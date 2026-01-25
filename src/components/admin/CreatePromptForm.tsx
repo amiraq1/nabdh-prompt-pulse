@@ -14,15 +14,33 @@ import {
 } from '@/components/ui/select';
 import { toast } from '@/hooks/use-toast';
 import { Prompt, useAddPrompt, useUpdatePrompt } from '@/hooks/usePrompts';
-import { categories, models } from '@/data/prompts';
+import { useLanguage, translations } from '@/contexts/LanguageContext';
+import { cn } from '@/lib/utils';
 
 interface CreatePromptFormProps {
   editPrompt?: Prompt;
   onClose?: () => void;
 }
 
+const categories = [
+  { id: 'coding', en: 'Coding', ar: 'البرمجة' },
+  { id: 'writing', en: 'Writing', ar: 'الكتابة' },
+  { id: 'art', en: 'Art', ar: 'الفن' },
+  { id: 'marketing', en: 'Marketing', ar: 'التسويق' },
+];
+
+const models = [
+  { id: 'gpt-4', en: 'GPT-4', ar: 'GPT-4' },
+  { id: 'gpt-3.5', en: 'GPT-3.5', ar: 'GPT-3.5' },
+  { id: 'midjourney', en: 'Midjourney', ar: 'Midjourney' },
+  { id: 'claude', en: 'Claude', ar: 'Claude' },
+  { id: 'gemini', en: 'Gemini', ar: 'Gemini' },
+];
+
 const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
   const navigate = useNavigate();
+  const { language, isRTL } = useLanguage();
+  const t = translations;
   const addPrompt = useAddPrompt();
   const updatePrompt = useUpdatePrompt();
   
@@ -42,8 +60,8 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
 
     if (!formData.title || !formData.content || !formData.category || !formData.aiModel) {
       toast({
-        title: 'Missing Fields',
-        description: 'Please fill in all required fields',
+        title: t.missingFields[language],
+        description: t.fillRequired[language],
         variant: 'destructive',
       });
       return;
@@ -64,22 +82,22 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
       if (editPrompt) {
         await updatePrompt.mutateAsync({ id: editPrompt.id, ...promptData });
         toast({
-          title: 'Prompt Updated',
-          description: 'The pulse has been updated successfully!',
+          title: t.promptUpdated[language],
+          description: t.pulseUpdated[language],
         });
         onClose?.();
       } else {
         await addPrompt.mutateAsync(promptData);
         toast({
-          title: 'Prompt Created',
-          description: 'New pulse added to the library!',
+          title: t.promptCreated[language],
+          description: t.newPulseAdded[language],
         });
         navigate('/admin');
       }
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'Failed to save prompt. Please try again.',
+        title: t.error[language],
+        description: t.failedToSave[language],
         variant: 'destructive',
       });
     } finally {
@@ -99,65 +117,73 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Title */}
       <div className="space-y-2">
-        <Label htmlFor="title" className="text-foreground">
-          Title <span className="text-destructive">*</span>
+        <Label htmlFor="title" className={cn("text-foreground", isRTL && "block text-right")}>
+          {t.promptTitle[language]} <span className="text-destructive">*</span>
         </Label>
         <Input
           id="title"
-          placeholder="Enter prompt title..."
+          placeholder={t.enterTitle[language]}
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-          className="bg-secondary border-border focus:border-primary focus:ring-primary/20"
+          className={cn(
+            "bg-secondary border-border focus:border-primary focus:ring-primary/20",
+            isRTL && "text-right"
+          )}
+          dir={isRTL ? 'rtl' : 'ltr'}
         />
       </div>
 
       {/* Arabic Title */}
       <div className="space-y-2">
-        <Label htmlFor="titleAr" className="text-foreground">
-          Arabic Title (العنوان بالعربية)
+        <Label htmlFor="titleAr" className={cn("text-foreground", isRTL && "block text-right")}>
+          {t.arabicTitle[language]} (العنوان بالعربية)
         </Label>
         <Input
           id="titleAr"
-          placeholder="أدخل عنوان الموجه..."
+          placeholder={t.enterArabicTitle[language]}
           value={formData.titleAr}
           onChange={(e) => setFormData({ ...formData, titleAr: e.target.value })}
-          className="bg-secondary border-border focus:border-primary focus:ring-primary/20"
+          className="bg-secondary border-border focus:border-primary focus:ring-primary/20 text-right"
           dir="rtl"
         />
       </div>
 
       {/* Prompt Content */}
       <div className="space-y-2">
-        <Label htmlFor="content" className="text-foreground">
-          Prompt Content <span className="text-destructive">*</span>
+        <Label htmlFor="content" className={cn("text-foreground", isRTL && "block text-right")}>
+          {t.promptContent[language]} <span className="text-destructive">*</span>
         </Label>
         <Textarea
           id="content"
-          placeholder="Write your AI prompt here..."
+          placeholder={t.writePrompt[language]}
           value={formData.content}
           onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-          className="min-h-[200px] bg-secondary border-border focus:border-primary focus:ring-primary/20 resize-y"
+          className={cn(
+            "min-h-[200px] bg-secondary border-border focus:border-primary focus:ring-primary/20 resize-y",
+            isRTL && "text-right"
+          )}
+          dir="ltr"
         />
       </div>
 
       {/* Category and Model Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-4", isRTL && "direction-rtl")}>
         {/* Category */}
         <div className="space-y-2">
-          <Label className="text-foreground">
-            Category <span className="text-destructive">*</span>
+          <Label className={cn("text-foreground", isRTL && "block text-right")}>
+            {t.category[language]} <span className="text-destructive">*</span>
           </Label>
           <Select
             value={formData.category}
             onValueChange={(value) => setFormData({ ...formData, category: value })}
           >
-            <SelectTrigger className="bg-secondary border-border focus:border-primary">
-              <SelectValue placeholder="Select category" />
+            <SelectTrigger className={cn("bg-secondary border-border focus:border-primary", isRTL && "flex-row-reverse")}>
+              <SelectValue placeholder={t.selectCategory[language]} />
             </SelectTrigger>
             <SelectContent className="bg-card border-border z-50">
-              {categories.filter((c) => c.id !== 'all').map((category) => (
+              {categories.map((category) => (
                 <SelectItem key={category.id} value={category.id}>
-                  {category.label}
+                  {language === 'ar' ? category.ar : category.en}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -166,20 +192,20 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
 
         {/* AI Model */}
         <div className="space-y-2">
-          <Label className="text-foreground">
-            AI Model <span className="text-destructive">*</span>
+          <Label className={cn("text-foreground", isRTL && "block text-right")}>
+            {t.aiModel[language]} <span className="text-destructive">*</span>
           </Label>
           <Select
             value={formData.aiModel}
             onValueChange={(value) => setFormData({ ...formData, aiModel: value })}
           >
-            <SelectTrigger className="bg-secondary border-border focus:border-primary">
-              <SelectValue placeholder="Select AI model" />
+            <SelectTrigger className={cn("bg-secondary border-border focus:border-primary", isRTL && "flex-row-reverse")}>
+              <SelectValue placeholder={t.selectAiModel[language]} />
             </SelectTrigger>
             <SelectContent className="bg-card border-border z-50">
-              {models.filter((m) => m.id !== 'all').map((model) => (
+              {models.map((model) => (
                 <SelectItem key={model.id} value={model.id}>
-                  {model.label}
+                  {language === 'ar' ? model.ar : model.en}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -189,37 +215,43 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
 
       {/* Tags */}
       <div className="space-y-2">
-        <Label htmlFor="tags" className="text-foreground">
-          Tags
+        <Label htmlFor="tags" className={cn("text-foreground", isRTL && "block text-right")}>
+          {t.tags[language]}
         </Label>
         <Input
           id="tags"
-          placeholder="Enter comma-separated tags (e.g., SEO, Marketing, AI)"
+          placeholder={t.enterTags[language]}
           value={formData.tags}
           onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-          className="bg-secondary border-border focus:border-primary focus:ring-primary/20"
+          className={cn(
+            "bg-secondary border-border focus:border-primary focus:ring-primary/20",
+            isRTL && "text-right"
+          )}
+          dir={isRTL ? 'rtl' : 'ltr'}
         />
-        <p className="text-xs text-muted-foreground">Separate tags with commas</p>
+        <p className={cn("text-xs text-muted-foreground", isRTL && "text-right")}>
+          {t.separateTags[language]}
+        </p>
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-4 pt-4 border-t border-border">
+      <div className={cn("flex items-center gap-4 pt-4 border-t border-border", isRTL && "flex-row-reverse")}>
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="bg-primary text-primary-foreground hover:bg-primary/90 glow-sm"
+          className={cn("bg-primary text-primary-foreground hover:bg-primary/90 glow-sm", isRTL && "flex-row-reverse")}
         >
-          <Save className="w-4 h-4 mr-2" />
-          {isSubmitting ? 'Saving...' : editPrompt ? 'Update Pulse' : 'Save Pulse'}
+          <Save className={cn("w-4 h-4", isRTL ? "ml-2" : "mr-2")} />
+          {isSubmitting ? t.saving[language] : editPrompt ? t.updatePulse[language] : t.savePulse[language]}
         </Button>
         <Button
           type="button"
           variant="outline"
           onClick={handleCancel}
-          className="border-border hover:bg-secondary"
+          className={cn("border-border hover:bg-secondary", isRTL && "flex-row-reverse")}
         >
-          <X className="w-4 h-4 mr-2" />
-          Cancel
+          <X className={cn("w-4 h-4", isRTL ? "ml-2" : "mr-2")} />
+          {t.cancel[language]}
         </Button>
       </div>
     </form>
