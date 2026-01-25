@@ -47,23 +47,26 @@ const FilterBar = ({
   const t = translations;
 
   return (
-    <div className="py-6 border-b border-border/50">
-      <div className="container mx-auto px-4">
+    <div className="py-4 sm:py-6 border-b border-border/50">
+      <div className="container mx-auto px-3 sm:px-4">
         <div className={cn(
-          "flex flex-col gap-4",
+          "flex flex-col gap-3 sm:gap-4",
           isRTL && "items-end"
         )}>
-          {/* Category Chips */}
-          <div className={cn("flex flex-wrap gap-2", isRTL && "flex-row-reverse justify-end")}>
+          {/* Category Chips - Horizontal scroll on mobile */}
+          <div className={cn(
+            "flex gap-2 overflow-x-auto scrollbar-hide pb-1 -mx-3 px-3 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-visible",
+            isRTL && "flex-row-reverse"
+          )}>
             {categories.map((category) => (
               <button
                 key={category.id}
                 onClick={() => onCategoryChange(category.id)}
                 className={cn(
-                  "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
+                  "px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap flex-shrink-0 touch-target",
                   selectedCategory === category.id
                     ? "bg-primary text-primary-foreground glow-sm"
-                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border/50"
+                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border/50 active:scale-95"
                 )}
               >
                 {language === 'ar' ? category.ar : category.en}
@@ -73,19 +76,19 @@ const FilterBar = ({
 
           {/* Model and Sort Selectors */}
           <div className={cn(
-            "flex flex-col sm:flex-row gap-3 w-full sm:w-auto",
+            "flex flex-col xs:flex-row gap-2 sm:gap-3 w-full sm:w-auto",
             isRTL && "sm:flex-row-reverse"
           )}>
             <Select value={selectedModel} onValueChange={onModelChange}>
               <SelectTrigger className={cn(
-                "w-full sm:w-[180px] bg-secondary border-border/50",
+                "w-full xs:w-[160px] sm:w-[180px] bg-secondary border-border/50 h-11 sm:h-10 text-sm",
                 isRTL && "text-right"
               )}>
                 <SelectValue placeholder={t.selectModel[language]} />
               </SelectTrigger>
               <SelectContent className="bg-card border-border z-50">
                 {models.map((model) => (
-                  <SelectItem key={model.id} value={model.id}>
+                  <SelectItem key={model.id} value={model.id} className="h-11 sm:h-10">
                     {language === 'ar' ? model.ar : model.en}
                   </SelectItem>
                 ))}
