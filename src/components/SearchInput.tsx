@@ -64,15 +64,26 @@ const SearchInput = ({ value, onChange, suggestions, placeholder, className }: S
     inputRef.current?.focus();
   };
 
+  const handleClear = () => {
+    onChange('');
+    inputRef.current?.focus();
+  };
+
   return (
     <div ref={containerRef} className={cn("relative", className)}>
       <Search className={cn(
-        "absolute top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground z-10",
+        "absolute top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground z-10 pointer-events-none",
         isRTL ? "right-3" : "left-3"
       )} />
       <Input
         ref={inputRef}
         type="text"
+        inputMode="search"
+        enterKeyHint="search"
+        autoComplete="off"
+        autoCorrect="off"
+        autoCapitalize="off"
+        spellCheck={false}
         placeholder={placeholder}
         value={value}
         onChange={(e) => {
@@ -83,7 +94,7 @@ const SearchInput = ({ value, onChange, suggestions, placeholder, className }: S
         onFocus={() => setShowSuggestions(true)}
         onKeyDown={handleKeyDown}
         className={cn(
-          "bg-secondary border-border/50 focus:border-primary/50 focus:ring-primary/20 transition-all",
+          "h-11 sm:h-10 bg-secondary border-border/50 focus:border-primary/50 focus:ring-primary/20 transition-all text-base sm:text-sm",
           isRTL ? "pr-10 text-right" : "pl-10",
           value && (isRTL ? "pl-10" : "pr-10")
         )}
@@ -91,14 +102,12 @@ const SearchInput = ({ value, onChange, suggestions, placeholder, className }: S
       />
       {value && (
         <button
-          onClick={() => {
-            onChange('');
-            inputRef.current?.focus();
-          }}
+          onClick={handleClear}
           className={cn(
-            "absolute top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors",
-            isRTL ? "left-3" : "right-3"
+            "absolute top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground active:text-foreground transition-colors p-2 touch-target flex items-center justify-center",
+            isRTL ? "left-1" : "right-1"
           )}
+          aria-label="Clear search"
         >
           <X className="w-4 h-4" />
         </button>
@@ -107,7 +116,7 @@ const SearchInput = ({ value, onChange, suggestions, placeholder, className }: S
       {/* Suggestions Dropdown */}
       {showSuggestions && suggestions.length > 0 && (
         <div className={cn(
-          "absolute top-full mt-1 w-full bg-card border border-border rounded-lg shadow-lg z-50 overflow-hidden",
+          "absolute top-full mt-1 w-full bg-card border border-border rounded-lg shadow-lg z-50 overflow-hidden max-h-[60vh] overflow-y-auto",
           isRTL && "text-right"
         )}>
           {suggestions.map((suggestion, index) => (
@@ -115,10 +124,10 @@ const SearchInput = ({ value, onChange, suggestions, placeholder, className }: S
               key={suggestion}
               onClick={() => handleSuggestionClick(suggestion)}
               className={cn(
-                "w-full px-4 py-2.5 text-sm text-left transition-colors flex items-center gap-2",
+                "w-full px-4 py-3 sm:py-2.5 text-sm text-left transition-colors flex items-center gap-2 touch-target",
                 index === selectedIndex
                   ? "bg-primary/20 text-primary"
-                  : "hover:bg-secondary text-foreground",
+                  : "hover:bg-secondary active:bg-secondary text-foreground",
                 isRTL && "flex-row-reverse text-right"
               )}
             >
