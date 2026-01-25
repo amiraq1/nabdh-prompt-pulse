@@ -14,6 +14,8 @@ const AdminLayout = lazy(() => import("./layouts/AdminLayout"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const CreatePromptPage = lazy(() => import("./pages/admin/CreatePromptPage"));
 const SettingsPage = lazy(() => import("./pages/admin/SettingsPage"));
+const UsersPage = lazy(() => import("./pages/admin/UsersPage"));
+const AuditLogsPage = lazy(() => import("./pages/admin/AuditLogPage"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -46,14 +48,14 @@ const App = () => (
           <Routes>
             {/* Main page - eagerly loaded */}
             <Route path="/" element={<Index />} />
-            
+
             {/* Auth page - lazy loaded */}
             <Route path="/auth" element={
               <Suspense fallback={<AdminFallback />}>
                 <AuthPage />
               </Suspense>
             } />
-            
+
             {/* Admin Routes - lazy loaded and protected */}
             <Route path="/admin" element={
               <Suspense fallback={<AdminFallback />}>
@@ -75,8 +77,20 @@ const App = () => (
                   <SettingsPage />
                 </Suspense>
               } />
+
+              <Route path="users" element={
+                <Suspense fallback={<AdminFallback />}>
+                  <UsersPage />
+                </Suspense>
+              } />
+
+              <Route path="audit" element={
+                <Suspense fallback={<AdminFallback />}>
+                  <AuditLogsPage />
+                </Suspense>
+              } />
             </Route>
-            
+
             {/* 404 - lazy loaded */}
             <Route path="*" element={
               <Suspense fallback={<AdminFallback />}>

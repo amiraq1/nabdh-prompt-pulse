@@ -8,20 +8,20 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: 
+        default:
           "border-transparent bg-primary/15 text-primary hover:bg-primary/20",
-        secondary: 
+        secondary:
           "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        destructive: 
+        destructive:
           "border-transparent bg-destructive/15 text-destructive hover:bg-destructive/20",
         success:
           "border-transparent bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/20",
         warning:
           "border-transparent bg-amber-500/15 text-amber-400 hover:bg-amber-500/20",
-        outline: 
+        outline:
           "border-border/60 text-foreground bg-transparent hover:bg-secondary/50",
         // Model-specific badges (for prompt cards)
-        gpt4: 
+        gpt4:
           "border-emerald-500/30 bg-emerald-500/15 text-emerald-400",
         gpt35:
           "border-green-500/30 bg-green-500/15 text-green-400",
@@ -45,9 +45,11 @@ const badgeVariants = cva(
   },
 );
 
-export interface BadgeProps 
-  extends React.HTMLAttributes<HTMLDivElement>, 
-    VariantProps<typeof badgeVariants> {}
+export interface BadgeProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+  VariantProps<typeof badgeVariants> {
+  children?: React.ReactNode;
+}
 
 function Badge({ className, variant, size, ...props }: BadgeProps) {
   return <div className={cn(badgeVariants({ variant, size }), className)} {...props} />;

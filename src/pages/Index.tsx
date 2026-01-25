@@ -159,6 +159,9 @@ const Index = () => {
         </div>
       </ErrorBoundary>
     );
-  };
+  }, [prompts, deferredQuery, selectedCategory, selectedModel, sortOption, filteredPrompts, error, isLoading, isRTL, language, searchQuery, handleSearchChange, handleCategoryChange, handleModelChange, handleSortChange, handleRetry, suggestions]);
 
-  export default Index;
+  return suggestions;
+};
+
+export default Index;
