@@ -3,9 +3,10 @@ import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import FilterBar from '@/components/FilterBar';
 import PromptGrid from '@/components/PromptGrid';
-import { prompts as allPrompts } from '@/data/prompts';
+import { usePromptStore } from '@/stores/promptStore';
 
 const Index = () => {
+  const { prompts: allPrompts } = usePromptStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedModel, setSelectedModel] = useState('all');
