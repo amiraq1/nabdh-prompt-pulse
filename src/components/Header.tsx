@@ -1,16 +1,17 @@
 import { Search, Plus, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { useLanguage, translations } from '@/contexts/LanguageContext';
 import LanguageToggle from './LanguageToggle';
+import SearchInput from './SearchInput';
 import { cn } from '@/lib/utils';
 
 interface HeaderProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
+  suggestions?: string[];
 }
 
-const Header = ({ searchQuery, onSearchChange }: HeaderProps) => {
+const Header = ({ searchQuery, onSearchChange, suggestions = [] }: HeaderProps) => {
   const { language, isRTL } = useLanguage();
   const t = translations;
 
@@ -32,23 +33,12 @@ const Header = ({ searchQuery, onSearchChange }: HeaderProps) => {
 
           {/* Search Bar */}
           <div className="flex-1 max-w-xl hidden md:block">
-            <div className="relative">
-              <Search className={cn(
-                "absolute top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground",
-                isRTL ? "right-3" : "left-3"
-              )} />
-              <Input
-                type="text"
-                placeholder={t.searchPlaceholder[language]}
-                value={searchQuery}
-                onChange={(e) => onSearchChange(e.target.value)}
-                className={cn(
-                  "bg-secondary border-border/50 focus:border-primary/50 focus:ring-primary/20 transition-all",
-                  isRTL ? "pr-10 text-right" : "pl-10"
-                )}
-                dir={isRTL ? 'rtl' : 'ltr'}
-              />
-            </div>
+            <SearchInput
+              value={searchQuery}
+              onChange={onSearchChange}
+              suggestions={suggestions}
+              placeholder={t.searchPlaceholder[language]}
+            />
           </div>
 
           {/* Actions */}
@@ -67,23 +57,12 @@ const Header = ({ searchQuery, onSearchChange }: HeaderProps) => {
 
         {/* Mobile Search */}
         <div className="mt-4 md:hidden">
-          <div className="relative">
-            <Search className={cn(
-              "absolute top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground",
-              isRTL ? "right-3" : "left-3"
-            )} />
-            <Input
-              type="text"
-              placeholder={t.searchPlaceholder[language]}
-              value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
-              className={cn(
-                "bg-secondary border-border/50 focus:border-primary/50",
-                isRTL ? "pr-10 text-right" : "pl-10"
-              )}
-              dir={isRTL ? 'rtl' : 'ltr'}
-            />
-          </div>
+          <SearchInput
+            value={searchQuery}
+            onChange={onSearchChange}
+            suggestions={suggestions}
+            placeholder={t.searchPlaceholder[language]}
+          />
         </div>
       </div>
     </header>
