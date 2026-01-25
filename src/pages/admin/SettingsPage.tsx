@@ -2,36 +2,44 @@ import { Settings as SettingsIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { useLanguage, translations } from '@/contexts/LanguageContext';
+import { cn } from '@/lib/utils';
 
 const SettingsPage = () => {
+  const { language, isRTL } = useLanguage();
+  const t = translations;
+
   return (
     <div className="max-w-2xl">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-foreground">Settings</h1>
-        <p className="text-muted-foreground">Configure your admin preferences</p>
+      <div className={cn("mb-6", isRTL && "text-right")}>
+        <h1 className="text-2xl font-bold text-foreground">{t.settings[language]}</h1>
+        <p className="text-muted-foreground">{t.manageLibrary[language]}</p>
       </div>
 
       <div className="space-y-6">
         {/* Appearance */}
         <div className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+          <h2 className={cn(
+            "text-lg font-semibold text-foreground mb-4 flex items-center gap-2",
+            isRTL && "flex-row-reverse"
+          )}>
             <SettingsIcon className="w-5 h-5 text-primary" />
-            Appearance
+            {t.appearance[language]}
           </h2>
           
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <Label className="text-foreground">RTL Mode</Label>
-                <p className="text-sm text-muted-foreground">Enable right-to-left layout for Arabic content</p>
+            <div className={cn("flex items-center justify-between", isRTL && "flex-row-reverse")}>
+              <div className={isRTL ? "text-right" : ""}>
+                <Label className="text-foreground">{t.rtlMode[language]}</Label>
+                <p className="text-sm text-muted-foreground">{t.rtlDescription[language]}</p>
               </div>
-              <Switch />
+              <Switch checked={isRTL} disabled />
             </div>
 
-            <div className="flex items-center justify-between">
-              <div>
-                <Label className="text-foreground">Show Arabic Titles</Label>
-                <p className="text-sm text-muted-foreground">Display Arabic translations when available</p>
+            <div className={cn("flex items-center justify-between", isRTL && "flex-row-reverse")}>
+              <div className={isRTL ? "text-right" : ""}>
+                <Label className="text-foreground">{t.showArabicTitles[language]}</Label>
+                <p className="text-sm text-muted-foreground">{t.showArabicDescription[language]}</p>
               </div>
               <Switch defaultChecked />
             </div>
@@ -40,13 +48,15 @@ const SettingsPage = () => {
 
         {/* Notifications */}
         <div className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-lg font-semibold text-foreground mb-4">Notifications</h2>
+          <h2 className={cn("text-lg font-semibold text-foreground mb-4", isRTL && "text-right")}>
+            {t.notifications[language]}
+          </h2>
           
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <Label className="text-foreground">New Submission Alerts</Label>
-                <p className="text-sm text-muted-foreground">Get notified when users submit new prompts</p>
+            <div className={cn("flex items-center justify-between", isRTL && "flex-row-reverse")}>
+              <div className={isRTL ? "text-right" : ""}>
+                <Label className="text-foreground">{t.newSubmissionAlerts[language]}</Label>
+                <p className="text-sm text-muted-foreground">{t.notifySubmissions[language]}</p>
               </div>
               <Switch defaultChecked />
             </div>
@@ -54,12 +64,12 @@ const SettingsPage = () => {
         </div>
 
         {/* Actions */}
-        <div className="flex gap-4">
+        <div className={cn("flex gap-4", isRTL && "flex-row-reverse")}>
           <Button className="bg-primary text-primary-foreground hover:bg-primary/90 glow-sm">
-            Save Changes
+            {t.saveChanges[language]}
           </Button>
           <Button variant="outline" className="border-border hover:bg-secondary">
-            Reset to Defaults
+            {t.resetDefaults[language]}
           </Button>
         </div>
       </div>

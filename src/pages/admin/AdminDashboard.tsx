@@ -30,11 +30,14 @@ import {
 } from '@/components/ui/alert-dialog';
 import { toast } from '@/hooks/use-toast';
 import { usePrompts, useDeletePrompt, Prompt } from '@/hooks/usePrompts';
+import { useLanguage, translations } from '@/contexts/LanguageContext';
 import CreatePromptForm from '@/components/admin/CreatePromptForm';
 import { cn } from '@/lib/utils';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const { language, isRTL } = useLanguage();
+  const t = translations;
   const { data: prompts = [], isLoading } = usePrompts();
   const deletePromptMutation = useDeletePrompt();
   const [searchQuery, setSearchQuery] = useState('');
@@ -52,13 +55,13 @@ const AdminDashboard = () => {
       try {
         await deletePromptMutation.mutateAsync(deletingPrompt.id);
         toast({
-          title: 'Prompt Deleted',
-          description: 'The pulse has been removed from the library.',
+          title: t.promptDeleted[language],
+          description: t.pulseRemoved[language],
         });
       } catch (error) {
         toast({
-          title: 'Error',
-          description: 'Failed to delete prompt. Please try again.',
+          title: t.error[language],
+          description: t.failedToDelete[language],
           variant: 'destructive',
         });
       }
@@ -77,6 +80,16 @@ const AdminDashboard = () => {
     }
   };
 
+  const getCategoryLabel = (category: string) => {
+    const labels: Record<string, { en: string; ar: string }> = {
+      coding: { en: 'Coding', ar: 'البرمجة' },
+      writing: { en: 'Writing', ar: 'الكتابة' },
+      art: { en: 'Art', ar: 'الفن' },
+      marketing: { en: 'Marketing', ar: 'التسويق' },
+    };
+    return labels[category]?.[language] || category;
+  };
+
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'coding': return 'bg-cyan-500/20 text-cyan-400';
@@ -90,54 +103,64 @@ const AdminDashboard = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-          <p className="text-muted-foreground">Manage your prompt library</p>
+      <div className={cn(
+        "flex flex-col sm:flex-row sm:items-center justify-between gap-4",
+        isRTL && "sm:flex-row-reverse"
+      )}>
+        <div className={isRTL ? "text-right" : ""}>
+          <h1 className="text-2xl font-bold text-foreground">{t.dashboard[language]}</h1>
+          <p className="text-muted-foreground">{t.manageLibrary[language]}</p>
         </div>
         <Button
           onClick={() => navigate('/admin/create')}
-          className="bg-primary text-primary-foreground hover:bg-primary/90 glow-sm"
+          className={cn("bg-primary text-primary-foreground hover:bg-primary/90 glow-sm", isRTL && "flex-row-reverse")}
         >
-          <Plus className="w-4 h-4 mr-2" />
-          Add New Prompt
+          <Plus className={cn("w-4 h-4", isRTL ? "ml-2" : "mr-2")} />
+          {t.addNewPrompt[language]}
         </Button>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-card rounded-xl border border-border p-4">
+      <div className={cn("grid grid-cols-2 md:grid-cols-4 gap-4", isRTL && "direction-rtl")}>
+        <div className={cn("bg-card rounded-xl border border-border p-4", isRTL && "text-right")}>
           <div className="text-2xl font-bold text-foreground">{prompts.length}</div>
-          <div className="text-sm text-muted-foreground">Total Prompts</div>
+          <div className="text-sm text-muted-foreground">{t.totalPrompts[language]}</div>
         </div>
-        <div className="bg-card rounded-xl border border-border p-4">
+        <div className={cn("bg-card rounded-xl border border-border p-4", isRTL && "text-right")}>
           <div className="text-2xl font-bold text-foreground">
             {prompts.filter((p) => p.category === 'coding').length}
           </div>
-          <div className="text-sm text-muted-foreground">Coding</div>
+          <div className="text-sm text-muted-foreground">{t.coding[language]}</div>
         </div>
-        <div className="bg-card rounded-xl border border-border p-4">
+        <div className={cn("bg-card rounded-xl border border-border p-4", isRTL && "text-right")}>
           <div className="text-2xl font-bold text-foreground">
             {prompts.filter((p) => p.category === 'art').length}
           </div>
-          <div className="text-sm text-muted-foreground">Art</div>
+          <div className="text-sm text-muted-foreground">{t.art[language]}</div>
         </div>
-        <div className="bg-card rounded-xl border border-border p-4">
+        <div className={cn("bg-card rounded-xl border border-border p-4", isRTL && "text-right")}>
           <div className="text-2xl font-bold text-foreground">
             {prompts.reduce((acc, p) => acc + p.likes, 0)}
           </div>
-          <div className="text-sm text-muted-foreground">Total Likes</div>
+          <div className="text-sm text-muted-foreground">{t.totalLikes[language]}</div>
         </div>
       </div>
 
       {/* Search */}
-      <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+      <div className={cn("relative max-w-md", isRTL && "mr-auto ml-0")}>
+        <Search className={cn(
+          "absolute top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground",
+          isRTL ? "right-3" : "left-3"
+        )} />
         <Input
-          placeholder="Search prompts..."
+          placeholder={t.searchPlaceholder[language]}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10 bg-secondary border-border"
+          className={cn(
+            "bg-secondary border-border",
+            isRTL ? "pr-10 text-right" : "pl-10"
+          )}
+          dir={isRTL ? 'rtl' : 'ltr'}
         />
       </div>
 
@@ -151,38 +174,38 @@ const AdminDashboard = () => {
           <Table>
             <TableHeader>
               <TableRow className="border-border hover:bg-transparent">
-                <TableHead className="text-muted-foreground">Title</TableHead>
-                <TableHead className="text-muted-foreground">Category</TableHead>
-                <TableHead className="text-muted-foreground">AI Model</TableHead>
-                <TableHead className="text-muted-foreground hidden md:table-cell">Tags</TableHead>
-                <TableHead className="text-muted-foreground text-right">Actions</TableHead>
+                <TableHead className={cn("text-muted-foreground", isRTL && "text-right")}>{t.title[language]}</TableHead>
+                <TableHead className={cn("text-muted-foreground", isRTL && "text-right")}>{t.category[language]}</TableHead>
+                <TableHead className={cn("text-muted-foreground", isRTL && "text-right")}>{t.aiModel[language]}</TableHead>
+                <TableHead className={cn("text-muted-foreground hidden md:table-cell", isRTL && "text-right")}>{t.tags[language]}</TableHead>
+                <TableHead className={cn("text-muted-foreground", isRTL ? "text-left" : "text-right")}>{t.actions[language]}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredPrompts.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                    No prompts found
+                    {t.noPromptsFound[language]}
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredPrompts.map((prompt) => (
                   <TableRow key={prompt.id} className="border-border hover:bg-secondary/50">
-                    <TableCell className="font-medium text-foreground max-w-[200px] truncate">
-                      {prompt.title}
+                    <TableCell className={cn("font-medium text-foreground max-w-[200px] truncate", isRTL && "text-right")}>
+                      {isRTL && prompt.title_ar ? prompt.title_ar : prompt.title}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className={isRTL ? "text-right" : ""}>
                       <Badge variant="secondary" className={cn("capitalize", getCategoryColor(prompt.category))}>
-                        {prompt.category}
+                        {getCategoryLabel(prompt.category)}
                       </Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className={isRTL ? "text-right" : ""}>
                       <Badge variant="outline" className={cn("uppercase text-xs", getModelColor(prompt.ai_model))}>
                         {prompt.ai_model}
                       </Badge>
                     </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      <div className="flex flex-wrap gap-1">
+                    <TableCell className={cn("hidden md:table-cell", isRTL && "text-right")}>
+                      <div className={cn("flex flex-wrap gap-1", isRTL && "flex-row-reverse justify-end")}>
                         {(prompt.tags ?? []).slice(0, 2).map((tag) => (
                           <span key={tag} className="px-2 py-0.5 text-xs rounded bg-secondary text-muted-foreground">
                             {tag}
@@ -193,8 +216,8 @@ const AdminDashboard = () => {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
+                    <TableCell className={isRTL ? "text-left" : "text-right"}>
+                      <div className={cn("flex items-center gap-2", isRTL ? "justify-start" : "justify-end")}>
                         <Button
                           variant="ghost"
                           size="icon"
@@ -225,7 +248,7 @@ const AdminDashboard = () => {
       <Dialog open={!!editingPrompt} onOpenChange={() => setEditingPrompt(null)}>
         <DialogContent className="bg-card border-border max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-foreground">Edit Prompt</DialogTitle>
+            <DialogTitle className={cn("text-foreground", isRTL && "text-right")}>{t.editPrompt[language]}</DialogTitle>
           </DialogHeader>
           {editingPrompt && (
             <CreatePromptForm
@@ -240,18 +263,20 @@ const AdminDashboard = () => {
       <AlertDialog open={!!deletingPrompt} onOpenChange={() => setDeletingPrompt(null)}>
         <AlertDialogContent className="bg-card border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-foreground">Delete Prompt?</AlertDialogTitle>
-            <AlertDialogDescription className="text-muted-foreground">
-              This action cannot be undone. This will permanently delete "{deletingPrompt?.title}" from the library.
+            <AlertDialogTitle className={cn("text-foreground", isRTL && "text-right")}>
+              {t.deletePrompt[language]}
+            </AlertDialogTitle>
+            <AlertDialogDescription className={cn("text-muted-foreground", isRTL && "text-right")}>
+              {t.deleteConfirmation[language]} "{deletingPrompt?.title}" {t.fromLibrary[language]}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="border-border hover:bg-secondary">Cancel</AlertDialogCancel>
+          <AlertDialogFooter className={isRTL ? "flex-row-reverse gap-2" : ""}>
+            <AlertDialogCancel className="border-border hover:bg-secondary">{t.cancel[language]}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Delete
+              {t.delete[language]}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
