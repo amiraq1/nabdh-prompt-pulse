@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import FilterBar from '@/components/FilterBar';
@@ -18,6 +18,27 @@ const Index = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedModel, setSelectedModel] = useState('all');
   const [sortOption, setSortOption] = useState<SortOption>('newest');
+
+  // Memoized callbacks to prevent child re-renders
+  const handleSearchChange = useCallback((query: string) => {
+    setSearchQuery(query);
+  }, []);
+
+  const handleCategoryChange = useCallback((category: string) => {
+    setSelectedCategory(category);
+  }, []);
+
+  const handleModelChange = useCallback((model: string) => {
+    setSelectedModel(model);
+  }, []);
+
+  const handleSortChange = useCallback((sort: SortOption) => {
+    setSortOption(sort);
+  }, []);
+
+  const handleRetry = useCallback(() => {
+    refetch();
+  }, [refetch]);
 
   // Generate search suggestions
   const suggestions = useMemo(() => {
@@ -79,7 +100,7 @@ const Index = () => {
       <div className="min-h-screen bg-background">
         <Header 
           searchQuery={searchQuery} 
-          onSearchChange={setSearchQuery}
+          onSearchChange={handleSearchChange}
           suggestions={suggestions}
         />
         
@@ -90,9 +111,9 @@ const Index = () => {
             selectedCategory={selectedCategory}
             selectedModel={selectedModel}
             sortOption={sortOption}
-            onCategoryChange={setSelectedCategory}
-            onModelChange={setSelectedModel}
-            onSortChange={setSortOption}
+            onCategoryChange={handleCategoryChange}
+            onModelChange={handleModelChange}
+            onSortChange={handleSortChange}
           />
 
           <section className="py-12">
@@ -114,7 +135,7 @@ const Index = () => {
               {error ? (
                 <InlineError 
                   message={isRTL ? 'فشل في تحميل الموجهات. حاول مرة أخرى.' : 'Failed to load prompts. Please try again.'}
-                  onRetry={() => refetch()}
+                  onRetry={handleRetry}
                 />
               ) : (
                 <PromptGrid prompts={filteredPrompts} isLoading={isLoading} />

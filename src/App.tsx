@@ -1,17 +1,39 @@
+import { lazy, Suspense } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
-import AdminLayout from "./layouts/AdminLayout";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import CreatePromptPage from "./pages/admin/CreatePromptPage";
-import SettingsPage from "./pages/admin/SettingsPage";
 
-const queryClient = new QueryClient();
+// Eager load the main page for LCP
+import Index from "./pages/Index";
+
+// Lazy load admin routes (not on critical path)
+const AdminLayout = lazy(() => import("./layouts/AdminLayout"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const CreatePromptPage = lazy(() => import("./pages/admin/CreatePromptPage"));
+const SettingsPage = lazy(() => import("./pages/admin/SettingsPage"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+
+// Optimized QueryClient with caching
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: 1000 * 60 * 30, // 30 minutes (formerly cacheTime)
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
+
+// Minimal loading fallback for admin routes
+const AdminFallback = () => (
+  <div className="min-h-screen bg-background flex items-center justify-center">
+    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+  </div>
+);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -21,17 +43,38 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
+            {/* Main page - eagerly loaded */}
             <Route path="/" element={<Index />} />
             
-            {/* Admin Routes */}
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="create" element={<CreatePromptPage />} />
-              <Route path="settings" element={<SettingsPage />} />
+            {/* Admin Routes - lazy loaded */}
+            <Route path="/admin" element={
+              <Suspense fallback={<AdminFallback />}>
+                <AdminLayout />
+              </Suspense>
+            }>
+              <Route index element={
+                <Suspense fallback={<AdminFallback />}>
+                  <AdminDashboard />
+                </Suspense>
+              } />
+              <Route path="create" element={
+                <Suspense fallback={<AdminFallback />}>
+                  <CreatePromptPage />
+                </Suspense>
+              } />
+              <Route path="settings" element={
+                <Suspense fallback={<AdminFallback />}>
+                  <SettingsPage />
+                </Suspense>
+              } />
             </Route>
             
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
+            {/* 404 - lazy loaded */}
+            <Route path="*" element={
+              <Suspense fallback={<AdminFallback />}>
+                <NotFound />
+              </Suspense>
+            } />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>

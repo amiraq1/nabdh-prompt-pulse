@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, memo } from 'react';
 import { Copy, Check, Heart, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -12,7 +12,62 @@ interface PromptCardProps {
   index?: number;
 }
 
-const PromptCard = ({ prompt, index = 0 }: PromptCardProps) => {
+// Memoized model badge to prevent re-renders
+const ModelBadge = memo(({ model }: { model: string }) => {
+  const getModelVariant = (model: string) => {
+    switch (model) {
+      case 'gpt-4': return 'gpt4';
+      case 'gpt-3.5': return 'gpt35';
+      case 'midjourney': return 'midjourney';
+      case 'claude': return 'claude';
+      case 'gemini': return 'gemini';
+      default: return 'default';
+    }
+  };
+
+  return (
+    <Badge 
+      variant={getModelVariant(model) as any}
+      size="sm"
+      className="shrink-0 transition-transform group-hover:scale-105"
+    >
+      {model.toUpperCase()}
+    </Badge>
+  );
+});
+ModelBadge.displayName = 'ModelBadge';
+
+// Memoized tags list
+const TagsList = memo(({ tags, isRTL }: { tags: string[] | null; isRTL: boolean }) => {
+  const visibleTags = (tags ?? []).slice(0, 4);
+  const extraCount = (tags?.length ?? 0) - 4;
+
+  if (visibleTags.length === 0) return null;
+
+  return (
+    <div className={cn(
+      "flex gap-1.5 sm:gap-2 mb-3 sm:mb-4 overflow-x-auto scrollbar-hide -mx-1 px-1",
+      isRTL && "flex-row-reverse"
+    )}>
+      {visibleTags.map((tag) => (
+        <span
+          key={tag}
+          className="px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs rounded-md bg-secondary text-muted-foreground whitespace-nowrap flex-shrink-0"
+        >
+          {tag}
+        </span>
+      ))}
+      {extraCount > 0 && (
+        <span className="px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs text-muted-foreground">
+          +{extraCount}
+        </span>
+      )}
+    </div>
+  );
+});
+TagsList.displayName = 'TagsList';
+
+const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
   const { language, isRTL } = useLanguage();
   const t = translations;
   const [isExpanded, setIsExpanded] = useState(false);
@@ -51,7 +106,6 @@ const PromptCard = ({ prompt, index = 0 }: PromptCardProps) => {
   const handleLike = useCallback(async () => {
     if (isLiking) return;
     
-    // Optimistic update
     const newIsLiked = !isLiked;
     const newLikes = newIsLiked ? optimisticLikes + 1 : optimisticLikes - 1;
     
@@ -62,7 +116,6 @@ const PromptCard = ({ prompt, index = 0 }: PromptCardProps) => {
     try {
       await updateLikes.mutateAsync({ id: prompt.id, likes: newLikes });
     } catch (error) {
-      // Rollback on error
       setIsLiked(!newIsLiked);
       setOptimisticLikes(optimisticLikes);
       toast({
@@ -75,29 +128,24 @@ const PromptCard = ({ prompt, index = 0 }: PromptCardProps) => {
     }
   }, [isLiked, optimisticLikes, isLiking, prompt.id, updateLikes, isRTL]);
 
+  const toggleExpand = useCallback(() => {
+    setIsExpanded(prev => !prev);
+  }, []);
+
   const displayTitle = isRTL && prompt.title_ar ? prompt.title_ar : prompt.title;
-  // Shorter truncation on mobile
   const truncatedPrompt = prompt.content.length > 120 
     ? prompt.content.slice(0, 120) + '...' 
     : prompt.content;
 
-  const getModelColor = (model: string) => {
-    switch (model) {
-      case 'gpt-4': return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
-      case 'gpt-3.5': return 'bg-green-500/20 text-green-400 border-green-500/30';
-      case 'midjourney': return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
-      case 'claude': return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
-      case 'gemini': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-      default: return 'bg-primary/20 text-primary border-primary/30';
-    }
-  };
+  // Stagger animation delay (capped for performance)
+  const animationDelay = Math.min(index * 0.05, 0.3);
 
   return (
     <div 
-      className="group relative bg-card rounded-xl border border-border/50 p-4 sm:p-5 transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 animate-fade-in active:scale-[0.99] sm:hover:-translate-y-1"
-      style={{ animationDelay: `${Math.min(index * 0.05, 0.3)}s` }}
+      className="group relative bg-card rounded-xl border border-border/50 p-4 sm:p-5 transition-all duration-200 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 animate-fade-in active:scale-[0.99] sm:hover:-translate-y-1 will-change-transform"
+      style={{ animationDelay: `${animationDelay}s` }}
     >
-      {/* Gradient border on hover - hidden on mobile for performance */}
+      {/* Gradient hover effect - CSS only, no JS */}
       <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/0 via-primary/5 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none hidden sm:block" />
       
       <div className="relative z-10">
@@ -112,36 +160,11 @@ const PromptCard = ({ prompt, index = 0 }: PromptCardProps) => {
           )}>
             {displayTitle}
           </h3>
-          <Badge 
-            variant="outline" 
-            className={cn(
-              "text-[10px] sm:text-xs font-medium shrink-0 transition-transform group-hover:scale-105 px-1.5 sm:px-2",
-              getModelColor(prompt.ai_model)
-            )}
-          >
-            {prompt.ai_model.toUpperCase()}
-          </Badge>
+          <ModelBadge model={prompt.ai_model} />
         </div>
 
-        {/* Tags - Horizontal scroll on mobile */}
-        <div className={cn(
-          "flex gap-1.5 sm:gap-2 mb-3 sm:mb-4 overflow-x-auto scrollbar-hide -mx-1 px-1",
-          isRTL && "flex-row-reverse"
-        )}>
-          {(prompt.tags ?? []).slice(0, 4).map((tag) => (
-            <span
-              key={tag}
-              className="px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs rounded-md bg-secondary text-muted-foreground whitespace-nowrap flex-shrink-0"
-            >
-              {tag}
-            </span>
-          ))}
-          {(prompt.tags?.length ?? 0) > 4 && (
-            <span className="px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs text-muted-foreground">
-              +{(prompt.tags?.length ?? 0) - 4}
-            </span>
-          )}
-        </div>
+        {/* Tags */}
+        <TagsList tags={prompt.tags} isRTL={isRTL} />
 
         {/* Prompt Text */}
         <div className="relative mb-3 sm:mb-4">
@@ -156,7 +179,7 @@ const PromptCard = ({ prompt, index = 0 }: PromptCardProps) => {
           
           {prompt.content.length > 120 && (
             <button
-              onClick={() => setIsExpanded(!isExpanded)}
+              onClick={toggleExpand}
               className={cn(
                 "flex items-center gap-1 mt-2 text-xs text-primary hover:text-primary/80 transition-colors focus:outline-none focus:underline touch-target justify-center w-full sm:w-auto sm:justify-start",
                 isRTL && "flex-row-reverse"
@@ -227,6 +250,8 @@ const PromptCard = ({ prompt, index = 0 }: PromptCardProps) => {
       </div>
     </div>
   );
-};
+});
+
+PromptCard.displayName = 'PromptCard';
 
 export default PromptCard;
