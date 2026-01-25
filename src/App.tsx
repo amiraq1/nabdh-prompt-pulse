@@ -9,11 +9,12 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 // Eager load the main page for LCP
 import Index from "./pages/Index";
 
-// Lazy load admin routes (not on critical path)
+// Lazy load admin and auth routes (not on critical path)
 const AdminLayout = lazy(() => import("./layouts/AdminLayout"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const CreatePromptPage = lazy(() => import("./pages/admin/CreatePromptPage"));
 const SettingsPage = lazy(() => import("./pages/admin/SettingsPage"));
+const AuthPage = lazy(() => import("./pages/AuthPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Optimized QueryClient with caching
@@ -46,7 +47,14 @@ const App = () => (
             {/* Main page - eagerly loaded */}
             <Route path="/" element={<Index />} />
             
-            {/* Admin Routes - lazy loaded */}
+            {/* Auth page - lazy loaded */}
+            <Route path="/auth" element={
+              <Suspense fallback={<AdminFallback />}>
+                <AuthPage />
+              </Suspense>
+            } />
+            
+            {/* Admin Routes - lazy loaded and protected */}
             <Route path="/admin" element={
               <Suspense fallback={<AdminFallback />}>
                 <AdminLayout />
