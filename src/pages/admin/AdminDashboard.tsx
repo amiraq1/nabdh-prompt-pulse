@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Pencil, Trash2, Search } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -29,14 +29,14 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { toast } from '@/hooks/use-toast';
-import { usePromptStore } from '@/stores/promptStore';
-import { Prompt } from '@/data/prompts';
+import { usePrompts, useDeletePrompt, Prompt } from '@/hooks/usePrompts';
 import CreatePromptForm from '@/components/admin/CreatePromptForm';
 import { cn } from '@/lib/utils';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const { prompts, deletePrompt } = usePromptStore();
+  const { data: prompts = [], isLoading } = usePrompts();
+  const deletePromptMutation = useDeletePrompt();
   const [searchQuery, setSearchQuery] = useState('');
   const [editingPrompt, setEditingPrompt] = useState<Prompt | null>(null);
   const [deletingPrompt, setDeletingPrompt] = useState<Prompt | null>(null);
@@ -44,16 +44,24 @@ const AdminDashboard = () => {
   const filteredPrompts = prompts.filter((prompt) =>
     prompt.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     prompt.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    prompt.model.toLowerCase().includes(searchQuery.toLowerCase())
+    prompt.ai_model.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (deletingPrompt) {
-      deletePrompt(deletingPrompt.id);
-      toast({
-        title: 'Prompt Deleted',
-        description: 'The pulse has been removed from the library.',
-      });
+      try {
+        await deletePromptMutation.mutateAsync(deletingPrompt.id);
+        toast({
+          title: 'Prompt Deleted',
+          description: 'The pulse has been removed from the library.',
+        });
+      } catch (error) {
+        toast({
+          title: 'Error',
+          description: 'Failed to delete prompt. Please try again.',
+          variant: 'destructive',
+        });
+      }
       setDeletingPrompt(null);
     }
   };
@@ -135,76 +143,82 @@ const AdminDashboard = () => {
 
       {/* Data Table */}
       <div className="bg-card rounded-xl border border-border overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="border-border hover:bg-transparent">
-              <TableHead className="text-muted-foreground">Title</TableHead>
-              <TableHead className="text-muted-foreground">Category</TableHead>
-              <TableHead className="text-muted-foreground">AI Model</TableHead>
-              <TableHead className="text-muted-foreground hidden md:table-cell">Tags</TableHead>
-              <TableHead className="text-muted-foreground text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredPrompts.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                  No prompts found
-                </TableCell>
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="w-6 h-6 text-primary animate-spin" />
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow className="border-border hover:bg-transparent">
+                <TableHead className="text-muted-foreground">Title</TableHead>
+                <TableHead className="text-muted-foreground">Category</TableHead>
+                <TableHead className="text-muted-foreground">AI Model</TableHead>
+                <TableHead className="text-muted-foreground hidden md:table-cell">Tags</TableHead>
+                <TableHead className="text-muted-foreground text-right">Actions</TableHead>
               </TableRow>
-            ) : (
-              filteredPrompts.map((prompt) => (
-                <TableRow key={prompt.id} className="border-border hover:bg-secondary/50">
-                  <TableCell className="font-medium text-foreground max-w-[200px] truncate">
-                    {prompt.title}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="secondary" className={cn("capitalize", getCategoryColor(prompt.category))}>
-                      {prompt.category}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={cn("uppercase text-xs", getModelColor(prompt.model))}>
-                      {prompt.model}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    <div className="flex flex-wrap gap-1">
-                      {prompt.tags.slice(0, 2).map((tag) => (
-                        <span key={tag} className="px-2 py-0.5 text-xs rounded bg-secondary text-muted-foreground">
-                          {tag}
-                        </span>
-                      ))}
-                      {prompt.tags.length > 2 && (
-                        <span className="text-xs text-muted-foreground">+{prompt.tags.length - 2}</span>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setEditingPrompt(prompt)}
-                        className="text-muted-foreground hover:text-primary"
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setDeletingPrompt(prompt)}
-                        className="text-muted-foreground hover:text-destructive"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
+            </TableHeader>
+            <TableBody>
+              {filteredPrompts.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                    No prompts found
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : (
+                filteredPrompts.map((prompt) => (
+                  <TableRow key={prompt.id} className="border-border hover:bg-secondary/50">
+                    <TableCell className="font-medium text-foreground max-w-[200px] truncate">
+                      {prompt.title}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="secondary" className={cn("capitalize", getCategoryColor(prompt.category))}>
+                        {prompt.category}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className={cn("uppercase text-xs", getModelColor(prompt.ai_model))}>
+                        {prompt.ai_model}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      <div className="flex flex-wrap gap-1">
+                        {(prompt.tags ?? []).slice(0, 2).map((tag) => (
+                          <span key={tag} className="px-2 py-0.5 text-xs rounded bg-secondary text-muted-foreground">
+                            {tag}
+                          </span>
+                        ))}
+                        {(prompt.tags ?? []).length > 2 && (
+                          <span className="text-xs text-muted-foreground">+{(prompt.tags ?? []).length - 2}</span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setEditingPrompt(prompt)}
+                          className="text-muted-foreground hover:text-primary"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setDeletingPrompt(prompt)}
+                          className="text-muted-foreground hover:text-destructive"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        )}
       </div>
 
       {/* Edit Dialog */}

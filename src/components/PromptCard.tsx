@@ -3,7 +3,7 @@ import { Copy, Check, Heart, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
-import { Prompt } from '@/data/prompts';
+import { Prompt, useUpdateLikes } from '@/hooks/usePrompts';
 import { cn } from '@/lib/utils';
 
 interface PromptCardProps {
@@ -13,12 +13,12 @@ interface PromptCardProps {
 const PromptCard = ({ prompt }: PromptCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
-  const [likes, setLikes] = useState(prompt.likes);
   const [isLiked, setIsLiked] = useState(false);
+  const updateLikes = useUpdateLikes();
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(prompt.prompt);
+      await navigator.clipboard.writeText(prompt.content);
       setIsCopied(true);
       toast({
         title: "Copied!",
@@ -35,17 +35,14 @@ const PromptCard = ({ prompt }: PromptCardProps) => {
   };
 
   const handleLike = () => {
-    if (isLiked) {
-      setLikes(likes - 1);
-    } else {
-      setLikes(likes + 1);
-    }
+    const newLikes = isLiked ? prompt.likes - 1 : prompt.likes + 1;
     setIsLiked(!isLiked);
+    updateLikes.mutate({ id: prompt.id, likes: newLikes });
   };
 
-  const truncatedPrompt = prompt.prompt.length > 150 
-    ? prompt.prompt.slice(0, 150) + '...' 
-    : prompt.prompt;
+  const truncatedPrompt = prompt.content.length > 150 
+    ? prompt.content.slice(0, 150) + '...' 
+    : prompt.content;
 
   const getModelColor = (model: string) => {
     switch (model) {
@@ -69,14 +66,14 @@ const PromptCard = ({ prompt }: PromptCardProps) => {
           <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
             {prompt.title}
           </h3>
-          <Badge variant="outline" className={cn("text-xs font-medium shrink-0", getModelColor(prompt.model))}>
-            {prompt.model.toUpperCase()}
+          <Badge variant="outline" className={cn("text-xs font-medium shrink-0", getModelColor(prompt.ai_model))}>
+            {prompt.ai_model.toUpperCase()}
           </Badge>
         </div>
 
         {/* Tags */}
         <div className="flex flex-wrap gap-2 mb-4">
-          {prompt.tags.map((tag) => (
+          {(prompt.tags ?? []).map((tag) => (
             <span
               key={tag}
               className="px-2 py-1 text-xs rounded-md bg-secondary text-muted-foreground"
@@ -90,11 +87,11 @@ const PromptCard = ({ prompt }: PromptCardProps) => {
         <div className="relative mb-4">
           <div className="bg-secondary/50 rounded-lg p-4 border border-border/30">
             <p className="text-sm text-foreground/80 leading-relaxed font-mono">
-              {isExpanded ? prompt.prompt : truncatedPrompt}
+              {isExpanded ? prompt.content : truncatedPrompt}
             </p>
           </div>
           
-          {prompt.prompt.length > 150 && (
+          {prompt.content.length > 150 && (
             <button
               onClick={() => setIsExpanded(!isExpanded)}
               className="flex items-center gap-1 mt-2 text-xs text-primary hover:text-primary/80 transition-colors"
@@ -124,7 +121,7 @@ const PromptCard = ({ prompt }: PromptCardProps) => {
             )}
           >
             <Heart className={cn("w-4 h-4", isLiked && "fill-current")} />
-            <span>{likes}</span>
+            <span>{prompt.likes}</span>
           </button>
 
           <Button

@@ -3,31 +3,32 @@ import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import FilterBar from '@/components/FilterBar';
 import PromptGrid from '@/components/PromptGrid';
-import { usePromptStore } from '@/stores/promptStore';
+import { usePrompts } from '@/hooks/usePrompts';
+import { Loader2 } from 'lucide-react';
 
 const Index = () => {
-  const { prompts: allPrompts } = usePromptStore();
+  const { data: prompts = [], isLoading, error } = usePrompts();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedModel, setSelectedModel] = useState('all');
 
   const filteredPrompts = useMemo(() => {
-    return allPrompts.filter((prompt) => {
+    return prompts.filter((prompt) => {
       // Search filter
       const matchesSearch = searchQuery === '' || 
         prompt.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        prompt.prompt.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        prompt.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+        prompt.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (prompt.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())) ?? false);
 
       // Category filter
       const matchesCategory = selectedCategory === 'all' || prompt.category === selectedCategory;
 
       // Model filter
-      const matchesModel = selectedModel === 'all' || prompt.model === selectedModel;
+      const matchesModel = selectedModel === 'all' || prompt.ai_model === selectedModel;
 
       return matchesSearch && matchesCategory && matchesModel;
     });
-  }, [searchQuery, selectedCategory, selectedModel]);
+  }, [prompts, searchQuery, selectedCategory, selectedModel]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -55,7 +56,17 @@ const Index = () => {
               </span>
             </div>
 
-            <PromptGrid prompts={filteredPrompts} />
+            {isLoading ? (
+              <div className="flex items-center justify-center py-20">
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
+              </div>
+            ) : error ? (
+              <div className="text-center py-20">
+                <p className="text-destructive">Failed to load prompts. Please try again.</p>
+              </div>
+            ) : (
+              <PromptGrid prompts={filteredPrompts} />
+            )}
           </div>
         </section>
       </main>
