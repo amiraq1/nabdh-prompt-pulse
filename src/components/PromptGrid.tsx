@@ -1,4 +1,4 @@
-import { Prompt } from '@/data/prompts';
+import { Prompt } from '@/hooks/usePrompts';
 import PromptCard from './PromptCard';
 import { Inbox } from 'lucide-react';
 

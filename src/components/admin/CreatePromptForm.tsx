@@ -13,8 +13,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { toast } from '@/hooks/use-toast';
-import { usePromptStore } from '@/stores/promptStore';
-import { categories, models, Prompt } from '@/data/prompts';
+import { Prompt, useAddPrompt, useUpdatePrompt } from '@/hooks/usePrompts';
+import { categories, models } from '@/data/prompts';
 
 interface CreatePromptFormProps {
   editPrompt?: Prompt;
@@ -23,21 +23,24 @@ interface CreatePromptFormProps {
 
 const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
   const navigate = useNavigate();
-  const { addPrompt, updatePrompt } = usePromptStore();
+  const addPrompt = useAddPrompt();
+  const updatePrompt = useUpdatePrompt();
   
   const [formData, setFormData] = useState({
     title: editPrompt?.title || '',
-    titleAr: editPrompt?.titleAr || '',
-    prompt: editPrompt?.prompt || '',
+    titleAr: editPrompt?.title_ar || '',
+    content: editPrompt?.content || '',
     category: editPrompt?.category || '',
-    model: editPrompt?.model || '',
-    tags: editPrompt?.tags.join(', ') || '',
+    aiModel: editPrompt?.ai_model || '',
+    tags: editPrompt?.tags?.join(', ') || '',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.title || !formData.prompt || !formData.category || !formData.model) {
+    if (!formData.title || !formData.content || !formData.category || !formData.aiModel) {
       toast({
         title: 'Missing Fields',
         description: 'Please fill in all required fields',
@@ -46,29 +49,41 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
       return;
     }
 
+    setIsSubmitting(true);
+
     const promptData = {
       title: formData.title,
-      titleAr: formData.titleAr,
-      prompt: formData.prompt,
+      title_ar: formData.titleAr || null,
+      content: formData.content,
       category: formData.category as Prompt['category'],
-      model: formData.model as Prompt['model'],
+      ai_model: formData.aiModel as Prompt['ai_model'],
       tags: formData.tags.split(',').map((t) => t.trim()).filter(Boolean),
     };
 
-    if (editPrompt) {
-      updatePrompt(editPrompt.id, promptData);
+    try {
+      if (editPrompt) {
+        await updatePrompt.mutateAsync({ id: editPrompt.id, ...promptData });
+        toast({
+          title: 'Prompt Updated',
+          description: 'The pulse has been updated successfully!',
+        });
+        onClose?.();
+      } else {
+        await addPrompt.mutateAsync(promptData);
+        toast({
+          title: 'Prompt Created',
+          description: 'New pulse added to the library!',
+        });
+        navigate('/admin');
+      }
+    } catch (error) {
       toast({
-        title: 'Prompt Updated',
-        description: 'The pulse has been updated successfully!',
+        title: 'Error',
+        description: 'Failed to save prompt. Please try again.',
+        variant: 'destructive',
       });
-      onClose?.();
-    } else {
-      addPrompt(promptData);
-      toast({
-        title: 'Prompt Created',
-        description: 'New pulse added to the library!',
-      });
-      navigate('/admin');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -113,14 +128,14 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
 
       {/* Prompt Content */}
       <div className="space-y-2">
-        <Label htmlFor="prompt" className="text-foreground">
+        <Label htmlFor="content" className="text-foreground">
           Prompt Content <span className="text-destructive">*</span>
         </Label>
         <Textarea
-          id="prompt"
+          id="content"
           placeholder="Write your AI prompt here..."
-          value={formData.prompt}
-          onChange={(e) => setFormData({ ...formData, prompt: e.target.value })}
+          value={formData.content}
+          onChange={(e) => setFormData({ ...formData, content: e.target.value })}
           className="min-h-[200px] bg-secondary border-border focus:border-primary focus:ring-primary/20 resize-y"
         />
       </div>
@@ -155,8 +170,8 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
             AI Model <span className="text-destructive">*</span>
           </Label>
           <Select
-            value={formData.model}
-            onValueChange={(value) => setFormData({ ...formData, model: value })}
+            value={formData.aiModel}
+            onValueChange={(value) => setFormData({ ...formData, aiModel: value })}
           >
             <SelectTrigger className="bg-secondary border-border focus:border-primary">
               <SelectValue placeholder="Select AI model" />
@@ -191,10 +206,11 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
       <div className="flex items-center gap-4 pt-4 border-t border-border">
         <Button
           type="submit"
+          disabled={isSubmitting}
           className="bg-primary text-primary-foreground hover:bg-primary/90 glow-sm"
         >
           <Save className="w-4 h-4 mr-2" />
-          {editPrompt ? 'Update Pulse' : 'Save Pulse'}
+          {isSubmitting ? 'Saving...' : editPrompt ? 'Update Pulse' : 'Save Pulse'}
         </Button>
         <Button
           type="button"
