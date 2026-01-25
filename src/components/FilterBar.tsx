@@ -37,12 +37,12 @@ const models = [
 ] as const;
 
 // Memoized category button
-const CategoryButton = memo(({ 
-  category, 
-  isSelected, 
-  language, 
-  onClick 
-}: { 
+const CategoryButton = memo(({
+  category,
+  isSelected,
+  language,
+  onClick
+}: {
   category: typeof categories[number];
   isSelected: boolean;
   language: 'en' | 'ar';
@@ -96,7 +96,7 @@ const FilterBar = memo(({
         )}>
           {/* Category Chips */}
           <div className={cn(
-            "flex gap-2 overflow-x-auto scrollbar-hide pb-1 -mx-3 px-3 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-visible",
+            "flex gap-2 overflow-x-auto scrollbar-hide pb-1 -mx-3 px-3 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-visible w-full mask-linear-gradient",
             isRTL && "flex-row-reverse"
           )}>
             {categories.map((category) => (

@@ -74,14 +74,14 @@ export const useUpdatePrompt = () => {
     onMutate: async (updatedPrompt) => {
       await queryClient.cancelQueries({ queryKey: promptKeys.all });
       const previousPrompts = queryClient.getQueryData(promptKeys.all);
-      
+
       queryClient.setQueryData(promptKeys.all, (old: Prompt[] | undefined) => {
         if (!old) return old;
-        return old.map(p => 
+        return old.map(p =>
           p.id === updatedPrompt.id ? { ...p, ...updatedPrompt } : p
         );
       });
-      
+
       return { previousPrompts };
     },
     onError: (err, variables, context) => {
@@ -108,12 +108,12 @@ export const useDeletePrompt = () => {
     onMutate: async (deletedId) => {
       await queryClient.cancelQueries({ queryKey: promptKeys.all });
       const previousPrompts = queryClient.getQueryData(promptKeys.all);
-      
+
       queryClient.setQueryData(promptKeys.all, (old: Prompt[] | undefined) => {
         if (!old) return old;
         return old.filter(p => p.id !== deletedId);
       });
-      
+
       return { previousPrompts };
     },
     onError: (err, variables, context) => {
@@ -125,21 +125,21 @@ export const useDeletePrompt = () => {
 };
 
 // Debounced like update to reduce API calls
-let likeDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+const likeDebounceTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
 export const useUpdateLikes = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ id, likes }: { id: string; likes: number }) => {
-      // Clear existing timer
-      if (likeDebounceTimer) {
-        clearTimeout(likeDebounceTimer);
+      // Clear existing timer for this specific ID
+      if (likeDebounceTimers.has(id)) {
+        clearTimeout(likeDebounceTimers.get(id));
       }
 
-      // Debounce the API call
+      // Debounce the API call per ID
       return new Promise<Prompt>((resolve, reject) => {
-        likeDebounceTimer = setTimeout(async () => {
+        const timer = setTimeout(async () => {
           try {
             const { data, error } = await supabase
               .from('prompts')
@@ -152,20 +152,24 @@ export const useUpdateLikes = () => {
             else resolve(data);
           } catch (err) {
             reject(err);
+          } finally {
+            likeDebounceTimers.delete(id);
           }
         }, 300); // 300ms debounce
+
+        likeDebounceTimers.set(id, timer);
       });
     },
     onMutate: async ({ id, likes }) => {
       // Optimistic update immediately
       await queryClient.cancelQueries({ queryKey: promptKeys.all });
       const previousPrompts = queryClient.getQueryData(promptKeys.all);
-      
+
       queryClient.setQueryData(promptKeys.all, (old: Prompt[] | undefined) => {
         if (!old) return old;
         return old.map(p => p.id === id ? { ...p, likes } : p);
       });
-      
+
       return { previousPrompts };
     },
     onError: (err, variables, context) => {

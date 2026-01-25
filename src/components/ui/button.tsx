@@ -10,20 +10,20 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 hover:shadow-md hover:shadow-primary/20",
+          "bg-primary text-primary-foreground shadow-[0_1px_0_0_rgba(255,255,255,0.2)_inset,0_1px_2px_0_rgba(0,0,0,0.1)] hover:bg-primary/95 hover:shadow-[0_1px_0_0_rgba(255,255,255,0.25)_inset,0_2px_4px_0_rgba(0,0,0,0.15)] active:shadow-[0_1px_0_0_rgba(255,255,255,0.1)_inset]",
         destructive:
-          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 hover:shadow-md hover:shadow-destructive/20",
+          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 hover:shadow-md",
         outline:
-          "border border-border/60 bg-transparent hover:bg-secondary hover:border-border shadow-sm",
+          "border border-border/40 bg-transparent hover:bg-secondary/50 hover:border-border/60 hover:text-foreground shadow-sm backdrop-blur-sm",
         secondary:
-          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-        ghost: 
-          "hover:bg-secondary hover:text-foreground",
-        link: 
+          "bg-secondary/80 text-secondary-foreground shadow-sm hover:bg-secondary border border-border/30",
+        ghost:
+          "hover:bg-secondary/50 hover:text-foreground",
+        link:
           "text-primary underline-offset-4 hover:underline",
         // Modern variants
-        glow: 
-          "bg-primary text-primary-foreground shadow-sm hover:shadow-lg hover:shadow-primary/25 glow-sm hover:glow",
+        glow:
+          "bg-primary text-primary-foreground shadow-[0_0_10px_-3px_hsl(var(--primary)/0.5)] hover:shadow-[0_0_20px_-5px_hsl(var(--primary)/0.6)] glow-sm hover:glow border border-primary/20",
         success:
           "bg-emerald-500 text-white shadow-sm hover:bg-emerald-600 hover:shadow-md hover:shadow-emerald-500/20",
         soft:
@@ -50,7 +50,7 @@ const buttonVariants = cva(
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   isLoading?: boolean;
   loadingText?: string;
@@ -59,11 +59,11 @@ export interface ButtonProps
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, isLoading = false, loadingText, children, disabled, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
-    
+
     return (
-      <Comp 
-        className={cn(buttonVariants({ variant, size, className }))} 
-        ref={ref} 
+      <Comp
+        className={cn(buttonVariants({ variant, size, className }))}
+        ref={ref}
         disabled={disabled || isLoading}
         {...props}
       >

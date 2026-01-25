@@ -19,7 +19,7 @@ function Skeleton({ className, ...props }: SkeletonProps) {
 // Prompt Card Skeleton
 function PromptCardSkeleton() {
   return (
-    <div className="bg-card rounded-xl border border-border/50 p-5 animate-fade-in">
+    <div className="bg-card rounded-xl border border-border/50 p-4 sm:p-5 animate-fade-in min-h-[280px] flex flex-col justify-between">
       {/* Header */}
       <div className="flex items-start justify-between gap-4 mb-3">
         <Skeleton className="h-5 w-3/4" />
@@ -82,10 +82,10 @@ function StatsCardSkeleton() {
   );
 }
 
-export { 
-  Skeleton, 
-  PromptCardSkeleton, 
-  TableRowSkeleton, 
+export {
+  Skeleton,
+  PromptCardSkeleton,
+  TableRowSkeleton,
   StatsCardSkeleton,
 };
 

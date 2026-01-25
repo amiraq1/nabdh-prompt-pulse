@@ -26,7 +26,7 @@ const ModelBadge = memo(({ model }: { model: string }) => {
   };
 
   return (
-    <Badge 
+    <Badge
       variant={getModelVariant(model) as any}
       size="sm"
       className="shrink-0 transition-transform group-hover:scale-105"
@@ -73,7 +73,7 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [isCopying, setIsCopying] = useState(false);
-  
+
   // Optimistic UI for likes
   const [optimisticLikes, setOptimisticLikes] = useState(prompt.likes);
   const [isLiked, setIsLiked] = useState(false);
@@ -82,7 +82,7 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
 
   const handleCopy = useCallback(async () => {
     if (isCopying) return;
-    
+
     setIsCopying(true);
     try {
       await navigator.clipboard.writeText(prompt.content);
@@ -105,14 +105,14 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
 
   const handleLike = useCallback(async () => {
     if (isLiking) return;
-    
+
     const newIsLiked = !isLiked;
     const newLikes = newIsLiked ? optimisticLikes + 1 : optimisticLikes - 1;
-    
+
     setIsLiked(newIsLiked);
     setOptimisticLikes(newLikes);
     setIsLiking(true);
-    
+
     try {
       await updateLikes.mutateAsync({ id: prompt.id, likes: newLikes });
     } catch (error) {
@@ -133,21 +133,21 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
   }, []);
 
   const displayTitle = isRTL && prompt.title_ar ? prompt.title_ar : prompt.title;
-  const truncatedPrompt = prompt.content.length > 120 
-    ? prompt.content.slice(0, 120) + '...' 
+  const truncatedPrompt = prompt.content.length > 120
+    ? prompt.content.slice(0, 120) + '...'
     : prompt.content;
 
   // Stagger animation delay (capped for performance)
   const animationDelay = Math.min(index * 0.05, 0.3);
 
   return (
-    <div 
-      className="group relative bg-card rounded-xl border border-border/50 p-4 sm:p-5 transition-all duration-200 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 animate-fade-in active:scale-[0.99] sm:hover:-translate-y-1 will-change-transform"
+    <div
+      className="group relative bg-card rounded-xl border border-border/50 p-4 sm:p-5 transition-all duration-200 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 animate-fade-in active:scale-[0.99] sm:hover:-translate-y-1 will-change-transform min-h-[280px] flex flex-col justify-between"
       style={{ animationDelay: `${animationDelay}s` }}
     >
       {/* Gradient hover effect - CSS only, no JS */}
       <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/0 via-primary/5 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none hidden sm:block" />
-      
+
       <div className="relative z-10">
         {/* Header */}
         <div className={cn(
@@ -176,7 +176,7 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
               {isExpanded ? prompt.content : truncatedPrompt}
             </p>
           </div>
-          
+
           {prompt.content.length > 120 && (
             <button
               onClick={toggleExpand}
