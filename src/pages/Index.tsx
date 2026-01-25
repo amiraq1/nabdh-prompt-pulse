@@ -4,10 +4,14 @@ import HeroSection from '@/components/HeroSection';
 import FilterBar from '@/components/FilterBar';
 import PromptGrid from '@/components/PromptGrid';
 import { usePrompts } from '@/hooks/usePrompts';
+import { useLanguage, translations } from '@/contexts/LanguageContext';
 import { Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const Index = () => {
   const { data: prompts = [], isLoading, error } = usePrompts();
+  const { language, isRTL } = useLanguage();
+  const t = translations;
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedModel, setSelectedModel] = useState('all');
@@ -30,6 +34,19 @@ const Index = () => {
     });
   }, [prompts, searchQuery, selectedCategory, selectedModel]);
 
+  const getCategoryLabel = () => {
+    if (selectedCategory === 'all') {
+      return t.allPrompts[language];
+    }
+    const categoryLabels: Record<string, { en: string; ar: string }> = {
+      coding: { en: 'Coding Prompts', ar: 'موجهات البرمجة' },
+      writing: { en: 'Writing Prompts', ar: 'موجهات الكتابة' },
+      art: { en: 'Art Prompts', ar: 'موجهات الفن' },
+      marketing: { en: 'Marketing Prompts', ar: 'موجهات التسويق' },
+    };
+    return categoryLabels[selectedCategory]?.[language] || t.allPrompts[language];
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
@@ -46,13 +63,17 @@ const Index = () => {
 
         <section className="py-12">
           <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between mb-8">
+            <div className={cn(
+              "flex items-center justify-between mb-8",
+              isRTL && "flex-row-reverse"
+            )}>
               <h2 className="text-2xl font-bold text-foreground">
-                {selectedCategory === 'all' ? 'All Prompts' : 
-                  selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1) + ' Prompts'}
+                {getCategoryLabel()}
               </h2>
               <span className="text-sm text-muted-foreground">
-                {filteredPrompts.length} {filteredPrompts.length === 1 ? 'prompt' : 'prompts'}
+                {filteredPrompts.length} {filteredPrompts.length === 1 
+                  ? (isRTL ? 'موجه' : 'prompt') 
+                  : (isRTL ? 'موجهات' : 'prompts')}
               </span>
             </div>
 
@@ -62,7 +83,9 @@ const Index = () => {
               </div>
             ) : error ? (
               <div className="text-center py-20">
-                <p className="text-destructive">Failed to load prompts. Please try again.</p>
+                <p className="text-destructive">
+                  {isRTL ? 'فشل في تحميل الموجهات. حاول مرة أخرى.' : 'Failed to load prompts. Please try again.'}
+                </p>
               </div>
             ) : (
               <PromptGrid prompts={filteredPrompts} />
@@ -75,7 +98,7 @@ const Index = () => {
       <footer className="border-t border-border/50 py-8">
         <div className="container mx-auto px-4 text-center">
           <p className="text-sm text-muted-foreground">
-            © 2024 Nabdh. Built with passion for the AI community.
+            © 2024 {isRTL ? 'نبض' : 'Nabdh'}. {t.footerText[language]}
           </p>
         </div>
       </footer>
