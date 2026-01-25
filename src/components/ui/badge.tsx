@@ -48,6 +48,9 @@ const badgeVariants = cva(
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
   VariantProps<typeof badgeVariants> {
+  className?: string;
+  variant?: "default" | "secondary" | "destructive" | "success" | "warning" | "outline" | "gpt4" | "gpt35" | "midjourney" | "claude" | "gemini" | null | undefined;
+  size?: "default" | "sm" | "lg" | null | undefined;
   children?: React.ReactNode;
 }
 

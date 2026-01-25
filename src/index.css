@@ -106,9 +106,7 @@
     --sidebar-ring: 187 85% 53%;
   }
 
-  .dark {
-    /* Same as root - dark by default */
-  }
+  /* .dark class uses root variables by default */
 }
 
 @layer base {

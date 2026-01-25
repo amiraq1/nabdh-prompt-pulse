@@ -5,13 +5,15 @@ import FilterBar from '@/components/FilterBar';
 import PromptGrid from '@/components/PromptGrid';
 import ErrorBoundary, { InlineError } from '@/components/ErrorBoundary';
 import { SortOption } from '@/components/SortSelect';
-import { usePrompts } from '@/hooks/usePrompts';
+import { usePrompts, Prompt } from '@/hooks/usePrompts';
 import { useLanguage, translations } from '@/contexts/LanguageContext';
 import { fuzzySearch, generateSuggestions } from '@/lib/search';
 import { cn } from '@/lib/utils';
 
 const Index = () => {
   const { data: prompts = [], isLoading, error, refetch } = usePrompts();
+  // Cast prompts to ensure TS knows the type for fuzzySearch
+  const typedPrompts = prompts as Prompt[];
   const { language, isRTL } = useLanguage();
   const t = translations;
   const [searchQuery, setSearchQuery] = useState('');
@@ -46,13 +48,13 @@ const Index = () => {
   const suggestions = useMemo(() => {
     const suggestions = useMemo(() => {
       // Generate suggestions based on the deferred query to avoid lag
-      return generateSuggestions(prompts, deferredQuery, 5);
-    }, [prompts, deferredQuery]);
+      return generateSuggestions(typedPrompts, deferredQuery, 5);
+    }, [typedPrompts, deferredQuery]);
 
     // Filter and sort prompts
     const filteredPrompts = useMemo(() => {
       // First apply category and model filters
-      let filtered = prompts.filter((prompt) => {
+      let filtered = typedPrompts.filter((prompt) => {
         const matchesCategory = selectedCategory === 'all' || prompt.category === selectedCategory;
         const matchesModel = selectedModel === 'all' || prompt.ai_model === selectedModel;
         return matchesCategory && matchesModel;
@@ -159,7 +161,7 @@ const Index = () => {
         </div>
       </ErrorBoundary>
     );
-  }, [prompts, deferredQuery, selectedCategory, selectedModel, sortOption, filteredPrompts, error, isLoading, isRTL, language, searchQuery, handleSearchChange, handleCategoryChange, handleModelChange, handleSortChange, handleRetry, suggestions]);
+  }, [typedPrompts, deferredQuery, selectedCategory, selectedModel, sortOption, error, isLoading, isRTL, language, searchQuery, handleSearchChange, handleCategoryChange, handleModelChange, handleSortChange, handleRetry]);
 
   return suggestions;
 };
