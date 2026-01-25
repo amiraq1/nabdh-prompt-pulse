@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { Prompt, useUpdateLikes } from '@/hooks/usePrompts';
+import { useLanguage, translations } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 
 interface PromptCardProps {
@@ -11,6 +12,8 @@ interface PromptCardProps {
 }
 
 const PromptCard = ({ prompt }: PromptCardProps) => {
+  const { language, isRTL } = useLanguage();
+  const t = translations;
   const [isExpanded, setIsExpanded] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
@@ -21,15 +24,15 @@ const PromptCard = ({ prompt }: PromptCardProps) => {
       await navigator.clipboard.writeText(prompt.content);
       setIsCopied(true);
       toast({
-        title: "Copied!",
-        description: "Prompt copied to clipboard",
+        title: t.copied[language],
+        description: isRTL ? 'تم نسخ الموجه إلى الحافظة' : 'Prompt copied to clipboard',
       });
       setTimeout(() => setIsCopied(false), 2000);
     } catch (err) {
       toast({
-        title: "Failed to copy",
-        description: "Please try again",
-        variant: "destructive",
+        title: isRTL ? 'فشل النسخ' : 'Failed to copy',
+        description: isRTL ? 'حاول مرة أخرى' : 'Please try again',
+        variant: 'destructive',
       });
     }
   };
@@ -40,6 +43,7 @@ const PromptCard = ({ prompt }: PromptCardProps) => {
     updateLikes.mutate({ id: prompt.id, likes: newLikes });
   };
 
+  const displayTitle = isRTL && prompt.title_ar ? prompt.title_ar : prompt.title;
   const truncatedPrompt = prompt.content.length > 150 
     ? prompt.content.slice(0, 150) + '...' 
     : prompt.content;
@@ -62,9 +66,15 @@ const PromptCard = ({ prompt }: PromptCardProps) => {
       
       <div className="relative z-10">
         {/* Header */}
-        <div className="flex items-start justify-between gap-4 mb-3">
-          <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
-            {prompt.title}
+        <div className={cn(
+          "flex items-start justify-between gap-4 mb-3",
+          isRTL && "flex-row-reverse"
+        )}>
+          <h3 className={cn(
+            "font-semibold text-foreground group-hover:text-primary transition-colors",
+            isRTL && "text-right"
+          )}>
+            {displayTitle}
           </h3>
           <Badge variant="outline" className={cn("text-xs font-medium shrink-0", getModelColor(prompt.ai_model))}>
             {prompt.ai_model.toUpperCase()}
@@ -72,7 +82,7 @@ const PromptCard = ({ prompt }: PromptCardProps) => {
         </div>
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className={cn("flex flex-wrap gap-2 mb-4", isRTL && "flex-row-reverse")}>
           {(prompt.tags ?? []).map((tag) => (
             <span
               key={tag}
@@ -86,7 +96,10 @@ const PromptCard = ({ prompt }: PromptCardProps) => {
         {/* Prompt Text */}
         <div className="relative mb-4">
           <div className="bg-secondary/50 rounded-lg p-4 border border-border/30">
-            <p className="text-sm text-foreground/80 leading-relaxed font-mono">
+            <p className={cn(
+              "text-sm text-foreground/80 leading-relaxed font-mono",
+              isRTL && "text-right"
+            )} dir="ltr">
               {isExpanded ? prompt.content : truncatedPrompt}
             </p>
           </div>
@@ -94,17 +107,20 @@ const PromptCard = ({ prompt }: PromptCardProps) => {
           {prompt.content.length > 150 && (
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="flex items-center gap-1 mt-2 text-xs text-primary hover:text-primary/80 transition-colors"
+              className={cn(
+                "flex items-center gap-1 mt-2 text-xs text-primary hover:text-primary/80 transition-colors",
+                isRTL && "flex-row-reverse"
+              )}
             >
               {isExpanded ? (
                 <>
                   <ChevronUp className="w-3 h-3" />
-                  Show less
+                  {t.showLess[language]}
                 </>
               ) : (
                 <>
                   <ChevronDown className="w-3 h-3" />
-                  Show more
+                  {t.showMore[language]}
                 </>
               )}
             </button>
@@ -112,12 +128,16 @@ const PromptCard = ({ prompt }: PromptCardProps) => {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-between">
+        <div className={cn(
+          "flex items-center justify-between",
+          isRTL && "flex-row-reverse"
+        )}>
           <button
             onClick={handleLike}
             className={cn(
               "flex items-center gap-1.5 text-sm transition-colors",
-              isLiked ? "text-red-400" : "text-muted-foreground hover:text-red-400"
+              isLiked ? "text-red-400" : "text-muted-foreground hover:text-red-400",
+              isRTL && "flex-row-reverse"
             )}
           >
             <Heart className={cn("w-4 h-4", isLiked && "fill-current")} />
@@ -131,18 +151,19 @@ const PromptCard = ({ prompt }: PromptCardProps) => {
               "font-medium transition-all",
               isCopied 
                 ? "bg-emerald-500 hover:bg-emerald-500 text-white" 
-                : "bg-primary hover:bg-primary/90 text-primary-foreground glow-sm"
+                : "bg-primary hover:bg-primary/90 text-primary-foreground glow-sm",
+              isRTL && "flex-row-reverse"
             )}
           >
             {isCopied ? (
               <>
-                <Check className="w-4 h-4 mr-1.5" />
-                Copied!
+                <Check className={cn("w-4 h-4", isRTL ? "ml-1.5" : "mr-1.5")} />
+                {t.copied[language]}
               </>
             ) : (
               <>
-                <Copy className="w-4 h-4 mr-1.5" />
-                Copy
+                <Copy className={cn("w-4 h-4", isRTL ? "ml-1.5" : "mr-1.5")} />
+                {t.copy[language]}
               </>
             )}
           </Button>
