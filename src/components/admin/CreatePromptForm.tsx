@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Save, X } from 'lucide-react';
+import { Save, X, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -37,6 +37,11 @@ const models = [
   { id: 'gemini', en: 'Gemini', ar: 'Gemini' },
 ];
 
+interface FieldError {
+  field: string;
+  message: string;
+}
+
 const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
   const navigate = useNavigate();
   const { language, isRTL } = useLanguage();
@@ -54,11 +59,73 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<FieldError[]>([]);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  const validateField = (field: string, value: string): string | null => {
+    switch (field) {
+      case 'title':
+        if (!value.trim()) return isRTL ? 'العنوان مطلوب' : 'Title is required';
+        if (value.length < 3) return isRTL ? 'العنوان قصير جداً' : 'Title is too short';
+        if (value.length > 100) return isRTL ? 'العنوان طويل جداً' : 'Title is too long';
+        return null;
+      case 'content':
+        if (!value.trim()) return isRTL ? 'محتوى الموجه مطلوب' : 'Prompt content is required';
+        if (value.length < 10) return isRTL ? 'المحتوى قصير جداً' : 'Content is too short';
+        return null;
+      case 'category':
+        if (!value) return isRTL ? 'اختر الفئة' : 'Select a category';
+        return null;
+      case 'aiModel':
+        if (!value) return isRTL ? 'اختر نموذج الذكاء' : 'Select an AI model';
+        return null;
+      default:
+        return null;
+    }
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors: FieldError[] = [];
+    
+    const titleError = validateField('title', formData.title);
+    if (titleError) newErrors.push({ field: 'title', message: titleError });
+    
+    const contentError = validateField('content', formData.content);
+    if (contentError) newErrors.push({ field: 'content', message: contentError });
+    
+    const categoryError = validateField('category', formData.category);
+    if (categoryError) newErrors.push({ field: 'category', message: categoryError });
+    
+    const modelError = validateField('aiModel', formData.aiModel);
+    if (modelError) newErrors.push({ field: 'aiModel', message: modelError });
+    
+    setErrors(newErrors);
+    return newErrors.length === 0;
+  };
+
+  const handleBlur = (field: string) => {
+    setTouched({ ...touched, [field]: true });
+    const value = formData[field as keyof typeof formData];
+    const error = validateField(field, value);
+    
+    if (error) {
+      setErrors(prev => [...prev.filter(e => e.field !== field), { field, message: error }]);
+    } else {
+      setErrors(prev => prev.filter(e => e.field !== field));
+    }
+  };
+
+  const getFieldError = (field: string): string | undefined => {
+    return touched[field] ? errors.find(e => e.field === field)?.message : undefined;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Mark all fields as touched
+    setTouched({ title: true, content: true, category: true, aiModel: true });
 
-    if (!formData.title || !formData.content || !formData.category || !formData.aiModel) {
+    if (!validateForm()) {
       toast({
         title: t.missingFields[language],
         description: t.fillRequired[language],
@@ -70,9 +137,9 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
     setIsSubmitting(true);
 
     const promptData = {
-      title: formData.title,
-      title_ar: formData.titleAr || null,
-      content: formData.content,
+      title: formData.title.trim(),
+      title_ar: formData.titleAr.trim() || null,
+      content: formData.content.trim(),
       category: formData.category as Prompt['category'],
       ai_model: formData.aiModel as Prompt['ai_model'],
       tags: formData.tags.split(',').map((t) => t.trim()).filter(Boolean),
@@ -113,6 +180,8 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
     }
   };
 
+  const hasErrors = errors.length > 0;
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Title */}
@@ -125,12 +194,22 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
           placeholder={t.enterTitle[language]}
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+          onBlur={() => handleBlur('title')}
           className={cn(
-            "bg-secondary border-border focus:border-primary focus:ring-primary/20",
-            isRTL && "text-right"
+            "bg-secondary border-border focus:border-primary focus:ring-primary/20 transition-all",
+            isRTL && "text-right",
+            getFieldError('title') && "border-destructive focus:border-destructive animate-shake"
           )}
           dir={isRTL ? 'rtl' : 'ltr'}
+          aria-invalid={!!getFieldError('title')}
+          aria-describedby={getFieldError('title') ? 'title-error' : undefined}
         />
+        {getFieldError('title') && (
+          <p id="title-error" className={cn("text-sm text-destructive flex items-center gap-1", isRTL && "flex-row-reverse")}>
+            <AlertCircle className="w-3 h-3" />
+            {getFieldError('title')}
+          </p>
+        )}
       </div>
 
       {/* Arabic Title */}
@@ -158,12 +237,24 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
           placeholder={t.writePrompt[language]}
           value={formData.content}
           onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+          onBlur={() => handleBlur('content')}
           className={cn(
-            "min-h-[200px] bg-secondary border-border focus:border-primary focus:ring-primary/20 resize-y",
-            isRTL && "text-right"
+            "min-h-[200px] bg-secondary border-border focus:border-primary focus:ring-primary/20 resize-y transition-all",
+            isRTL && "text-right",
+            getFieldError('content') && "border-destructive focus:border-destructive animate-shake"
           )}
           dir="ltr"
+          aria-invalid={!!getFieldError('content')}
         />
+        {getFieldError('content') && (
+          <p className={cn("text-sm text-destructive flex items-center gap-1", isRTL && "flex-row-reverse")}>
+            <AlertCircle className="w-3 h-3" />
+            {getFieldError('content')}
+          </p>
+        )}
+        <p className={cn("text-xs text-muted-foreground", isRTL && "text-right")}>
+          {formData.content.length} {isRTL ? 'حرف' : 'characters'}
+        </p>
       </div>
 
       {/* Category and Model Row */}
@@ -175,9 +266,17 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
           </Label>
           <Select
             value={formData.category}
-            onValueChange={(value) => setFormData({ ...formData, category: value })}
+            onValueChange={(value) => {
+              setFormData({ ...formData, category: value });
+              setTouched({ ...touched, category: true });
+              setErrors(prev => prev.filter(e => e.field !== 'category'));
+            }}
           >
-            <SelectTrigger className={cn("bg-secondary border-border focus:border-primary", isRTL && "flex-row-reverse")}>
+            <SelectTrigger className={cn(
+              "bg-secondary border-border focus:border-primary transition-all",
+              isRTL && "flex-row-reverse",
+              getFieldError('category') && "border-destructive"
+            )}>
               <SelectValue placeholder={t.selectCategory[language]} />
             </SelectTrigger>
             <SelectContent className="bg-card border-border z-50">
@@ -188,6 +287,12 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
               ))}
             </SelectContent>
           </Select>
+          {getFieldError('category') && (
+            <p className={cn("text-sm text-destructive flex items-center gap-1", isRTL && "flex-row-reverse")}>
+              <AlertCircle className="w-3 h-3" />
+              {getFieldError('category')}
+            </p>
+          )}
         </div>
 
         {/* AI Model */}
@@ -197,9 +302,17 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
           </Label>
           <Select
             value={formData.aiModel}
-            onValueChange={(value) => setFormData({ ...formData, aiModel: value })}
+            onValueChange={(value) => {
+              setFormData({ ...formData, aiModel: value });
+              setTouched({ ...touched, aiModel: true });
+              setErrors(prev => prev.filter(e => e.field !== 'aiModel'));
+            }}
           >
-            <SelectTrigger className={cn("bg-secondary border-border focus:border-primary", isRTL && "flex-row-reverse")}>
+            <SelectTrigger className={cn(
+              "bg-secondary border-border focus:border-primary transition-all",
+              isRTL && "flex-row-reverse",
+              getFieldError('aiModel') && "border-destructive"
+            )}>
               <SelectValue placeholder={t.selectAiModel[language]} />
             </SelectTrigger>
             <SelectContent className="bg-card border-border z-50">
@@ -210,6 +323,12 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
               ))}
             </SelectContent>
           </Select>
+          {getFieldError('aiModel') && (
+            <p className={cn("text-sm text-destructive flex items-center gap-1", isRTL && "flex-row-reverse")}>
+              <AlertCircle className="w-3 h-3" />
+              {getFieldError('aiModel')}
+            </p>
+          )}
         </div>
       </div>
 
@@ -238,11 +357,14 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
       <div className={cn("flex items-center gap-4 pt-4 border-t border-border", isRTL && "flex-row-reverse")}>
         <Button
           type="submit"
-          disabled={isSubmitting}
-          className={cn("bg-primary text-primary-foreground hover:bg-primary/90 glow-sm", isRTL && "flex-row-reverse")}
+          disabled={isSubmitting || hasErrors}
+          isLoading={isSubmitting}
+          loadingText={t.saving[language]}
+          variant="glow"
+          className={cn(isRTL && "flex-row-reverse")}
         >
           <Save className={cn("w-4 h-4", isRTL ? "ml-2" : "mr-2")} />
-          {isSubmitting ? t.saving[language] : editPrompt ? t.updatePulse[language] : t.savePulse[language]}
+          {editPrompt ? t.updatePulse[language] : t.savePulse[language]}
         </Button>
         <Button
           type="button"

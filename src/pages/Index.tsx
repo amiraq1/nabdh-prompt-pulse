@@ -3,15 +3,15 @@ import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import FilterBar from '@/components/FilterBar';
 import PromptGrid from '@/components/PromptGrid';
+import ErrorBoundary, { InlineError } from '@/components/ErrorBoundary';
 import { SortOption } from '@/components/SortSelect';
 import { usePrompts } from '@/hooks/usePrompts';
 import { useLanguage, translations } from '@/contexts/LanguageContext';
 import { fuzzySearch, generateSuggestions } from '@/lib/search';
-import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const Index = () => {
-  const { data: prompts = [], isLoading, error } = usePrompts();
+  const { data: prompts = [], isLoading, error, refetch } = usePrompts();
   const { language, isRTL } = useLanguage();
   const t = translations;
   const [searchQuery, setSearchQuery] = useState('');
@@ -75,67 +75,64 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header 
-        searchQuery={searchQuery} 
-        onSearchChange={setSearchQuery}
-        suggestions={suggestions}
-      />
-      
-      <main>
-        <HeroSection />
-        
-        <FilterBar
-          selectedCategory={selectedCategory}
-          selectedModel={selectedModel}
-          sortOption={sortOption}
-          onCategoryChange={setSelectedCategory}
-          onModelChange={setSelectedModel}
-          onSortChange={setSortOption}
+    <ErrorBoundary>
+      <div className="min-h-screen bg-background">
+        <Header 
+          searchQuery={searchQuery} 
+          onSearchChange={setSearchQuery}
+          suggestions={suggestions}
         />
+        
+        <main>
+          <HeroSection />
+          
+          <FilterBar
+            selectedCategory={selectedCategory}
+            selectedModel={selectedModel}
+            sortOption={sortOption}
+            onCategoryChange={setSelectedCategory}
+            onModelChange={setSelectedModel}
+            onSortChange={setSortOption}
+          />
 
-        <section className="py-12">
-          <div className="container mx-auto px-4">
-            <div className={cn(
-              "flex items-center justify-between mb-8",
-              isRTL && "flex-row-reverse"
-            )}>
-              <h2 className="text-2xl font-bold text-foreground">
-                {getCategoryLabel()}
-              </h2>
-              <span className="text-sm text-muted-foreground">
-                {filteredPrompts.length} {filteredPrompts.length === 1 
-                  ? (isRTL ? 'موجه' : 'prompt') 
-                  : (isRTL ? 'موجهات' : 'prompts')}
-              </span>
+          <section className="py-12">
+            <div className="container mx-auto px-4">
+              <div className={cn(
+                "flex items-center justify-between mb-8",
+                isRTL && "flex-row-reverse"
+              )}>
+                <h2 className="text-2xl font-bold text-foreground">
+                  {getCategoryLabel()}
+                </h2>
+                <span className="text-sm text-muted-foreground tabular-nums">
+                  {filteredPrompts.length} {filteredPrompts.length === 1 
+                    ? (isRTL ? 'موجه' : 'prompt') 
+                    : (isRTL ? 'موجهات' : 'prompts')}
+                </span>
+              </div>
+
+              {error ? (
+                <InlineError 
+                  message={isRTL ? 'فشل في تحميل الموجهات. حاول مرة أخرى.' : 'Failed to load prompts. Please try again.'}
+                  onRetry={() => refetch()}
+                />
+              ) : (
+                <PromptGrid prompts={filteredPrompts} isLoading={isLoading} />
+              )}
             </div>
+          </section>
+        </main>
 
-            {isLoading ? (
-              <div className="flex items-center justify-center py-20">
-                <Loader2 className="w-8 h-8 text-primary animate-spin" />
-              </div>
-            ) : error ? (
-              <div className="text-center py-20">
-                <p className="text-destructive">
-                  {isRTL ? 'فشل في تحميل الموجهات. حاول مرة أخرى.' : 'Failed to load prompts. Please try again.'}
-                </p>
-              </div>
-            ) : (
-              <PromptGrid prompts={filteredPrompts} />
-            )}
+        {/* Footer */}
+        <footer className="border-t border-border/50 py-8">
+          <div className="container mx-auto px-4 text-center">
+            <p className="text-sm text-muted-foreground">
+              © 2024 {isRTL ? 'نبض' : 'Nabdh'}. {t.footerText[language]}
+            </p>
           </div>
-        </section>
-      </main>
-
-      {/* Footer */}
-      <footer className="border-t border-border/50 py-8">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-sm text-muted-foreground">
-            © 2024 {isRTL ? 'نبض' : 'Nabdh'}. {t.footerText[language]}
-          </p>
-        </div>
-      </footer>
-    </div>
+        </footer>
+      </div>
+    </ErrorBoundary>
   );
 };
 
