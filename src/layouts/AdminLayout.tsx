@@ -6,23 +6,37 @@ import {
   Settings, 
   Zap,
   Menu,
-  X
+  X,
+  LogOut
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useLanguage, translations } from '@/contexts/LanguageContext';
 import LanguageToggle from '@/components/LanguageToggle';
+import { AuthGuard } from '@/components/auth/AuthGuard';
+import { useAuth } from '@/hooks/useAuth';
+import { toast } from 'sonner';
 
-const AdminLayout = () => {
+const AdminLayoutContent = () => {
   const { language, isRTL } = useLanguage();
   const t = translations;
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const { user, signOut } = useAuth();
 
   const adminNavItems = [
     { title: t.dashboard[language], path: '/admin', icon: LayoutDashboard },
     { title: t.addPrompt[language], path: '/admin/create', icon: PlusCircle },
     { title: t.settings[language], path: '/admin/settings', icon: Settings },
   ];
+
+  const handleSignOut = async () => {
+    const { error } = await signOut();
+    if (error) {
+      toast.error('Failed to sign out');
+    } else {
+      toast.success('Signed out successfully');
+    }
+  };
 
   return (
     <div className={cn("min-h-screen bg-background flex", isRTL && "flex-row-reverse")}>
@@ -124,9 +138,22 @@ const AdminLayout = () => {
           
           <div className={cn("flex items-center gap-2", isRTL && "flex-row-reverse")}>
             <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-              <span className="text-sm font-medium text-primary">A</span>
+              <span className="text-sm font-medium text-primary">
+                {user?.email?.charAt(0).toUpperCase() || 'A'}
+              </span>
             </div>
-            <span className="text-sm text-foreground hidden sm:block">{t.admin[language]}</span>
+            <span className="text-sm text-foreground hidden sm:block max-w-[150px] truncate">
+              {user?.email || t.admin[language]}
+            </span>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleSignOut}
+              className="text-muted-foreground hover:text-foreground"
+              title="Sign out"
+            >
+              <LogOut className="w-4 h-4" />
+            </Button>
           </div>
         </header>
 
@@ -136,6 +163,14 @@ const AdminLayout = () => {
         </main>
       </div>
     </div>
+  );
+};
+
+const AdminLayout = () => {
+  return (
+    <AuthGuard requireAdmin>
+      <AdminLayoutContent />
+    </AuthGuard>
   );
 };
 
