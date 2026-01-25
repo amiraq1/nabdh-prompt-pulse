@@ -3,8 +3,10 @@ import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import FilterBar from '@/components/FilterBar';
 import PromptGrid from '@/components/PromptGrid';
+import { SortOption } from '@/components/SortSelect';
 import { usePrompts } from '@/hooks/usePrompts';
 import { useLanguage, translations } from '@/contexts/LanguageContext';
+import { fuzzySearch, generateSuggestions } from '@/lib/search';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -15,24 +17,49 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedModel, setSelectedModel] = useState('all');
+  const [sortOption, setSortOption] = useState<SortOption>('newest');
 
+  // Generate search suggestions
+  const suggestions = useMemo(() => {
+    return generateSuggestions(prompts, searchQuery, 5);
+  }, [prompts, searchQuery]);
+
+  // Filter and sort prompts
   const filteredPrompts = useMemo(() => {
-    return prompts.filter((prompt) => {
-      // Search filter
-      const matchesSearch = searchQuery === '' || 
-        prompt.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        prompt.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (prompt.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())) ?? false);
-
-      // Category filter
+    // First apply category and model filters
+    let filtered = prompts.filter((prompt) => {
       const matchesCategory = selectedCategory === 'all' || prompt.category === selectedCategory;
-
-      // Model filter
       const matchesModel = selectedModel === 'all' || prompt.ai_model === selectedModel;
-
-      return matchesSearch && matchesCategory && matchesModel;
+      return matchesCategory && matchesModel;
     });
-  }, [prompts, searchQuery, selectedCategory, selectedModel]);
+
+    // Apply fuzzy search
+    if (searchQuery.trim()) {
+      filtered = fuzzySearch(filtered, searchQuery, (prompt) => [
+        prompt.title,
+        prompt.title_ar || '',
+        prompt.content,
+        ...(prompt.tags ?? []),
+      ]);
+    }
+
+    // Apply sorting
+    const sorted = [...filtered].sort((a, b) => {
+      switch (sortOption) {
+        case 'newest':
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        case 'oldest':
+          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        case 'popular':
+        case 'likes':
+          return b.likes - a.likes;
+        default:
+          return 0;
+      }
+    });
+
+    return sorted;
+  }, [prompts, searchQuery, selectedCategory, selectedModel, sortOption]);
 
   const getCategoryLabel = () => {
     if (selectedCategory === 'all') {
@@ -49,7 +76,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+      <Header 
+        searchQuery={searchQuery} 
+        onSearchChange={setSearchQuery}
+        suggestions={suggestions}
+      />
       
       <main>
         <HeroSection />
@@ -57,8 +88,10 @@ const Index = () => {
         <FilterBar
           selectedCategory={selectedCategory}
           selectedModel={selectedModel}
+          sortOption={sortOption}
           onCategoryChange={setSelectedCategory}
           onModelChange={setSelectedModel}
+          onSortChange={setSortOption}
         />
 
         <section className="py-12">

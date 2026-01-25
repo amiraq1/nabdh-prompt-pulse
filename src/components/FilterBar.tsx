@@ -7,12 +7,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import SortSelect, { SortOption } from './SortSelect';
 
 interface FilterBarProps {
   selectedCategory: string;
   selectedModel: string;
+  sortOption: SortOption;
   onCategoryChange: (category: string) => void;
   onModelChange: (model: string) => void;
+  onSortChange: (sort: SortOption) => void;
 }
 
 const categories = [
@@ -35,8 +38,10 @@ const models = [
 const FilterBar = ({
   selectedCategory,
   selectedModel,
+  sortOption,
   onCategoryChange,
   onModelChange,
+  onSortChange,
 }: FilterBarProps) => {
   const { language, isRTL } = useLanguage();
   const t = translations;
@@ -45,11 +50,11 @@ const FilterBar = ({
     <div className="py-6 border-b border-border/50">
       <div className="container mx-auto px-4">
         <div className={cn(
-          "flex flex-col md:flex-row md:items-center justify-between gap-4",
-          isRTL && "md:flex-row-reverse"
+          "flex flex-col gap-4",
+          isRTL && "items-end"
         )}>
           {/* Category Chips */}
-          <div className={cn("flex flex-wrap gap-2", isRTL && "flex-row-reverse")}>
+          <div className={cn("flex flex-wrap gap-2", isRTL && "flex-row-reverse justify-end")}>
             {categories.map((category) => (
               <button
                 key={category.id}
@@ -66,22 +71,29 @@ const FilterBar = ({
             ))}
           </div>
 
-          {/* Model Selector */}
-          <Select value={selectedModel} onValueChange={onModelChange}>
-            <SelectTrigger className={cn(
-              "w-full md:w-[180px] bg-secondary border-border/50",
-              isRTL && "text-right"
-            )}>
-              <SelectValue placeholder={t.selectModel[language]} />
-            </SelectTrigger>
-            <SelectContent className="bg-card border-border z-50">
-              {models.map((model) => (
-                <SelectItem key={model.id} value={model.id}>
-                  {language === 'ar' ? model.ar : model.en}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {/* Model and Sort Selectors */}
+          <div className={cn(
+            "flex flex-col sm:flex-row gap-3 w-full sm:w-auto",
+            isRTL && "sm:flex-row-reverse"
+          )}>
+            <Select value={selectedModel} onValueChange={onModelChange}>
+              <SelectTrigger className={cn(
+                "w-full sm:w-[180px] bg-secondary border-border/50",
+                isRTL && "text-right"
+              )}>
+                <SelectValue placeholder={t.selectModel[language]} />
+              </SelectTrigger>
+              <SelectContent className="bg-card border-border z-50">
+                {models.map((model) => (
+                  <SelectItem key={model.id} value={model.id}>
+                    {language === 'ar' ? model.ar : model.en}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <SortSelect value={sortOption} onChange={onSortChange} />
+          </div>
         </div>
       </div>
     </div>
