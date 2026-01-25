@@ -1,3 +1,4 @@
+import { memo, useCallback, useMemo } from 'react';
 import { useLanguage, translations } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import {
@@ -24,7 +25,7 @@ const categories = [
   { id: 'writing', en: 'Writing', ar: 'الكتابة' },
   { id: 'art', en: 'Art', ar: 'الفن' },
   { id: 'marketing', en: 'Marketing', ar: 'التسويق' }
-];
+] as const;
 
 const models = [
   { id: 'all', en: 'All Models', ar: 'كل النماذج' },
@@ -33,9 +34,35 @@ const models = [
   { id: 'midjourney', en: 'Midjourney', ar: 'Midjourney' },
   { id: 'claude', en: 'Claude', ar: 'Claude' },
   { id: 'gemini', en: 'Gemini', ar: 'Gemini' }
-];
+] as const;
 
-const FilterBar = ({
+// Memoized category button
+const CategoryButton = memo(({ 
+  category, 
+  isSelected, 
+  language, 
+  onClick 
+}: { 
+  category: typeof categories[number];
+  isSelected: boolean;
+  language: 'en' | 'ar';
+  onClick: () => void;
+}) => (
+  <button
+    onClick={onClick}
+    className={cn(
+      "px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap flex-shrink-0 touch-target",
+      isSelected
+        ? "bg-primary text-primary-foreground glow-sm"
+        : "bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border/50 active:scale-95"
+    )}
+  >
+    {language === 'ar' ? category.ar : category.en}
+  </button>
+));
+CategoryButton.displayName = 'CategoryButton';
+
+const FilterBar = memo(({
   selectedCategory,
   selectedModel,
   sortOption,
@@ -46,6 +73,20 @@ const FilterBar = ({
   const { language, isRTL } = useLanguage();
   const t = translations;
 
+  // Memoize category click handlers to prevent re-renders
+  const handleCategoryClick = useCallback((categoryId: string) => {
+    onCategoryChange(categoryId);
+  }, [onCategoryChange]);
+
+  // Memoize model items
+  const modelItems = useMemo(() => (
+    models.map((model) => (
+      <SelectItem key={model.id} value={model.id} className="h-11 sm:h-10">
+        {language === 'ar' ? model.ar : model.en}
+      </SelectItem>
+    ))
+  ), [language]);
+
   return (
     <div className="py-4 sm:py-6 border-b border-border/50">
       <div className="container mx-auto px-3 sm:px-4">
@@ -53,24 +94,19 @@ const FilterBar = ({
           "flex flex-col gap-3 sm:gap-4",
           isRTL && "items-end"
         )}>
-          {/* Category Chips - Horizontal scroll on mobile */}
+          {/* Category Chips */}
           <div className={cn(
             "flex gap-2 overflow-x-auto scrollbar-hide pb-1 -mx-3 px-3 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-visible",
             isRTL && "flex-row-reverse"
           )}>
             {categories.map((category) => (
-              <button
+              <CategoryButton
                 key={category.id}
-                onClick={() => onCategoryChange(category.id)}
-                className={cn(
-                  "px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap flex-shrink-0 touch-target",
-                  selectedCategory === category.id
-                    ? "bg-primary text-primary-foreground glow-sm"
-                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border/50 active:scale-95"
-                )}
-              >
-                {language === 'ar' ? category.ar : category.en}
-              </button>
+                category={category}
+                isSelected={selectedCategory === category.id}
+                language={language}
+                onClick={() => handleCategoryClick(category.id)}
+              />
             ))}
           </div>
 
@@ -87,11 +123,7 @@ const FilterBar = ({
                 <SelectValue placeholder={t.selectModel[language]} />
               </SelectTrigger>
               <SelectContent className="bg-card border-border z-50">
-                {models.map((model) => (
-                  <SelectItem key={model.id} value={model.id} className="h-11 sm:h-10">
-                    {language === 'ar' ? model.ar : model.en}
-                  </SelectItem>
-                ))}
+                {modelItems}
               </SelectContent>
             </Select>
 
@@ -101,6 +133,8 @@ const FilterBar = ({
       </div>
     </div>
   );
-};
+});
+
+FilterBar.displayName = 'FilterBar';
 
 export default FilterBar;

@@ -18,4 +18,33 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    // Optimize chunk splitting
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Vendor chunks
+          'react-vendor': ['react', 'react-dom'],
+          'router': ['react-router-dom'],
+          'query': ['@tanstack/react-query'],
+          'ui-core': [
+            '@radix-ui/react-select',
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-tooltip',
+            '@radix-ui/react-popover',
+          ],
+        },
+      },
+    },
+    // Target modern browsers for smaller bundles
+    target: 'es2020',
+    // Minimize CSS
+    cssMinify: true,
+    // Source maps only in development
+    sourcemap: mode === 'development',
+  },
+  // Optimize dependencies
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query'],
+  },
 }));

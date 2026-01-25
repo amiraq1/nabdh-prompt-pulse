@@ -6,10 +6,16 @@ export type Prompt = Database['public']['Tables']['prompts']['Row'];
 export type PromptInsert = Database['public']['Tables']['prompts']['Insert'];
 export type PromptUpdate = Database['public']['Tables']['prompts']['Update'];
 
-// Fetch all prompts
+// Query keys for cache management
+export const promptKeys = {
+  all: ['prompts'] as const,
+  detail: (id: string) => ['prompts', id] as const,
+};
+
+// Fetch all prompts with optimized caching
 export const usePrompts = () => {
   return useQuery({
-    queryKey: ['prompts'],
+    queryKey: promptKeys.all,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('prompts')
@@ -19,10 +25,12 @@ export const usePrompts = () => {
       if (error) throw error;
       return data;
     },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 30, // 30 minutes
   });
 };
 
-// Add a new prompt
+// Add a new prompt with optimistic update
 export const useAddPrompt = () => {
   const queryClient = useQueryClient();
 
@@ -37,13 +45,17 @@ export const useAddPrompt = () => {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['prompts'] });
+    onSuccess: (newPrompt) => {
+      // Optimistically add to cache
+      queryClient.setQueryData(promptKeys.all, (old: Prompt[] | undefined) => {
+        if (!old) return [newPrompt];
+        return [newPrompt, ...old];
+      });
     },
   });
 };
 
-// Update a prompt
+// Update a prompt with optimistic update
 export const useUpdatePrompt = () => {
   const queryClient = useQueryClient();
 
@@ -59,13 +71,28 @@ export const useUpdatePrompt = () => {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['prompts'] });
+    onMutate: async (updatedPrompt) => {
+      await queryClient.cancelQueries({ queryKey: promptKeys.all });
+      const previousPrompts = queryClient.getQueryData(promptKeys.all);
+      
+      queryClient.setQueryData(promptKeys.all, (old: Prompt[] | undefined) => {
+        if (!old) return old;
+        return old.map(p => 
+          p.id === updatedPrompt.id ? { ...p, ...updatedPrompt } : p
+        );
+      });
+      
+      return { previousPrompts };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousPrompts) {
+        queryClient.setQueryData(promptKeys.all, context.previousPrompts);
+      }
     },
   });
 };
 
-// Delete a prompt
+// Delete a prompt with optimistic update
 export const useDeletePrompt = () => {
   const queryClient = useQueryClient();
 
@@ -78,30 +105,73 @@ export const useDeletePrompt = () => {
 
       if (error) throw error;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['prompts'] });
+    onMutate: async (deletedId) => {
+      await queryClient.cancelQueries({ queryKey: promptKeys.all });
+      const previousPrompts = queryClient.getQueryData(promptKeys.all);
+      
+      queryClient.setQueryData(promptKeys.all, (old: Prompt[] | undefined) => {
+        if (!old) return old;
+        return old.filter(p => p.id !== deletedId);
+      });
+      
+      return { previousPrompts };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousPrompts) {
+        queryClient.setQueryData(promptKeys.all, context.previousPrompts);
+      }
     },
   });
 };
 
-// Update likes
+// Debounced like update to reduce API calls
+let likeDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+
 export const useUpdateLikes = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ id, likes }: { id: string; likes: number }) => {
-      const { data, error } = await supabase
-        .from('prompts')
-        .update({ likes })
-        .eq('id', id)
-        .select()
-        .single();
+      // Clear existing timer
+      if (likeDebounceTimer) {
+        clearTimeout(likeDebounceTimer);
+      }
 
-      if (error) throw error;
-      return data;
+      // Debounce the API call
+      return new Promise<Prompt>((resolve, reject) => {
+        likeDebounceTimer = setTimeout(async () => {
+          try {
+            const { data, error } = await supabase
+              .from('prompts')
+              .update({ likes })
+              .eq('id', id)
+              .select()
+              .single();
+
+            if (error) reject(error);
+            else resolve(data);
+          } catch (err) {
+            reject(err);
+          }
+        }, 300); // 300ms debounce
+      });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['prompts'] });
+    onMutate: async ({ id, likes }) => {
+      // Optimistic update immediately
+      await queryClient.cancelQueries({ queryKey: promptKeys.all });
+      const previousPrompts = queryClient.getQueryData(promptKeys.all);
+      
+      queryClient.setQueryData(promptKeys.all, (old: Prompt[] | undefined) => {
+        if (!old) return old;
+        return old.map(p => p.id === id ? { ...p, likes } : p);
+      });
+      
+      return { previousPrompts };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousPrompts) {
+        queryClient.setQueryData(promptKeys.all, context.previousPrompts);
+      }
     },
   });
 };
