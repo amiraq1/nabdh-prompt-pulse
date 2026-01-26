@@ -49,7 +49,7 @@ class ErrorBoundary extends Component<Props, State> {
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-destructive/10 mb-6">
               <AlertTriangle className="w-8 h-8 text-destructive" />
             </div>
-            
+
             <h2 className="text-xl font-semibold text-foreground mb-2">
               Something went wrong
             </h2>
@@ -89,6 +89,7 @@ class ErrorBoundary extends Component<Props, State> {
 }
 
 // Hook for functional components to trigger error boundary
+// eslint-disable-next-line react-refresh/only-export-components
 export function useErrorHandler() {
   return (error: Error) => {
     throw error;
@@ -102,6 +103,7 @@ interface InlineErrorProps {
   className?: string;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function InlineError({ message, onRetry, className }: InlineErrorProps) {
   return (
     <div className={`flex items-center gap-3 p-4 rounded-lg bg-destructive/10 border border-destructive/20 ${className}`}>

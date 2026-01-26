@@ -1,7 +1,7 @@
 import { useState, useCallback, memo } from 'react';
 import { Copy, Check, Heart, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge, BadgeProps } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { Prompt, useUpdateLikes } from '@/hooks/usePrompts';
 import { useLanguage, translations } from '@/contexts/LanguageContext';
@@ -11,10 +11,8 @@ interface PromptCardProps {
   prompt: Prompt;
   index?: number;
 }
-
-// Memoized model badge to prevent re-renders
 const ModelBadge = memo(({ model }: { model: string }) => {
-  const getModelVariant = (model: string) => {
+  const getModelVariant = (model: string): BadgeProps['variant'] => {
     switch (model) {
       case 'gpt-4': return 'gpt4';
       case 'gpt-3.5': return 'gpt35';
@@ -27,7 +25,7 @@ const ModelBadge = memo(({ model }: { model: string }) => {
 
   return (
     <Badge
-      variant={getModelVariant(model) as any}
+      variant={getModelVariant(model)}
       size="sm"
       className="shrink-0 transition-transform group-hover:scale-105"
     >
