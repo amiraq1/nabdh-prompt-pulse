@@ -1,11 +1,11 @@
-import { useState, useCallback, memo, useMemo } from 'react';
+import { useState, useCallback, memo } from 'react';
 import { Copy, Check, Heart, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge, BadgeProps } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { Prompt, useUpdateLikes } from '@/hooks/usePrompts';
 import { useLanguage, translations } from '@/contexts/useLanguage';
-import { cn, getOptimizedImageUrl } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 
 interface PromptCardProps {
   prompt: Prompt;
@@ -138,11 +138,6 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
   // Stagger animation delay (capped for performance)
   const animationDelay = Math.min(index * 0.05, 0.3);
 
-  // Calculate optimized image URL (400px width is sufficient for cards)
-  const optimizedImage = useMemo(() => {
-    return getOptimizedImageUrl(prompt.image_url, 400);
-  }, [prompt.image_url]);
-
   return (
     <div
       className="group relative bg-card rounded-xl border border-border/50 p-4 sm:p-5 transition-all duration-200 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 animate-fade-in active:scale-[0.99] sm:hover:-translate-y-1 will-change-transform min-h-[280px] flex flex-col justify-between"
@@ -166,17 +161,14 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
           <ModelBadge model={prompt.ai_model} />
         </div>
 
-        {/* Image Display - Updated for Performance 🚀 */}
+        {/* Image Display */}
         {prompt.image_url && (
-          <div className="mb-4 rounded-lg overflow-hidden border border-border/30 aspect-video bg-secondary/50 relative group-hover:shadow-md transition-all">
+          <div className="mb-4 rounded-lg overflow-hidden border border-border/30 bg-secondary/50 relative aspect-video">
             <img
-              src={optimizedImage} // 👈 Use optimized URL
+              src={prompt.image_url}
               alt={displayTitle}
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              loading="lazy"         // Lazy load
-              decoding="async"       // Async decoding
-              width="400"            // Explicit dimensions
-              height="225"
+              loading="lazy"
             />
           </div>
         )}

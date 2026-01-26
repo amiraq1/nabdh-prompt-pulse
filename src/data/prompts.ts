@@ -7,6 +7,7 @@ export interface Prompt {
   model: 'gpt-4' | 'gpt-3.5' | 'midjourney' | 'claude' | 'gemini';
   tags: string[];
   likes: number;
+  image_url: string | null;
 }
 
 export const prompts: Prompt[] = [
@@ -18,7 +19,8 @@ export const prompts: Prompt[] = [
     category: 'coding',
     model: 'gpt-4',
     tags: ['TypeScript', 'React', 'Backend'],
-    likes: 342
+    likes: 342,
+    image_url: null
   },
   {
     id: '2',
@@ -28,7 +30,8 @@ export const prompts: Prompt[] = [
     category: 'writing',
     model: 'gpt-4',
     tags: ['SEO', 'Content', 'Marketing'],
-    likes: 289
+    likes: 289,
+    image_url: null
   },
   {
     id: '3',
@@ -38,7 +41,8 @@ export const prompts: Prompt[] = [
     category: 'art',
     model: 'midjourney',
     tags: ['Character', 'Cyberpunk', 'Portrait'],
-    likes: 567
+    likes: 567,
+    image_url: null
   },
   {
     id: '4',
@@ -48,7 +52,8 @@ export const prompts: Prompt[] = [
     category: 'marketing',
     model: 'gpt-4',
     tags: ['Email', 'Launch', 'SaaS'],
-    likes: 198
+    likes: 198,
+    image_url: null
   },
   {
     id: '5',
@@ -58,7 +63,8 @@ export const prompts: Prompt[] = [
     category: 'coding',
     model: 'claude',
     tags: ['Review', 'Security', 'Best Practices'],
-    likes: 423
+    likes: 423,
+    image_url: null
   },
   {
     id: '6',
@@ -68,7 +74,8 @@ export const prompts: Prompt[] = [
     category: 'art',
     model: 'midjourney',
     tags: ['Landscape', 'Fantasy', 'Environment'],
-    likes: 891
+    likes: 891,
+    image_url: null
   },
   {
     id: '7',
@@ -78,7 +85,8 @@ export const prompts: Prompt[] = [
     category: 'marketing',
     model: 'gpt-4',
     tags: ['Social Media', 'Strategy', 'Content'],
-    likes: 256
+    likes: 256,
+    image_url: null
   },
   {
     id: '8',
@@ -88,7 +96,8 @@ export const prompts: Prompt[] = [
     category: 'writing',
     model: 'claude',
     tags: ['Fiction', 'Creative', 'Storytelling'],
-    likes: 445
+    likes: 445,
+    image_url: null
   }
 ];
 
