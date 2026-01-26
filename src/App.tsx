@@ -6,6 +6,7 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import AdminSubmissions from "./pages/admin/AdminSubmissions";
 import AuthPage from "./pages/AuthPage";
 import Settings from "./pages/Settings";
+import MagicBackground from "@/components/MagicBackground";
 
 // Eager load the main page for LCP
 import Index from "./pages/Index";
@@ -32,6 +33,7 @@ const App = () => (
     <SpeedInsights />
     <Toaster />
     <Sonner />
+    <MagicBackground />
     <BrowserRouter>
       <Routes>
         {/* Main page - eagerly loaded */}
