@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useCallback, useRef } from 'react';
 import { toast } from '@/hooks/use-toast';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage } from '@/contexts/useLanguage';
 
 // Settings Schema with defaults
 export interface AppSettings {
@@ -195,3 +195,4 @@ export const useResetSettings = () => {
     isPending: updateSettings.isPending,
   };
 };
+

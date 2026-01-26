@@ -3,7 +3,7 @@ import { Prompt } from '@/hooks/usePrompts';
 import PromptCard from './PromptCard';
 import { PromptCardSkeleton } from '@/components/ui/skeleton';
 import { Inbox } from 'lucide-react';
-import { useLanguage, translations } from '@/contexts/LanguageContext';
+import { useLanguage, translations } from '@/contexts/useLanguage';
 
 interface PromptGridProps {
   prompts: Prompt[];
@@ -66,3 +66,4 @@ const PromptGrid = memo(({ prompts, isLoading = false }: PromptGridProps) => {
 PromptGrid.displayName = 'PromptGrid';
 
 export default PromptGrid;
+

@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage } from '@/contexts/useLanguage';
 
 interface SettingsSectionProps {
   icon: LucideIcon;
@@ -36,3 +36,4 @@ export function SettingsSection({ icon: Icon, title, description, children }: Se
     </div>
   );
 }
+

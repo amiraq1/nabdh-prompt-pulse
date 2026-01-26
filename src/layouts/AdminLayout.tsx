@@ -13,7 +13,7 @@ import {
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { useLanguage, translations } from '@/contexts/LanguageContext';
+import { useLanguage, translations } from '@/contexts/useLanguage';
 import LanguageToggle from '@/components/LanguageToggle';
 import { AuthGuard } from '@/components/auth/AuthGuard';
 import { useAuth } from '@/hooks/useAuth';
@@ -114,3 +114,4 @@ const AdminLayout = () => {
 };
 
 export default AdminLayout;
+

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage } from '@/contexts/useLanguage';
 import { cn } from '@/lib/utils';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -102,3 +102,4 @@ const AuditLogsPage = () => {
 };
 
 export default AuditLogsPage;
+

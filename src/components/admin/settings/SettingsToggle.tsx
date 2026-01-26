@@ -1,7 +1,7 @@
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage } from '@/contexts/useLanguage';
 
 interface SettingsToggleProps {
   id: string;
@@ -48,3 +48,4 @@ export function SettingsToggle({
     </div>
   );
 }
+

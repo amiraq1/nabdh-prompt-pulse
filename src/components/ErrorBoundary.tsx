@@ -88,13 +88,6 @@ class ErrorBoundary extends Component<Props, State> {
   }
 }
 
-// Hook for functional components to trigger error boundary
-export function useErrorHandler() {
-  return (error: Error) => {
-    throw error;
-  };
-}
-
 // Inline error component for smaller errors
 interface InlineErrorProps {
   message: string;

@@ -1,5 +1,5 @@
 import CreatePromptForm from '@/components/admin/CreatePromptForm';
-import { useLanguage, translations } from '@/contexts/LanguageContext';
+import { useLanguage, translations } from '@/contexts/useLanguage';
 import { cn } from '@/lib/utils';
 
 const CreatePromptPage = () => {
@@ -21,3 +21,4 @@ const CreatePromptPage = () => {
 };
 
 export default CreatePromptPage;
+

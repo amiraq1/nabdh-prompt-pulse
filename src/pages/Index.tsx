@@ -6,7 +6,7 @@ import PromptGrid from '@/components/PromptGrid';
 import ErrorBoundary, { InlineError } from '@/components/ErrorBoundary';
 import { SortOption } from '@/components/SortSelect';
 import { usePrompts } from '@/hooks/usePrompts';
-import { useLanguage, translations } from '@/contexts/LanguageContext';
+import { useLanguage, translations } from '@/contexts/useLanguage';
 import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
 
@@ -125,3 +125,4 @@ const Index = () => {
 };
 
 export default Index;
+

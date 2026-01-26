@@ -1,5 +1,5 @@
 import { ArrowUpDown } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage } from '@/contexts/useLanguage';
 import { cn } from '@/lib/utils';
 import {
   Select,
@@ -49,3 +49,4 @@ const SortSelect = ({ value, onChange }: SortSelectProps) => {
 };
 
 export default SortSelect;
+

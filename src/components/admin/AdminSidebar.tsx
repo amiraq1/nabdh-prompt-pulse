@@ -10,7 +10,7 @@ import {
     ChevronRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useLanguage, translations } from '@/contexts/LanguageContext';
+import { useLanguage, translations } from '@/contexts/useLanguage';
 
 interface AdminSidebarProps {
     isOpen: boolean;
@@ -150,3 +150,4 @@ const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
 };
 
 export default AdminSidebar;
+

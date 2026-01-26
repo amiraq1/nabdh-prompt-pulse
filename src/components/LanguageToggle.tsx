@@ -1,6 +1,6 @@
 import { Languages } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage } from '@/contexts/useLanguage';
 import { cn } from '@/lib/utils';
 
 const LanguageToggle = () => {
@@ -29,3 +29,4 @@ const LanguageToggle = () => {
 };
 
 export default LanguageToggle;
+

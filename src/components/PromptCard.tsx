@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge, BadgeProps } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { Prompt, useUpdateLikes } from '@/hooks/usePrompts';
-import { useLanguage, translations } from '@/contexts/LanguageContext';
+import { useLanguage, translations } from '@/contexts/useLanguage';
 import { cn, getOptimizedImageUrl } from '@/lib/utils';
 
 interface PromptCardProps {
@@ -273,3 +273,4 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
 PromptCard.displayName = 'PromptCard';
 
 export default PromptCard;
+

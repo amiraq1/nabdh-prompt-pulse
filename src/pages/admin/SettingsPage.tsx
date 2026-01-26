@@ -9,7 +9,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useLanguage, translations } from '@/contexts/LanguageContext';
+import { useLanguage, translations } from '@/contexts/useLanguage';
 import { cn } from '@/lib/utils';
 import { 
   useSettings, 
@@ -267,3 +267,4 @@ const SettingsPage = () => {
 };
 
 export default SettingsPage;
+

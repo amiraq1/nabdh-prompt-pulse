@@ -30,7 +30,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { toast } from '@/hooks/use-toast';
 import { usePrompts, useDeletePrompt, Prompt } from '@/hooks/usePrompts';
-import { useLanguage, translations } from '@/contexts/LanguageContext';
+import { useLanguage, translations } from '@/contexts/useLanguage';
 import CreatePromptForm from '@/components/admin/CreatePromptForm';
 import { cn } from '@/lib/utils';
 
@@ -316,3 +316,4 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+

@@ -1,15 +1,15 @@
-import { describe, it, expect } from 'vitest';
+пїњimport { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import PromptCard from './PromptCard';
-import { LanguageProvider } from '@/contexts/LanguageContext';
+import { LanguageProvider } from '@/contexts/LanguageProvider';
 import { TooltipProvider } from '@/components/ui/tooltip';
 
-// »н«д«  жегн… бб«ќ »«— (Mock Data)
+// Ў®ўКЎІўЖЎІЎ™ ўИўЗўЕўКЎ© ўДўДЎІЎЃЎ™Ў®ЎІЎ± (Mock Data)
 const mockPrompt = {
   id: '123',
   title: 'Test Prompt Title',
-  title_ar: 'Џдж«д  ћ—н»н',
+  title_ar: 'ЎєўЖўИЎІўЖ Ў™ЎђЎ±ўКЎ®ўК',
   content: 'This is the prompt content for testing.',
   category: 'coding',
   ai_model: 'gpt-4',
@@ -28,7 +28,7 @@ const createTestQueryClient = () =>
     },
   });
 
-// џб«Ё б жЁн— «бяжд я”  (Wrapper)
+// ЎЇўДЎІўБ ўДЎ™ўИўБўКЎ± ЎІўДўГўИўЖЎ™ўГЎ≥Ў™ (Wrapper)
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <QueryClientProvider client={createTestQueryClient()}>
     <LanguageProvider>
@@ -47,7 +47,7 @@ describe('PromptCard Component', () => {
       </TestWrapper>
     );
 
-    // «б Ќёё гд ўеж— «бЏдж«д «б≈дћбн“н («б«Ё —«÷н)
+    // ЎІўДЎ™Ў≠ўВўВ ўЕўЖ ЎЄўЗўИЎ± ЎІўДЎєўЖўИЎІўЖ ЎІўДЎ•ўЖЎђўДўКЎ≤ўК (ЎІўДЎІўБЎ™Ў±ЎІЎґўК)
     expect(screen.getByText('Test Prompt Title')).toBeInTheDocument();
   });
 

@@ -1,5 +1,5 @@
 import { Sparkles, ArrowDown } from 'lucide-react';
-import { useLanguage, translations } from '@/contexts/LanguageContext';
+import { useLanguage, translations } from '@/contexts/useLanguage';
 import { cn } from '@/lib/utils';
 
 const HeroSection = () => {

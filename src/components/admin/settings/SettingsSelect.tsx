@@ -7,7 +7,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage } from '@/contexts/useLanguage';
 
 interface SelectOption {
   value: string;
@@ -69,3 +69,4 @@ export function SettingsSelect({
     </div>
   );
 }
+

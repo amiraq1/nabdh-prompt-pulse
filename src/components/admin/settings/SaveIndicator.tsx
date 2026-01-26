@@ -1,6 +1,6 @@
 import { Check, Loader2, Cloud } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage } from '@/contexts/useLanguage';
 import { formatDistanceToNow } from 'date-fns';
 import { ar, enUS } from 'date-fns/locale';
 
@@ -57,3 +57,4 @@ export function SaveIndicator({ isPending, lastSaved, hasChanges }: SaveIndicato
     </div>
   );
 }
+

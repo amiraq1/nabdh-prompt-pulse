@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage } from '@/contexts/useLanguage';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -108,3 +108,4 @@ const UsersPage = () => {
 };
 
 export default UsersPage;
+

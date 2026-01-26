@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/select';
 import { toast } from '@/hooks/use-toast';
 import { Prompt, useAddPrompt, useUpdatePrompt } from '@/hooks/usePrompts';
-import { useLanguage, translations } from '@/contexts/LanguageContext';
+import { useLanguage, translations } from '@/contexts/useLanguage';
 import { cn } from '@/lib/utils';
 import { supabase } from "@/integrations/supabase/client";
 
@@ -497,3 +497,4 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
 };
 
 export default CreatePromptForm;
+

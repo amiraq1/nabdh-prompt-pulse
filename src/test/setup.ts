@@ -1,8 +1,26 @@
 import "@testing-library/jest-dom";
 import { vi } from "vitest";
 
-const createQueryBuilder = () => {
-  const builder: any = {
+type QueryResult = { data: unknown[]; error: null };
+
+type QueryBuilder = {
+  select: (..._args: unknown[]) => QueryBuilder;
+  range: (..._args: unknown[]) => QueryBuilder;
+  order: (..._args: unknown[]) => QueryBuilder;
+  eq: (..._args: unknown[]) => QueryBuilder;
+  textSearch: (..._args: unknown[]) => QueryBuilder;
+  limit: (..._args: unknown[]) => QueryBuilder;
+  or: (..._args: unknown[]) => QueryBuilder;
+  single: () => Promise<{ data: null; error: null }>;
+  maybeSingle: () => Promise<{ data: null; error: null }>;
+  update: (..._args: unknown[]) => QueryBuilder;
+  insert: (..._args: unknown[]) => QueryBuilder;
+  delete: (..._args: unknown[]) => QueryBuilder;
+  then: PromiseLike<QueryResult>["then"];
+};
+
+const createQueryBuilder = (): QueryBuilder => {
+  const builder: QueryBuilder = {
     select: () => builder,
     range: () => builder,
     order: () => builder,
@@ -15,8 +33,8 @@ const createQueryBuilder = () => {
     update: () => builder,
     insert: () => builder,
     delete: () => builder,
-    then: (resolve: (value: { data: any[]; error: null }) => void) =>
-      Promise.resolve(resolve({ data: [], error: null })),
+    then: (onfulfilled, onrejected) =>
+      Promise.resolve({ data: [], error: null }).then(onfulfilled, onrejected),
   };
   return builder;
 };

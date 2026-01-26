@@ -1,7 +1,7 @@
 import { Search, Plus, Zap, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { useLanguage, translations } from '@/contexts/LanguageContext';
+import { useLanguage, translations } from '@/contexts/useLanguage';
 import LanguageToggle from './LanguageToggle';
 import SearchInput from './SearchInput';
 import { cn } from '@/lib/utils';
