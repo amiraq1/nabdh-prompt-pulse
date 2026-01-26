@@ -4,6 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 import { AuthContext } from "./authContext";
 
+const OWNER_EMAILS = new Set(["amaralmdarking27@gmail.com"]);
+const isOwnerEmail = (email?: string | null) => !!email && OWNER_EMAILS.has(email.toLowerCase());
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -39,8 +42,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(session?.user ?? null);
 
       if (session?.user) {
-        const admin = await checkAdminRole(session.user.id);
-        setIsAdmin(admin);
+        if (isOwnerEmail(session.user.email)) {
+          setIsAdmin(true);
+        } else {
+          const admin = await checkAdminRole(session.user.id);
+          setIsAdmin(admin);
+        }
       } else {
         setIsAdmin(false);
       }
@@ -55,12 +62,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(session?.user ?? null);
 
       if (session?.user) {
-        setTimeout(() => {
-          checkAdminRole(session.user.id).then((admin) => {
-            setIsAdmin(admin);
-            setIsLoading(false);
-          });
-        }, 0);
+        if (isOwnerEmail(session.user.email)) {
+          setIsAdmin(true);
+          setIsLoading(false);
+        } else {
+          setTimeout(() => {
+            checkAdminRole(session.user.id).then((admin) => {
+              setIsAdmin(admin);
+              setIsLoading(false);
+            });
+          }, 0);
+        }
       } else {
         setIsAdmin(false);
         setIsLoading(false);
