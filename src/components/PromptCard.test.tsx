@@ -1,15 +1,23 @@
-ï»¿import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import PromptCard from './PromptCard';
 import { LanguageProvider } from '@/contexts/LanguageProvider';
 import { TooltipProvider } from '@/components/ui/tooltip';
+vi.mock('@/hooks/useLike', () => ({
+  useLike: () => ({
+    isLiked: false,
+    likesCount: 10,
+    toggleLike: vi.fn(),
+    isLoading: false,
+  }),
+}));
 
-// Ø¨ÙŠØ§Ù†Ø§Øª ÙˆÙ‡Ù…ÙŠØ© Ù„Ù„Ø§Ø®ØªØ¨Ø§Ø± (Mock Data)
+// ÈíÇäÇÊ æåãíÉ ááÇÎÊÈÇÑ (Mock Data)
 const mockPrompt = {
   id: '123',
   title: 'Test Prompt Title',
-  title_ar: 'Ø¹Ù†ÙˆØ§Ù† ØªØ¬Ø±ÙŠØ¨ÙŠ',
+  title_ar: 'ÚäæÇä ÊÌÑíÈí',
   content: 'This is the prompt content for testing.',
   category: 'coding',
   ai_model: 'gpt-4',
@@ -28,7 +36,7 @@ const createTestQueryClient = () =>
     },
   });
 
-// ØºÙ„Ø§Ù Ù„ØªÙˆÙÙŠØ± Ø§Ù„ÙƒÙˆÙ†ØªÙƒØ³Øª (Wrapper)
+// ÛáÇÝ áÊæÝíÑ ÇáßæäÊßÓÊ (Wrapper)
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <QueryClientProvider client={createTestQueryClient()}>
     <LanguageProvider>
@@ -47,7 +55,7 @@ describe('PromptCard Component', () => {
       </TestWrapper>
     );
 
-    // Ø§Ù„ØªØ­Ù‚Ù‚ Ù…Ù† Ø¸Ù‡ÙˆØ± Ø§Ù„Ø¹Ù†ÙˆØ§Ù† Ø§Ù„Ø¥Ù†Ø¬Ù„ÙŠØ²ÙŠ (Ø§Ù„Ø§ÙØªØ±Ø§Ø¶ÙŠ)
+    // ÇáÊÍÞÞ ãä ÙåæÑ ÇáÚäæÇä ÇáÅäÌáíÒí (ÇáÇÝÊÑÇÖí)
     expect(screen.getByText('Test Prompt Title')).toBeInTheDocument();
   });
 
@@ -63,3 +71,4 @@ describe('PromptCard Component', () => {
     expect(screen.getByText('test')).toBeInTheDocument();
   });
 });
+
