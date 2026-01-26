@@ -18,39 +18,48 @@ export const usePrompts = (search?: string, category?: string, model?: string) =
   return useInfiniteQuery({
     queryKey: promptKeys.infinite(search, category, model),
     queryFn: async ({ pageParam = 0 }: { pageParam: number }) => {
+      console.log('Fetching page:', pageParam);
+
       let query = supabase
         .from('prompts')
         .select('*')
         .range(pageParam * PAGE_SIZE, (pageParam + 1) * PAGE_SIZE - 1)
         .order('created_at', { ascending: false });
 
+      // تصفية الفئات (Categories)
       if (category && category !== 'all') {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         query = query.eq('category', category as any);
       }
 
+      // تصفية الموديلات (AI Models)
       if (model && model !== 'all') {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         query = query.eq('ai_model', model as any);
       }
 
+      // البحث (Search)
       if (search && search.trim()) {
-        // Use textSearch if search_vector exists, otherwise fallback logic might be needed.
-        // Assuming search_vector exists as per previous context.
+        // نستخدم textSearch للبحث السريع في العمود الذي أنشأناه سابقاً
+        // تأكد من أنك نفذت كود SQL الخاص بـ search_vector
         query = query.textSearch('search_vector', search.trim().split(' ').join(' & '));
       }
 
       const { data, error } = await query;
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching prompts:', error);
+        throw error;
+      }
 
       return data as Prompt[];
     },
     getNextPageParam: (lastPage: Prompt[], allPages: Prompt[][]) => {
+      // إذا كانت الصفحة الحالية أقل من الحجم الكامل، فلا يوجد المزيد
       return lastPage.length === PAGE_SIZE ? allPages.length : undefined;
     },
     initialPageParam: 0,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5, // 5 دقائق
   });
 };
 
