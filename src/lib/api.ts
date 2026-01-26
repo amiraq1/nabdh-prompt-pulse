@@ -1,5 +1,9 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { Database } from '@/integrations/supabase/types';
+
+type PromptCategory = Database['public']['Enums']['prompt_category'];
+type AIModel = Database['public']['Enums']['ai_model'];
 
 export interface SearchOptions {
     query: string;
@@ -21,11 +25,11 @@ export const searchPrompts = async ({ query, category, model, limit = 20 }: Sear
     }
 
     if (category && category !== 'all') {
-        queryBuilder = queryBuilder.eq('category', category);
+        queryBuilder = queryBuilder.eq('category', category as PromptCategory);
     }
 
     if (model && model !== 'all') {
-        queryBuilder = queryBuilder.eq('ai_model', model);
+        queryBuilder = queryBuilder.eq('ai_model', model as AIModel);
     }
 
     const { data, error } = await queryBuilder

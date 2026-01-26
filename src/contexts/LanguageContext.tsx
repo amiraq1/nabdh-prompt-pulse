@@ -4,7 +4,10 @@ import { translations } from '@/constants/translations';
 type Language = 'en' | 'ar';
 
 interface LanguageContextType {
-  // ... existing interface
+  language: Language;
+  setLanguage: (lang: Language) => void;
+  isRTL: boolean;
+  t: (en: string, ar?: string | null) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);

@@ -38,7 +38,8 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const { language, isRTL } = useLanguage();
   const t = translations;
-  const { data: prompts = [], isLoading } = usePrompts();
+  const { data, isLoading } = usePrompts();
+  const prompts = data?.pages.flatMap((page) => page) ?? [];
   const deletePromptMutation = useDeletePrompt();
   const [searchQuery, setSearchQuery] = useState('');
   const [editingPrompt, setEditingPrompt] = useState<Prompt | null>(null);
