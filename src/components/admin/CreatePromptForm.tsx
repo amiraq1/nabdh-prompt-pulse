@@ -25,10 +25,10 @@ interface CreatePromptFormProps {
 }
 
 const categories = [
-  { id: 'coding', en: 'Coding', ar: 'البرمجة' },
-  { id: 'writing', en: 'Writing', ar: 'الكتابة' },
-  { id: 'art', en: 'Art', ar: 'الفن' },
-  { id: 'marketing', en: 'Marketing', ar: 'التسويق' },
+  { id: 'coding', en: 'Coding', ar: 'ط§ظ„ط¨ط±ظ…ط¬ط©' },
+  { id: 'writing', en: 'Writing', ar: 'ط§ظ„ظƒطھط§ط¨ط©' },
+  { id: 'art', en: 'Art', ar: 'ط§ظ„ظپظ†' },
+  { id: 'marketing', en: 'Marketing', ar: 'ط§ظ„طھط³ظˆظٹظ‚' },
 ];
 
 const models = [
@@ -61,29 +61,28 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
   });
 
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(editPrompt?.image_url || null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<FieldError[]>([]);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   const validateField = (field: string, value: string): string | null => {
     switch (field) {
       case 'title':
-        if (!value.trim()) return isRTL ? 'العنوان مطلوب' : 'Title is required';
-        if (value.length < 3) return isRTL ? 'العنوان قصير جداً' : 'Title is too short';
-        if (value.length > 100) return isRTL ? 'العنوان طويل جداً' : 'Title is too long';
+        if (!value.trim()) return isRTL ? 'ط§ظ„ط¹ظ†ظˆط§ظ† ظ…ط·ظ„ظˆط¨' : 'Title is required';
+        if (value.length < 3) return isRTL ? 'ط§ظ„ط¹ظ†ظˆط§ظ† ظ‚طµظٹط± ط¬ط¯ط§ظ‹' : 'Title is too short';
+        if (value.length > 100) return isRTL ? 'ط§ظ„ط¹ظ†ظˆط§ظ† ط·ظˆظٹظ„ ط¬ط¯ط§ظ‹' : 'Title is too long';
         return null;
       case 'content':
-        if (!value.trim()) return isRTL ? 'محتوى الموجه مطلوب' : 'Prompt content is required';
-        if (value.length < 10) return isRTL ? 'المحتوى قصير جداً' : 'Content is too short';
+        if (!value.trim()) return isRTL ? 'ظ…ط­طھظˆظ‰ ط§ظ„ظ…ظˆط¬ظ‡ ظ…ط·ظ„ظˆط¨' : 'Prompt content is required';
+        if (value.length < 10) return isRTL ? 'ط§ظ„ظ…ط­طھظˆظ‰ ظ‚طµظٹط± ط¬ط¯ط§ظ‹' : 'Content is too short';
         return null;
       case 'category':
-        if (!value) return isRTL ? 'اختر الفئة' : 'Select a category';
+        if (!value) return isRTL ? 'ط§ط®طھط± ط§ظ„ظپط¦ط©' : 'Select a category';
         return null;
       case 'aiModel':
-        if (!value) return isRTL ? 'اختر نموذج الذكاء' : 'Select an AI model';
+        if (!value) return isRTL ? 'ط§ط®طھط± ظ†ظ…ظˆط°ط¬ ط§ظ„ط°ظƒط§ط،' : 'Select an AI model';
         return null;
       default:
         return null;
@@ -126,19 +125,18 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
   };
 
   const uploadImage = async (file: File): Promise<string | null> => {
-    if (!file) return null;
-
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${uuidv4()}.${fileExt}`;
-    const filePath = `${fileName}`;
-
     try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${uuidv4()}.${fileExt}`; // اسم فريد للملف
+      const filePath = `${fileName}`;
+
       const { error: uploadError } = await supabase.storage
         .from('prompt-images')
         .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
+      // الحصول على الرابط العلني للصورة
       const { data } = supabase.storage
         .from('prompt-images')
         .getPublicUrl(filePath);
@@ -148,23 +146,11 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
       console.error('Error uploading image:', error);
       toast({
         title: isRTL ? 'خطأ في الرفع' : 'Upload Error',
-        description: isRTL ? 'فشل رفع الصورة' : 'Failed to upload image',
+        description: isRTL ? 'فشل رفع الصورة' : 'Failed to upload image.',
         variant: 'destructive',
       });
       return null;
     }
-  };
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) {
-      return;
-    }
-
-    const file = e.target.files[0];
-    setImageFile(file);
-    // Create a local preview URL
-    const objectUrl = URL.createObjectURL(file);
-    setPreviewUrl(objectUrl);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -185,21 +171,19 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
     setIsSubmitting(true);
 
     try {
-      let imageUrl = editPrompt?.image_url || null;
+      let imageUrlToSave = editPrompt?.image_url || null; // الافتراضي: الصورة القديمة أو لا شيء
 
-      // Logic to handle image:
-      // 1. If previewUrl is null, it means user removed the image.
-      if (!previewUrl) {
-        imageUrl = null;
-      }
-      // 2. If there is a new imageFile, upload it.
-      else if (imageFile) {
+      // إذا تم اختيار ملف جديد، قم برفعه
+      if (imageFile) {
         const uploadedUrl = await uploadImage(imageFile);
         if (uploadedUrl) {
-          imageUrl = uploadedUrl;
+          imageUrlToSave = uploadedUrl;
+        } else {
+          // إذا فشل الرفع، توقف
+          setIsSubmitting(false);
+          return;
         }
       }
-      // 3. Otherwise (previewUrl exists, no new imageFile), keep existing imageUrl (already set).
 
       const promptData = {
         title: formData.title.trim(),
@@ -208,7 +192,7 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
         category: formData.category as Prompt['category'],
         ai_model: formData.aiModel as Prompt['ai_model'],
         tags: formData.tags.split(',').map((t) => t.trim()).filter(Boolean),
-        image_url: imageUrl,
+        image_url: imageUrlToSave, // <-- إضافة الرابط هنا
       };
 
       if (editPrompt) {
@@ -281,7 +265,7 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
       {/* Arabic Title */}
       <div className="space-y-2">
         <Label htmlFor="titleAr" className={cn("text-foreground", isRTL && "block text-right")}>
-          {t.arabicTitle[language]} (العنوان بالعربية)
+          {t.arabicTitle[language]} (ط§ظ„ط¹ظ†ظˆط§ظ† ط¨ط§ظ„ط¹ط±ط¨ظٹط©)
         </Label>
         <Input
           id="titleAr"
@@ -319,7 +303,7 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
           </p>
         )}
         <p className={cn("text-xs text-muted-foreground", isRTL && "text-right")}>
-          {formData.content.length} {isRTL ? 'حرف' : 'characters'}
+          {formData.content.length} {isRTL ? 'ط­ط±ظپ' : 'characters'}
         </p>
       </div>
 
@@ -396,63 +380,63 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
             </p>
           )}
         </div>
-      </div>
-
-      {/* Image Upload */}
+      </div>      {/* Image Upload Section */}
       <div className="space-y-2">
         <Label className={cn("text-foreground", isRTL && "block text-right")}>
-          {isRTL ? 'صورة الموجه' : 'Prompt Image'}
+          {isRTL ? 'صورة توضيحية (اختياري)' : 'Example Image (Optional)'}
         </Label>
-        <div className={cn("flex items-center gap-4", isRTL && "flex-row-reverse")}>
-          {previewUrl && (
-            <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-border">
-              <img src={previewUrl} alt="Prompt" className="w-full h-full object-cover" />
+
+        <div className="flex items-start gap-4">
+          {/* Hidden File Input */}
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
+            accept="image/png, image/jpeg, image/jpg, image/webp"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                if (file.size > 5 * 1024 * 1024) { // التحقق من الحجم (مثلاً 5MB)
+                  toast({ title: 'File too large', description: 'Max 5MB', variant: 'destructive' });
+                  return;
+                }
+                setImageFile(file);
+                setPreviewUrl(URL.createObjectURL(file)); // إنشاء رابط معاينة محلي
+              }
+            }}
+          />
+
+          {/* Upload Button or Preview */}
+          {!previewUrl ? (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => fileInputRef.current?.click()}
+              className="h-32 w-full border-dashed flex flex-col gap-2 text-muted-foreground hover:text-foreground"
+            >
+              <ImagePlus className="w-8 h-8" />
+              <span>{isRTL ? 'اضغط لرفع صورة' : 'Click to upload image'}</span>
+            </Button>
+          ) : (
+            <div className="relative w-full h-64 rounded-md overflow-hidden border border-border group">
+              <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
+              {/* زر حذف الصورة */}
               <button
                 type="button"
                 onClick={() => {
-                  setPreviewUrl(null);
                   setImageFile(null);
-                  if (fileInputRef.current) {
-                    fileInputRef.current.value = '';
-                  }
+                  setPreviewUrl(null);
+                  if (fileInputRef.current) fileInputRef.current.value = '';
                 }}
-                className="absolute top-0 right-0 p-1 bg-destructive text-white rounded-bl-lg hover:bg-destructive/90"
+                className="absolute top-2 right-2 p-1 bg-black/50 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
               >
-                <X className="w-3 h-3" />
+                <X className="w-5 h-5" />
               </button>
             </div>
           )}
-          <div className="flex-1">
-            <label
-              htmlFor="image-upload"
-              className={cn(
-                "flex items-center justify-center w-full h-20 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary/50 hover:bg-secondary/50 transition-colors",
-                isUploading && "opacity-50 cursor-not-allowed"
-              )}
-            >
-              <div className="flex flex-col items-center gap-1 text-muted-foreground">
-                {isUploading ? (
-                  <span className="text-xs animate-pulse">{isRTL ? 'جاري الرفع...' : 'Uploading...'}</span>
-                ) : (
-                  <>
-                    <ImagePlus className="w-5 h-5" />
-                    <span className="text-xs">{isRTL ? 'اضغط لرفع صورة' : 'Click to upload'}</span>
-                  </>
-                )}
-              </div>
-              <input
-                id="image-upload"
-                type="file"
-                accept="image/*"
-                onChange={handleFileSelect}
-                disabled={isUploading}
-                className="hidden"
-                ref={fileInputRef}
-              />
-            </label>
-          </div>
         </div>
       </div>
+
 
       {/* Tags */}
       <div className="space-y-2">
@@ -479,7 +463,7 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
       <div className={cn("flex items-center gap-4 pt-4 border-t border-border", isRTL && "flex-row-reverse")}>
         <Button
           type="submit"
-          disabled={isSubmitting || hasErrors || isUploading}
+          disabled={isSubmitting || hasErrors}
           isLoading={isSubmitting}
           loadingText={t.saving[language]}
           variant="glow"
@@ -503,4 +487,6 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
 };
 
 export default CreatePromptForm;
+
+
 
