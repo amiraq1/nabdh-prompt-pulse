@@ -7,7 +7,7 @@ import {
     Settings,
     ShieldAlert,
     Zap,
-    ChevronRight
+    Clock
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLanguage, translations } from '@/contexts/useLanguage';
@@ -33,6 +33,7 @@ const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
             title: isRTL ? 'إدارة المحتوى' : 'Content',
             items: [
                 { title: t.prompts[language], path: '/admin/prompts', icon: FileText },
+                { title: isRTL ? 'طلبات المراجعة' : 'Submissions', path: '/admin/submissions', icon: Clock },
                 { title: isRTL ? 'إضافة جديد' : 'Add New', path: '/admin/create', icon: Zap },
             ]
         },

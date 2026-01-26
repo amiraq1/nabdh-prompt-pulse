@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageProvider";
 import { SpeedInsights } from "@vercel/speed-insights/react";
+import AdminSubmissions from "./pages/admin/AdminSubmissions";
 
 // Eager load the main page for LCP
 import Index from "./pages/Index";
@@ -91,6 +92,8 @@ const App = () => (
                   <AuditLogsPage />
                 </Suspense>
               } />
+
+              <Route path="submissions" element={<AdminSubmissions />} />
             </Route>
 
             {/* 404 - lazy loaded */}
