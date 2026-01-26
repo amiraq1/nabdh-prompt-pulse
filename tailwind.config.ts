@@ -33,6 +33,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        cairo: ['Cairo', 'sans-serif'],
       },
       colors: {
         border: {

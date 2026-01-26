@@ -29,7 +29,10 @@ const HeroSection = () => {
           </div>
 
           {/* Title - Responsive sizing */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 sm:mb-6 animate-fade-in leading-tight" style={{ animationDelay: '0.1s' }}>
+          <h1 className={cn(
+            "text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 sm:mb-6 animate-fade-in leading-tight",
+            isRTL && "font-cairo"
+          )} style={{ animationDelay: '0.1s' }}>
             {isRTL ? (
               <>
                 <span className="text-foreground">اكتشف </span>
