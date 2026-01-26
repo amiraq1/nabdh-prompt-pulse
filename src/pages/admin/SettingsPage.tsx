@@ -1,4 +1,4 @@
-ï»¿import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/useAuth";
@@ -27,45 +27,51 @@ export default function SettingsPage() {
   const [bio, setBio] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
-  // 1. Ø¬Ù„Ø¨ Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ø¨Ø±ÙˆÙØ§ÙŠÙ„ Ø¹Ù†Ø¯ Ø§Ù„ØªØ­Ù…ÙŠÙ„
+  const getErrorMessage = useCallback((error: unknown) => {
+  if (error instanceof Error) return error.message;
+  return isRTL ? "ÍÏË ÎØÃ ÛíÑ ãÚÑæİ" : "An unknown error occurred";
+}, [isRTL]);
+
+  // 1. ÌáÈ ÈíÇäÇÊ ÇáÈÑæİÇíá ÚäÏ ÇáÊÍãíá
   useEffect(() => {
     if (!user) {
       navigate("/auth");
       return;
     }
-    getProfile();
-  }, [user, navigate]);
 
-  const getProfile = async () => {
-    try {
-      setLoading(true);
-      if (!user) return;
+    const getProfile = async () => {
+      try {
+        setLoading(true);
+        if (!user) return;
 
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("username, website, avatar_url, full_name, bio")
-        .eq("id", user.id)
-        .single();
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("username, website, avatar_url, full_name, bio")
+          .eq("id", user.id)
+          .single();
 
-      if (error && error.code !== "PGRST116") {
-        throw error;
+        if (error && error.code !== "PGRST116") {
+          throw error;
+        }
+
+        if (data) {
+          setUsername(data.username || "");
+          setWebsite(data.website || "");
+          setAvatarUrl(data.avatar_url);
+          setFullName(data.full_name || "");
+          setBio(data.bio || "");
+        }
+      } catch (error) {
+        console.error("Error loading user data!", getErrorMessage(error));
+      } finally {
+        setLoading(false);
       }
+    };
 
-      if (data) {
-        setUsername(data.username || "");
-        setWebsite(data.website || "");
-        setAvatarUrl(data.avatar_url);
-        setFullName(data.full_name || "");
-        setBio(data.bio || "");
-      }
-    } catch (error: any) {
-      console.error("Error loading user data!", error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    void getProfile();
+  }, [user, navigate, getErrorMessage]);
 
-  // 2. ØªØ­Ø¯ÙŠØ« Ø§Ù„Ø¨Ø±ÙˆÙØ§ÙŠÙ„
+  // 2. ÊÍÏíË ÇáÈÑæİÇíá
   const updateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -87,21 +93,21 @@ export default function SettingsPage() {
 
       if (error) throw error;
       toast({
-        title: isRTL ? "ØªÙ… Ø§Ù„Ø­ÙØ¸" : "Profile updated",
-        description: isRTL ? "ØªÙ… ØªØ­Ø¯ÙŠØ« Ø¨ÙŠØ§Ù†Ø§ØªÙƒ Ø¨Ù†Ø¬Ø§Ø­." : "Your profile has been updated.",
+        title: isRTL ? "Êã ÇáÍİÙ" : "Profile updated",
+        description: isRTL ? "Êã ÊÍÏíË ÈíÇäÇÊß ÈäÌÇÍ." : "Your profile has been updated.",
       });
-    } catch (error: any) {
+    } catch (error) {
       toast({
         variant: "destructive",
-        title: isRTL ? "Ø®Ø·Ø£" : "Error",
-        description: error.message,
+        title: isRTL ? "ÎØÃ" : "Error",
+        description: getErrorMessage(error),
       });
     } finally {
       setUpdating(false);
     }
   };
 
-  // 3. Ø±ÙØ¹ Ø§Ù„ØµÙˆØ±Ø© Ø§Ù„Ø±Ù…Ø²ÙŠØ©
+  // 3. ÑİÚ ÇáÕæÑÉ ÇáÑãÒíÉ
   const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       setUpdating(true);
@@ -120,14 +126,14 @@ export default function SettingsPage() {
 
       if (uploadError) throw uploadError;
 
-      // Ø§Ù„Ø­ØµÙˆÙ„ Ø¹Ù„Ù‰ Ø§Ù„Ø±Ø§Ø¨Ø·
+      // ÇáÍÕæá Úáì ÇáÑÇÈØ
       const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
       setAvatarUrl(data.publicUrl);
-    } catch (error: any) {
+    } catch (error) {
       toast({
         variant: "destructive",
-        title: isRTL ? "ÙØ´Ù„ Ø§Ù„Ø±ÙØ¹" : "Upload failed",
-        description: error.message,
+        title: isRTL ? "İÔá ÇáÑİÚ" : "Upload failed",
+        description: getErrorMessage(error),
       });
     } finally {
       setUpdating(false);
@@ -148,14 +154,14 @@ export default function SettingsPage() {
       <main className="container max-w-2xl mx-auto px-4 py-8">
         <Card>
           <CardHeader>
-            <CardTitle>{isRTL ? "Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª Ø§Ù„Ø­Ø³Ø§Ø¨" : "Account Settings"}</CardTitle>
+            <CardTitle>{isRTL ? "ÅÚÏÇÏÇÊ ÇáÍÓÇÈ" : "Account Settings"}</CardTitle>
             <CardDescription>
-              {isRTL ? "Ù‚Ù… Ø¨Ø¥Ø¯Ø§Ø±Ø© Ù…Ù„ÙÙƒ Ø§Ù„Ø´Ø®ØµÙŠ ÙˆÙƒÙŠÙ ÙŠØ±Ø§Ùƒ Ø§Ù„Ø¢Ø®Ø±ÙˆÙ†." : "Manage your profile and how others see you."}
+              {isRTL ? "Şã ÈÅÏÇÑÉ ãáİß ÇáÔÎÕí æßíİ íÑÇß ÇáÂÎÑæä." : "Manage your profile and how others see you."}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={updateProfile} className="space-y-6">
-              {/* Ù‚Ø³Ù… Ø§Ù„ØµÙˆØ±Ø© */}
+              {/* ŞÓã ÇáÕæÑÉ */}
               <div className="flex flex-col items-center gap-4 mb-6">
                 <Avatar className="h-24 w-24">
                   <AvatarImage src={avatarUrl || ""} objectFit="cover" />
@@ -165,7 +171,7 @@ export default function SettingsPage() {
                   <Label htmlFor="avatar-upload" className="cursor-pointer">
                     <div className="flex items-center gap-2 text-sm text-primary hover:underline bg-secondary px-4 py-2 rounded-md">
                       <Upload className="h-4 w-4" />
-                      {isRTL ? "ØªØºÙŠÙŠØ± Ø§Ù„ØµÙˆØ±Ø©" : "Change Avatar"}
+                      {isRTL ? "ÊÛííÑ ÇáÕæÑÉ" : "Change Avatar"}
                     </div>
                     <input
                       id="avatar-upload"
@@ -179,25 +185,25 @@ export default function SettingsPage() {
                 </div>
               </div>
 
-              {/* Ø§Ù„Ø­Ù‚ÙˆÙ„ Ø§Ù„Ù†ØµÙŠØ© */}
+              {/* ÇáÍŞæá ÇáäÕíÉ */}
               <div className="space-y-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="email">{isRTL ? "Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ" : "Email"}</Label>
+                  <Label htmlFor="email">{isRTL ? "ÇáÈÑíÏ ÇáÅáßÊÑæäí" : "Email"}</Label>
                   <Input id="email" value={session?.user.email} disabled className="bg-muted" />
                 </div>
 
                 <div className="grid gap-2">
-                  <Label htmlFor="fullName">{isRTL ? "Ø§Ù„Ø§Ø³Ù… Ø§Ù„ÙƒØ§Ù…Ù„" : "Full Name"}</Label>
+                  <Label htmlFor="fullName">{isRTL ? "ÇáÇÓã ÇáßÇãá" : "Full Name"}</Label>
                   <Input
                     id="fullName"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    placeholder={isRTL ? "Ø§Ø³Ù…Ùƒ Ø§Ù„ÙƒØ§Ù…Ù„" : "Your full name"}
+                    placeholder={isRTL ? "ÇÓãß ÇáßÇãá" : "Your full name"}
                   />
                 </div>
 
                 <div className="grid gap-2">
-                  <Label htmlFor="username">{isRTL ? "Ø§Ø³Ù… Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…" : "Username"}</Label>
+                  <Label htmlFor="username">{isRTL ? "ÇÓã ÇáãÓÊÎÏã" : "Username"}</Label>
                   <Input
                     id="username"
                     value={username}
@@ -207,12 +213,12 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="grid gap-2">
-                  <Label htmlFor="bio">{isRTL ? "Ù†Ø¨Ø°Ø© Ø¹Ù†Ùƒ" : "Bio"}</Label>
+                  <Label htmlFor="bio">{isRTL ? "äÈĞÉ Úäß" : "Bio"}</Label>
                   <Textarea
                     id="bio"
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
-                    placeholder={isRTL ? "Ø§ÙƒØªØ¨ Ù‚Ù„ÙŠÙ„Ø§Ù‹ Ø¹Ù† Ù†ÙØ³Ùƒ..." : "Write a little bit about yourself..."}
+                    placeholder={isRTL ? "ÇßÊÈ ŞáíáÇğ Úä äİÓß..." : "Write a little bit about yourself..."}
                     rows={4}
                   />
                 </div>
@@ -225,7 +231,7 @@ export default function SettingsPage() {
                   ) : (
                     <>
                       <Save className="h-4 w-4 mr-2" />
-                      {isRTL ? "Ø­ÙØ¸ Ø§Ù„ØªØºÙŠÙŠØ±Ø§Øª" : "Save Changes"}
+                      {isRTL ? "ÍİÙ ÇáÊÛííÑÇÊ" : "Save Changes"}
                     </>
                   )}
                 </Button>
@@ -237,3 +243,6 @@ export default function SettingsPage() {
     </div>
   );
 }
+
+
+
