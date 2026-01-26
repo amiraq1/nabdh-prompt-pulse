@@ -4,7 +4,8 @@ import { Copy, Check, Heart, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge, BadgeProps } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
-import { Prompt, useUpdateLikes } from '@/hooks/usePrompts';
+import { Prompt } from '@/hooks/usePrompts';
+import { useLike } from '@/hooks/useLike';
 import { useLanguage, translations } from '@/contexts/useLanguage';
 import { cn } from '@/lib/utils';
 
@@ -73,11 +74,10 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
   const [isCopied, setIsCopied] = useState(false);
   const [isCopying, setIsCopying] = useState(false);
 
-  // Optimistic UI for likes
-  const [optimisticLikes, setOptimisticLikes] = useState(prompt.likes);
-  const [isLiked, setIsLiked] = useState(false);
-  const [isLiking, setIsLiking] = useState(false);
-  const updateLikes = useUpdateLikes();
+  const { isLiked, likesCount, toggleLike, isLoading: isLiking } = useLike(
+    prompt.id,
+    prompt.likes || 0
+  );
 
   const handleCopy = useCallback(async () => {
     if (isCopying) return;
@@ -101,31 +101,6 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
       setIsCopying(false);
     }
   }, [prompt.content, isCopying, language, isRTL, t]);
-
-  const handleLike = useCallback(async () => {
-    if (isLiking) return;
-
-    const newIsLiked = !isLiked;
-    const newLikes = newIsLiked ? optimisticLikes + 1 : optimisticLikes - 1;
-
-    setIsLiked(newIsLiked);
-    setOptimisticLikes(newLikes);
-    setIsLiking(true);
-
-    try {
-      await updateLikes.mutateAsync({ id: prompt.id, likes: newLikes });
-    } catch (error) {
-      setIsLiked(!newIsLiked);
-      setOptimisticLikes(optimisticLikes);
-      toast({
-        title: isRTL ? 'خطأ' : 'Error',
-        description: isRTL ? 'فشل في تحديث الإعجاب' : 'Failed to update like',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsLiking(false);
-    }
-  }, [isLiked, optimisticLikes, isLiking, prompt.id, updateLikes, isRTL]);
 
   const toggleExpand = useCallback(() => {
     setIsExpanded(prev => !prev);
@@ -218,27 +193,48 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
         </div>
 
         {/* Actions */}
-        <div className={cn(
-          "flex items-center justify-between gap-2",
-          isRTL && "flex-row-reverse"
-        )}>
-          <button
-            onClick={handleLike}
+        <div
+          className={cn(
+            "mt-4 pt-4 border-t border-border/50 flex items-center justify-between",
+            isRTL && "flex-row-reverse"
+          )}
+        >
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={(event) => {
+              event.stopPropagation();
+              toggleLike();
+            }}
             disabled={isLiking}
             className={cn(
-              "flex items-center gap-1.5 text-xs sm:text-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary/50 rounded-lg px-3 py-2 -ml-3 touch-target",
-              isLiked ? "text-red-400" : "text-muted-foreground hover:text-red-400 active:text-red-400",
-              isLiking && "opacity-70",
-              isRTL && "flex-row-reverse -ml-0 -mr-3"
+              "group/like gap-2 hover:bg-red-500/10 transition-colors",
+              isLiked ? "text-red-500" : "text-muted-foreground"
             )}
-            aria-label={isLiked ? 'Unlike' : 'Like'}
+            aria-label={isLiked ? "Unlike" : "Like"}
           >
-            <Heart className={cn(
-              "w-4 h-4 sm:w-5 sm:h-5 transition-transform",
-              isLiked && "fill-current scale-110"
-            )} />
-            <span className="tabular-nums font-medium">{optimisticLikes}</span>
-          </button>
+            <div className="relative">
+              <Heart
+                className={cn(
+                  "w-4 h-4 transition-all duration-300",
+                  isLiked ? "fill-current scale-110" : "group-hover/like:scale-110"
+                )}
+              />
+              <AnimatePresence>
+                {isLiked && (
+                  <motion.div
+                    initial={{ scale: 0, opacity: 1 }}
+                    animate={{ scale: 2, opacity: 0 }}
+                    exit={{ scale: 0, opacity: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="absolute inset-0 bg-red-500 rounded-full -z-10"
+                  />
+                )}
+              </AnimatePresence>
+            </div>
+
+            <span className="tabular-nums font-medium">{likesCount}</span>
+          </Button>
 
           <Button
             variant="ghost"
