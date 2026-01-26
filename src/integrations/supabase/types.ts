@@ -56,6 +56,24 @@ export type Database = {
         }
         Relationships: []
       }
+      prompt_likes: {
+        Row: {
+          prompt_id: string
+          user_id: string
+          created_at: string
+        }
+        Insert: {
+          prompt_id: string
+          user_id: string
+          created_at?: string
+        }
+        Update: {
+          prompt_id?: string
+          user_id?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -112,6 +130,12 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      toggle_like: {
+        Args: {
+          p_id: string
+        }
+        Returns: void
       }
     }
     Enums: {
