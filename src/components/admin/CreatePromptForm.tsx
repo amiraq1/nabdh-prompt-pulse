@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Save, X, AlertCircle, Image as ImageIcon, Upload } from 'lucide-react';
+import { Save, X, AlertCircle, ImagePlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -17,6 +17,7 @@ import { Prompt, useAddPrompt, useUpdatePrompt } from '@/hooks/usePrompts';
 import { useLanguage, translations } from '@/contexts/useLanguage';
 import { cn } from '@/lib/utils';
 import { supabase } from "@/integrations/supabase/client";
+import { v4 as uuidv4 } from 'uuid';
 
 interface CreatePromptFormProps {
   editPrompt?: Prompt;
@@ -60,6 +61,7 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
   });
 
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(editPrompt?.image_url || null);
@@ -127,7 +129,7 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
     if (!file) return null;
 
     const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
+    const fileName = `${uuidv4()}.${fileExt}`;
     const filePath = `${fileName}`;
 
     try {
@@ -410,6 +412,9 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
                 onClick={() => {
                   setPreviewUrl(null);
                   setImageFile(null);
+                  if (fileInputRef.current) {
+                    fileInputRef.current.value = '';
+                  }
                 }}
                 className="absolute top-0 right-0 p-1 bg-destructive text-white rounded-bl-lg hover:bg-destructive/90"
               >
@@ -430,7 +435,7 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
                   <span className="text-xs animate-pulse">{isRTL ? 'جاري الرفع...' : 'Uploading...'}</span>
                 ) : (
                   <>
-                    <Upload className="w-5 h-5" />
+                    <ImagePlus className="w-5 h-5" />
                     <span className="text-xs">{isRTL ? 'اضغط لرفع صورة' : 'Click to upload'}</span>
                   </>
                 )}
@@ -442,6 +447,7 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
                 onChange={handleFileSelect}
                 disabled={isUploading}
                 className="hidden"
+                ref={fileInputRef}
               />
             </label>
           </div>
