@@ -89,7 +89,6 @@ class ErrorBoundary extends Component<Props, State> {
 }
 
 // Hook for functional components to trigger error boundary
-// eslint-disable-next-line react-refresh/only-export-components
 export function useErrorHandler() {
   return (error: Error) => {
     throw error;
@@ -103,7 +102,6 @@ interface InlineErrorProps {
   className?: string;
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function InlineError({ message, onRetry, className }: InlineErrorProps) {
   return (
     <div className={`flex items-center gap-3 p-4 rounded-lg bg-destructive/10 border border-destructive/20 ${className}`}>

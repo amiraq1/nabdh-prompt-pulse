@@ -17,15 +17,15 @@ const PAGE_SIZE = 12;
 export const usePrompts = (search?: string, category?: string, model?: string) => {
   return useInfiniteQuery({
     queryKey: promptKeys.infinite(search, category, model),
-    queryFn: async ({ pageParam = 0 }) => {
+    queryFn: async ({ pageParam = 0 }: { pageParam: number }) => {
       let query = supabase
         .from('prompts')
         .select('*')
         .range(pageParam * PAGE_SIZE, (pageParam + 1) * PAGE_SIZE - 1)
         .order('created_at', { ascending: false });
 
-      // تطبيق الفلاتر على مستوى السيرفر (أسرع بكثير)
       if (category && category !== 'all') {
+        // Cast to 'any' to bypass strict enum checking if needed, or let TS infer if types align
         query = query.eq('category', category as any);
       }
 
@@ -34,35 +34,30 @@ export const usePrompts = (search?: string, category?: string, model?: string) =
       }
 
       if (search && search.trim()) {
-        // استخدام البحث الذكي الذي قمنا بتفعيله في SQL
+        // Use textSearch if search_vector exists, otherwise fallback logic might be needed.
+        // Assuming search_vector exists as per previous context.
         query = query.textSearch('search_vector', search.trim().split(' ').join(' & '));
       }
 
       const { data, error } = await query;
+
       if (error) throw error;
+
       return data as Prompt[];
     },
-    getNextPageParam: (lastPage, allPages) => {
-      // إذا كانت الصفحة الحالية ممتلئة، فهذا يعني أنه قد يوجد المزيد
+    getNextPageParam: (lastPage: Prompt[], allPages: Prompt[][]) => {
       return lastPage.length === PAGE_SIZE ? allPages.length : undefined;
     },
     initialPageParam: 0,
-    staleTime: 1000 * 60 * 5, // 5 دقائق
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };
 
-// Add a new prompt
 export const useAddPrompt = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async (prompt: PromptInsert) => {
-      const { data, error } = await supabase
-        .from('prompts')
-        .insert(prompt)
-        .select()
-        .single();
-
+      const { data, error } = await supabase.from('prompts').insert(prompt).select().single();
       if (error) throw error;
       return data;
     },
@@ -72,19 +67,11 @@ export const useAddPrompt = () => {
   });
 };
 
-// Update a prompt
 export const useUpdatePrompt = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async ({ id, ...updates }: PromptUpdate & { id: string }) => {
-      const { data, error } = await supabase
-        .from('prompts')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
-
+      const { data, error } = await supabase.from('prompts').update(updates).eq('id', id).select().single();
       if (error) throw error;
       return data;
     },
@@ -94,17 +81,11 @@ export const useUpdatePrompt = () => {
   });
 };
 
-// Delete a prompt
 export const useDeletePrompt = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('prompts')
-        .delete()
-        .eq('id', id);
-
+      const { error } = await supabase.from('prompts').delete().eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -127,8 +108,7 @@ export const useUpdateLikes = () => {
       return data;
     },
     onSuccess: () => {
-      // تحديث الكاش لجميع القوائم
-      queryClient.invalidateQueries({ queryKey: ['prompts'] });
+      queryClient.invalidateQueries({ queryKey: promptKeys.all });
     },
   });
 };
