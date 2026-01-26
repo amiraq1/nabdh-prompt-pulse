@@ -7,7 +7,7 @@ interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
   isRTL: boolean;
-  t: (en: string, ar?: string | null) => string;
+  t: typeof translations; // استخدام النوع مباشرة من الثابت
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -26,15 +26,8 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     document.documentElement.lang = language;
   }, [language, isRTL]);
 
-  const t = (en: string, ar?: string | null) => {
-    if (language === 'ar' && ar) {
-      return ar;
-    }
-    return en;
-  };
-
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, isRTL, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage, isRTL, t: translations }}>
       {children}
     </LanguageContext.Provider>
   );

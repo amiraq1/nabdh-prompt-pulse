@@ -12,11 +12,12 @@ import { Loader2 } from 'lucide-react';
 
 const Index = () => {
   const { language, isRTL } = useLanguage();
-  const t = translations;
 
   // States
   const [searchQuery, setSearchQuery] = useState('');
-  const deferredQuery = useDeferredValue(searchQuery); // تأخير البحث قليلاً لتحسين الأداء
+  // تأخير البحث قليلاً لتحسين الأداء (Debounce-like behavior)
+  const deferredQuery = useDeferredValue(searchQuery);
+
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedModel, setSelectedModel] = useState('all');
   const [sortOption, setSortOption] = useState<SortOption>('newest');
@@ -32,33 +33,22 @@ const Index = () => {
     refetch
   } = usePrompts(deferredQuery, selectedCategory, selectedModel);
 
-  // دمج الصفحات في مصفوفة واحدة للعرض
+  // دمج جميع الصفحات القادمة من السيرفر في مصفوفة واحدة للعرض
   const allPrompts = data?.pages.flatMap(page => page) ?? [];
+
+  // دالة الفرز (Sorting) - نقوم بها محلياً على البيانات المحملة
+  // (ملاحظة: السيرفر يرسلها مرتبة حسب التاريخ افتراضياً، لكن هنا للتحكم الإضافي)
+  const sortedPrompts = [...allPrompts].sort((a, b) => {
+    if (sortOption === 'popular' || sortOption === 'likes') return (b.likes || 0) - (a.likes || 0);
+    if (sortOption === 'oldest') return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+    // الافتراضي newest
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  });
 
   const handleSearchChange = useCallback((query: string) => setSearchQuery(query), []);
   const handleCategoryChange = useCallback((cat: string) => setSelectedCategory(cat), []);
   const handleModelChange = useCallback((model: string) => setSelectedModel(model), []);
   const handleSortChange = useCallback((sort: SortOption) => setSortOption(sort), []);
-
-  // دالة لفرز البيانات محلياً للنتائج الظاهرة
-  const sortedPrompts = [...allPrompts].sort((a, b) => {
-    if (sortOption === 'popular' || sortOption === 'likes') return b.likes - a.likes;
-    if (sortOption === 'oldest') return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-  });
-
-  const getCategoryLabel = () => {
-    if (selectedCategory === 'all') {
-      return t.allPrompts[language];
-    }
-    const categoryLabels: Record<string, { en: string; ar: string }> = {
-      coding: { en: 'Coding Prompts', ar: 'موجهات البرمجة' },
-      writing: { en: 'Writing Prompts', ar: 'موجهات الكتابة' },
-      art: { en: 'Art Prompts', ar: 'موجهات الفن' },
-      marketing: { en: 'Marketing Prompts', ar: 'موجهات التسويق' },
-    };
-    return categoryLabels[selectedCategory]?.[language] || t.allPrompts[language];
-  };
 
   return (
     <ErrorBoundary>
@@ -84,37 +74,42 @@ const Index = () => {
           <section className="py-12">
             <div className="container mx-auto px-4">
               <div className={cn("flex items-center justify-between mb-8", isRTL && "flex-row-reverse")}>
-                <h2 className="text-2xl font-bold text-foreground">{getCategoryLabel()}</h2>
+                <h2 className="text-2xl font-bold text-foreground">
+                  {selectedCategory === 'all'
+                    ? translations.allPrompts[language]
+                    : selectedCategory}
+                </h2>
                 <span className="text-sm text-muted-foreground tabular-nums">
-                  {allPrompts.length}+ {isRTL ? 'موجه' : 'prompts'}
+                  {allPrompts.length} {isRTL ? 'موجه' : 'prompts'}
                 </span>
               </div>
 
               {error ? (
                 <InlineError
-                  message={isRTL ? 'حدث خطأ' : 'Error loading prompts'}
+                  message={isRTL ? 'حدث خطأ أثناء تحميل البيانات' : 'Error loading prompts'}
                   onRetry={() => refetch()}
                 />
               ) : (
                 <>
                   <PromptGrid prompts={sortedPrompts} isLoading={isLoading} />
 
-                  {/* زر تحميل المزيد / مؤشر التحميل */}
+                  {/* زر تحميل المزيد (Load More) */}
                   <div className="mt-12 flex justify-center">
                     {isFetchingNextPage ? (
-                      <div className="flex items-center gap-2 text-primary">
+                      <div className="flex items-center gap-2 text-primary animate-pulse">
                         <Loader2 className="w-6 h-6 animate-spin" />
-                        <span>{isRTL ? 'جاري التحميل...' : 'Loading more...'}</span>
+                        <span>{isRTL ? 'جاري تحميل المزيد...' : 'Loading more...'}</span>
                       </div>
                     ) : hasNextPage ? (
                       <button
                         onClick={() => fetchNextPage()}
-                        className="px-6 py-3 rounded-full bg-secondary hover:bg-secondary/80 text-foreground transition-colors font-medium border border-border"
+                        disabled={isFetchingNextPage}
+                        className="px-8 py-3 rounded-full bg-secondary hover:bg-secondary/80 text-foreground transition-all font-medium border border-border shadow-sm hover:shadow-md active:scale-95"
                       >
-                        {isRTL ? 'تحميل المزيد' : 'Load More'}
+                        {isRTL ? 'عرض المزيد' : 'Load More'}
                       </button>
                     ) : allPrompts.length > 0 ? (
-                      <p className="text-muted-foreground text-sm">
+                      <p className="text-muted-foreground text-sm opacity-60">
                         {isRTL ? 'وصلت لنهاية القائمة' : 'You have reached the end'}
                       </p>
                     ) : null}
@@ -124,15 +119,6 @@ const Index = () => {
             </div>
           </section>
         </main>
-
-        {/* Footer */}
-        <footer className="border-t border-border/50 py-8">
-          <div className="container mx-auto px-4 text-center">
-            <p className="text-sm text-muted-foreground">
-              © 2024 {isRTL ? 'نبض' : 'Nabdh'}. {t.footerText[language]}
-            </p>
-          </div>
-        </footer>
       </div>
     </ErrorBoundary>
   );
