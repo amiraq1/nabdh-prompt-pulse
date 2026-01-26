@@ -1,4 +1,5 @@
 import { useState, useCallback, memo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Copy, Check, Heart, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge, BadgeProps } from '@/components/ui/badge';
@@ -139,14 +140,20 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
   const animationDelay = Math.min(index * 0.05, 0.3);
 
   return (
-    <div
-      className="group relative bg-card rounded-xl border border-border/50 p-4 sm:p-5 transition-all duration-200 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 animate-fade-in active:scale-[0.99] sm:hover:-translate-y-1 will-change-transform min-h-[280px] flex flex-col justify-between"
-      style={{ animationDelay: `${animationDelay}s` }}
+    <motion.div
+      whileHover={{ y: -5, scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ type: "spring", stiffness: 300 }}
+      className="h-full"
     >
-      {/* Gradient hover effect - CSS only, no JS */}
-      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/0 via-primary/5 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none hidden sm:block" />
+      <div
+        className="group relative bg-card rounded-xl border border-border/50 p-4 sm:p-5 transition-all duration-200 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 animate-fade-in will-change-transform min-h-[280px] flex flex-col justify-between"
+        style={{ animationDelay: `${animationDelay}s` }}
+      >
+        {/* Glow hover effect */}
+        <div className="absolute inset-0 rounded-xl bg-gradient-to-tr from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
-      <div className="relative z-10">
+        <div className="relative z-10">
         {/* Header */}
         <div className={cn(
           "flex items-start justify-between gap-2 sm:gap-4 mb-2 sm:mb-3",
@@ -234,35 +241,45 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
           </button>
 
           <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-background/50"
             onClick={handleCopy}
-            size="sm"
-            isLoading={isCopying}
-            variant={isCopied ? "success" : "glow"}
-            className={cn(
-              "h-10 sm:h-9 px-3 sm:px-4 text-xs sm:text-sm",
-              isRTL && "flex-row-reverse"
-            )}
           >
-            {isCopied ? (
-              <>
-                <Check className={cn("w-3.5 h-3.5 sm:w-4 sm:h-4", isRTL ? "ml-1.5" : "mr-1.5")} />
-                <span className="hidden xs:inline">{t.copied[language]}</span>
-                <span className="xs:hidden">✓</span>
-              </>
-            ) : (
-              <>
-                <Copy className={cn("w-3.5 h-3.5 sm:w-4 sm:h-4", isRTL ? "ml-1.5" : "mr-1.5")} />
-                {t.copy[language]}
-              </>
-            )}
+            <AnimatePresence mode="wait" initial={false}>
+              {isCopied ? (
+                <motion.div
+                  key="check"
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Check className="w-4 h-4 text-green-500" />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="copy"
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Copy className="w-4 h-4" />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </Button>
         </div>
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 });
 
 PromptCard.displayName = 'PromptCard';
 
 export default PromptCard;
+
+
 
