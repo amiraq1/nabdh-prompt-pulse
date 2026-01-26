@@ -25,11 +25,12 @@ export const usePrompts = (search?: string, category?: string, model?: string) =
         .order('created_at', { ascending: false });
 
       if (category && category !== 'all') {
-        // Cast to 'any' to bypass strict enum checking if needed, or let TS infer if types align
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         query = query.eq('category', category as any);
       }
 
       if (model && model !== 'all') {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         query = query.eq('ai_model', model as any);
       }
 
