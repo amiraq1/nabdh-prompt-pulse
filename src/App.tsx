@@ -1,12 +1,11 @@
-import { lazy, Suspense } from 'react';
+﻿import { lazy, Suspense } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { LanguageProvider } from "@/contexts/LanguageProvider";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import AdminSubmissions from "./pages/admin/AdminSubmissions";
+import AuthPage from "./pages/AuthPage";
+import Settings from "./pages/Settings";
 
 // Eager load the main page for LCP
 import Index from "./pages/Index";
@@ -18,20 +17,8 @@ const CreatePromptPage = lazy(() => import("./pages/admin/CreatePromptPage"));
 const SettingsPage = lazy(() => import("./pages/admin/SettingsPage"));
 const UsersPage = lazy(() => import("./pages/admin/UsersPage"));
 const AuditLogsPage = lazy(() => import("./pages/admin/AuditLogPage"));
-const AuthPage = lazy(() => import("./pages/AuthPage"));
-const NotFound = lazy(() => import("./pages/NotFound"));
 
-// Optimized QueryClient with caching
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      gcTime: 1000 * 60 * 30, // 30 minutes (formerly cacheTime)
-      refetchOnWindowFocus: false,
-      retry: 1,
-    },
-  },
-});
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Minimal loading fallback for admin routes
 const AdminFallback = () => (
@@ -41,73 +28,67 @@ const AdminFallback = () => (
 );
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <LanguageProvider>
-      <TooltipProvider>
-        <SpeedInsights />
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            {/* Main page - eagerly loaded */}
-            <Route path="/" element={<Index />} />
+  <>
+    <SpeedInsights />
+    <Toaster />
+    <Sonner />
+    <BrowserRouter>
+      <Routes>
+        {/* Main page - eagerly loaded */}
+        <Route path="/" element={<Index />} />
 
-            {/* Auth page - lazy loaded */}
-            <Route path="/auth" element={
-              <Suspense fallback={<AdminFallback />}>
-                <AuthPage />
-              </Suspense>
-            } />
+        {/* Auth page - lazy loaded */}
+        <Route path="/auth" element={<AuthPage />} />
+        <Route path="/settings" element={<Settings />} />
 
-            {/* Admin Routes - lazy loaded and protected */}
-            <Route path="/admin" element={
-              <Suspense fallback={<AdminFallback />}>
-                <AdminLayout />
-              </Suspense>
-            }>
-              <Route index element={
-                <Suspense fallback={<AdminFallback />}>
-                  <AdminDashboard />
-                </Suspense>
-              } />
-              <Route path="create" element={
-                <Suspense fallback={<AdminFallback />}>
-                  <CreatePromptPage />
-                </Suspense>
-              } />
-              <Route path="settings" element={
-                <Suspense fallback={<AdminFallback />}>
-                  <SettingsPage />
-                </Suspense>
-              } />
+        {/* Admin Routes - lazy loaded and protected */}
+        <Route path="/admin" element={
+          <Suspense fallback={<AdminFallback />}>
+            <AdminLayout />
+          </Suspense>
+        }>
+          <Route index element={
+            <Suspense fallback={<AdminFallback />}>
+              <AdminDashboard />
+            </Suspense>
+          } />
+          <Route path="create" element={
+            <Suspense fallback={<AdminFallback />}>
+              <CreatePromptPage />
+            </Suspense>
+          } />
+          <Route path="settings" element={
+            <Suspense fallback={<AdminFallback />}>
+              <SettingsPage />
+            </Suspense>
+          } />
 
-              <Route path="users" element={
-                <Suspense fallback={<AdminFallback />}>
-                  <UsersPage />
-                </Suspense>
-              } />
+          <Route path="users" element={
+            <Suspense fallback={<AdminFallback />}>
+              <UsersPage />
+            </Suspense>
+          } />
 
-              <Route path="audit" element={
-                <Suspense fallback={<AdminFallback />}>
-                  <AuditLogsPage />
-                </Suspense>
-              } />
+          <Route path="audit" element={
+            <Suspense fallback={<AdminFallback />}>
+              <AuditLogsPage />
+            </Suspense>
+          } />
 
-              <Route path="submissions" element={<AdminSubmissions />} />
-            </Route>
+          <Route path="submissions" element={<AdminSubmissions />} />
+        </Route>
 
-            {/* 404 - lazy loaded */}
-            <Route path="*" element={
-              <Suspense fallback={<AdminFallback />}>
-                <NotFound />
-              </Suspense>
-            } />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </LanguageProvider>
-  </QueryClientProvider>
+        {/* 404 - lazy loaded */}
+        <Route path="*" element={
+          <Suspense fallback={<AdminFallback />}>
+            <NotFound />
+          </Suspense>
+        } />
+      </Routes>
+    </BrowserRouter>
+  </>
 );
 
 export default App;
+
 

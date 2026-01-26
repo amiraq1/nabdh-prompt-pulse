@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button';
 import { useLanguage, translations } from '@/contexts/useLanguage';
 import LanguageToggle from '@/components/LanguageToggle';
 import { AuthGuard } from '@/components/auth/AuthGuard';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/contexts/useAuth';
 import { toast } from 'sonner';
 
 const AdminLayoutContent = () => {
@@ -79,7 +79,7 @@ const AdminLayoutContent = () => {
             <div className={cn("flex items-center gap-3", isRTL && "flex-row-reverse")}>
               <div className="text-right hidden sm:block">
                 <p className="text-sm font-medium leading-none">{user?.email?.split('@')[0] || 'Admin'}</p>
-                <p className="text-xs text-muted-foreground mt-1">{isRTL ? 'مسؤول النظام' : 'Super Admin'}</p>
+                <p className="text-xs text-muted-foreground mt-1">{isRTL ? 'ظ…ط³ط¤ظˆظ„ ط§ظ„ظ†ط¸ط§ظ…' : 'Super Admin'}</p>
               </div>
               <Button
                 variant="ghost"
@@ -114,4 +114,6 @@ const AdminLayout = () => {
 };
 
 export default AdminLayout;
+
+
 

@@ -1,6 +1,6 @@
-import { ReactNode } from 'react';
+﻿import { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/contexts/useAuth';
 import { Loader2 } from 'lucide-react';
 
 interface AuthGuardProps {
@@ -34,7 +34,7 @@ export function AuthGuard({ children, requireAdmin = false }: AuthGuardProps) {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center p-8 max-w-md">
           <div className="w-16 h-16 rounded-full bg-destructive/20 flex items-center justify-center mx-auto mb-4">
-            <span className="text-2xl">🔒</span>
+            <span className="text-2xl">ًں”’</span>
           </div>
           <h1 className="text-2xl font-bold text-foreground mb-2">Access Denied</h1>
           <p className="text-muted-foreground mb-4">
@@ -53,3 +53,5 @@ export function AuthGuard({ children, requireAdmin = false }: AuthGuardProps) {
 
   return <>{children}</>;
 }
+
+
