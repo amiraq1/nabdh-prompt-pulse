@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Save, X, AlertCircle } from 'lucide-react';
+import { Save, X, AlertCircle, Image as ImageIcon, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -16,6 +16,7 @@ import { toast } from '@/hooks/use-toast';
 import { Prompt, useAddPrompt, useUpdatePrompt } from '@/hooks/usePrompts';
 import { useLanguage, translations } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
+import { supabase } from "@/integrations/supabase/client";
 
 interface CreatePromptFormProps {
   editPrompt?: Prompt;
@@ -48,7 +49,7 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
   const t = translations;
   const addPrompt = useAddPrompt();
   const updatePrompt = useUpdatePrompt();
-  
+
   const [formData, setFormData] = useState({
     title: editPrompt?.title || '',
     titleAr: editPrompt?.title_ar || '',
@@ -58,7 +59,10 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
     tags: editPrompt?.tags?.join(', ') || '',
   });
 
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(editPrompt?.image_url || null);
   const [errors, setErrors] = useState<FieldError[]>([]);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
@@ -86,19 +90,19 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
 
   const validateForm = (): boolean => {
     const newErrors: FieldError[] = [];
-    
+
     const titleError = validateField('title', formData.title);
     if (titleError) newErrors.push({ field: 'title', message: titleError });
-    
+
     const contentError = validateField('content', formData.content);
     if (contentError) newErrors.push({ field: 'content', message: contentError });
-    
+
     const categoryError = validateField('category', formData.category);
     if (categoryError) newErrors.push({ field: 'category', message: categoryError });
-    
+
     const modelError = validateField('aiModel', formData.aiModel);
     if (modelError) newErrors.push({ field: 'aiModel', message: modelError });
-    
+
     setErrors(newErrors);
     return newErrors.length === 0;
   };
@@ -107,7 +111,7 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
     setTouched({ ...touched, [field]: true });
     const value = formData[field as keyof typeof formData];
     const error = validateField(field, value);
-    
+
     if (error) {
       setErrors(prev => [...prev.filter(e => e.field !== field), { field, message: error }]);
     } else {
@@ -119,9 +123,51 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
     return touched[field] ? errors.find(e => e.field === field)?.message : undefined;
   };
 
+  const uploadImage = async (file: File): Promise<string | null> => {
+    if (!file) return null;
+
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Math.random()}.${fileExt}`;
+    const filePath = `${fileName}`;
+
+    try {
+      const { error: uploadError } = await supabase.storage
+        .from('prompt-images')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage
+        .from('prompt-images')
+        .getPublicUrl(filePath);
+
+      return data.publicUrl;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast({
+        title: isRTL ? 'خطأ في الرفع' : 'Upload Error',
+        description: isRTL ? 'فشل رفع الصورة' : 'Failed to upload image',
+        variant: 'destructive',
+      });
+      return null;
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) {
+      return;
+    }
+
+    const file = e.target.files[0];
+    setImageFile(file);
+    // Create a local preview URL
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewUrl(objectUrl);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Mark all fields as touched
     setTouched({ title: true, content: true, category: true, aiModel: true });
 
@@ -136,16 +182,33 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
 
     setIsSubmitting(true);
 
-    const promptData = {
-      title: formData.title.trim(),
-      title_ar: formData.titleAr.trim() || null,
-      content: formData.content.trim(),
-      category: formData.category as Prompt['category'],
-      ai_model: formData.aiModel as Prompt['ai_model'],
-      tags: formData.tags.split(',').map((t) => t.trim()).filter(Boolean),
-    };
-
     try {
+      let imageUrl = editPrompt?.image_url || null;
+
+      // Logic to handle image:
+      // 1. If previewUrl is null, it means user removed the image.
+      if (!previewUrl) {
+        imageUrl = null;
+      }
+      // 2. If there is a new imageFile, upload it.
+      else if (imageFile) {
+        const uploadedUrl = await uploadImage(imageFile);
+        if (uploadedUrl) {
+          imageUrl = uploadedUrl;
+        }
+      }
+      // 3. Otherwise (previewUrl exists, no new imageFile), keep existing imageUrl (already set).
+
+      const promptData = {
+        title: formData.title.trim(),
+        title_ar: formData.titleAr.trim() || null,
+        content: formData.content.trim(),
+        category: formData.category as Prompt['category'],
+        ai_model: formData.aiModel as Prompt['ai_model'],
+        tags: formData.tags.split(',').map((t) => t.trim()).filter(Boolean),
+        image_url: imageUrl,
+      };
+
       if (editPrompt) {
         await updatePrompt.mutateAsync({ id: editPrompt.id, ...promptData });
         toast({
@@ -162,6 +225,7 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
         navigate('/admin');
       }
     } catch (error) {
+      console.error(error);
       toast({
         title: t.error[language],
         description: t.failedToSave[language],
@@ -332,6 +396,58 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
         </div>
       </div>
 
+      {/* Image Upload */}
+      <div className="space-y-2">
+        <Label className={cn("text-foreground", isRTL && "block text-right")}>
+          {isRTL ? 'صورة الموجه' : 'Prompt Image'}
+        </Label>
+        <div className={cn("flex items-center gap-4", isRTL && "flex-row-reverse")}>
+          {previewUrl && (
+            <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-border">
+              <img src={previewUrl} alt="Prompt" className="w-full h-full object-cover" />
+              <button
+                type="button"
+                onClick={() => {
+                  setPreviewUrl(null);
+                  setImageFile(null);
+                }}
+                className="absolute top-0 right-0 p-1 bg-destructive text-white rounded-bl-lg hover:bg-destructive/90"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </div>
+          )}
+          <div className="flex-1">
+            <label
+              htmlFor="image-upload"
+              className={cn(
+                "flex items-center justify-center w-full h-20 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary/50 hover:bg-secondary/50 transition-colors",
+                isUploading && "opacity-50 cursor-not-allowed"
+              )}
+            >
+              <div className="flex flex-col items-center gap-1 text-muted-foreground">
+                {isUploading ? (
+                  <span className="text-xs animate-pulse">{isRTL ? 'جاري الرفع...' : 'Uploading...'}</span>
+                ) : (
+                  <>
+                    <Upload className="w-5 h-5" />
+                    <span className="text-xs">{isRTL ? 'اضغط لرفع صورة' : 'Click to upload'}</span>
+                  </>
+                )}
+              </div>
+              <input
+                id="image-upload"
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                disabled={isUploading}
+                className="hidden"
+              />
+            </label>
+          </div>
+        </div>
+      </div>
+
       {/* Tags */}
       <div className="space-y-2">
         <Label htmlFor="tags" className={cn("text-foreground", isRTL && "block text-right")}>
@@ -357,7 +473,7 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
       <div className={cn("flex items-center gap-4 pt-4 border-t border-border", isRTL && "flex-row-reverse")}>
         <Button
           type="submit"
-          disabled={isSubmitting || hasErrors}
+          disabled={isSubmitting || hasErrors || isUploading}
           isLoading={isSubmitting}
           loadingText={t.saving[language]}
           variant="glow"

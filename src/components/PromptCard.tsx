@@ -161,6 +161,18 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
           <ModelBadge model={prompt.ai_model} />
         </div>
 
+        {/* Image Display */}
+        {prompt.image_url && (
+          <div className="mb-4 rounded-lg overflow-hidden border border-border/30 aspect-video bg-secondary/50">
+            <img
+              src={prompt.image_url}
+              alt={displayTitle}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              loading="lazy"
+            />
+          </div>
+        )}
+
         {/* Tags */}
         <TagsList tags={prompt.tags} isRTL={isRTL} />
 
