@@ -15,14 +15,32 @@ export default function Index() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [shouldFetch, setShouldFetch] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(searchQuery), 500);
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const win = window as Window & {
+      requestIdleCallback?: (cb: () => void) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+
+    if (win.requestIdleCallback) {
+      const id = win.requestIdleCallback(() => setShouldFetch(true));
+      return () => win.cancelIdleCallback?.(id);
+    }
+
+    const timeoutId = window.setTimeout(() => setShouldFetch(true), 0);
+    return () => window.clearTimeout(timeoutId);
+  }, []);
+
   const { data: prompts, isLoading } = useQuery({
     queryKey: ["prompts", selectedCategory, debouncedSearch],
+    enabled: shouldFetch,
     queryFn: async () => {
       let query = supabase
         .from("prompts")
