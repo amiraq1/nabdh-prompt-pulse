@@ -302,10 +302,24 @@
   /* Button base styles */
   .btn-base {
     @apply inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium;
-    @apply transition-all duration-200 ease-out;
+    transition: transform var(--motion-fast) var(--ease-out),
+      box-shadow var(--motion-fast) var(--ease-out);
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2;
     @apply disabled:pointer-events-none disabled:opacity-50;
     @apply active:scale-[0.98];
+  }
+
+  .button {
+    transition: transform var(--motion-fast) var(--ease-out),
+      box-shadow var(--motion-fast) var(--ease-out);
+  }
+
+  .button:active {
+    transform: scale(0.98);
+  }
+
+  .button:focus-visible {
+    box-shadow: 0 0 0 2px hsl(var(--ring) / 0.6);
   }
 
   /* Input base */
