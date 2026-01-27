@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/useAuth";
 import { useLanguage } from "@/contexts/useLanguage";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -105,19 +106,24 @@ export default function CommentSection({ promptId }: CommentSectionProps) {
           <div className="space-y-4">
             {comments?.map((comment) => (
               <div key={comment.id} className="flex gap-3 text-sm">
-                <Avatar className="w-8 h-8">
-                  <AvatarImage src={comment.profiles?.avatar_url || ""} />
-                  <AvatarFallback>
-                    {comment.profiles?.username?.[0] || "?"}
-                  </AvatarFallback>
-                </Avatar>
+                <Link to={`/user/${comment.user_id}`}>
+                  <Avatar className="w-8 h-8 cursor-pointer hover:opacity-80 transition-opacity">
+                    <AvatarImage src={comment.profiles?.avatar_url || ""} />
+                    <AvatarFallback>
+                      {comment.profiles?.username?.[0] || "?"}
+                    </AvatarFallback>
+                  </Avatar>
+                </Link>
                 <div className="flex-1 bg-secondary/30 p-3 rounded-lg rounded-tl-none">
                   <div className="flex justify-between items-start mb-1">
-                    <span className="font-semibold text-primary text-xs">
+                    <Link
+                      to={`/user/${comment.user_id}`}
+                      className="font-semibold text-primary text-xs hover:underline"
+                    >
                       {comment.profiles?.full_name ||
                         comment.profiles?.username ||
                         "Unknown"}
-                    </span>
+                    </Link>
                     <span className="text-[10px] text-muted-foreground">
                       {formatDistanceToNow(new Date(comment.created_at), {
                         addSuffix: true,
