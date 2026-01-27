@@ -3,6 +3,15 @@ import { render, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { LanguageProvider } from '@/contexts/LanguageProvider';
 import { TooltipProvider } from '@/components/ui/tooltip';
+
+vi.mock('@/contexts/useAuth', () => ({
+  useAuth: () => ({
+    user: null,
+    session: null,
+    signOut: vi.fn(),
+    loading: false,
+  }),
+}));
 vi.mock('@/hooks/useLike', () => ({
   useLike: () => ({
     isLiked: false,
