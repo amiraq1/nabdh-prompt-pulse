@@ -32,8 +32,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        cairo: ['Cairo', 'sans-serif'],
+        sans: ['Manrope', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['Sora', 'system-ui', '-apple-system', 'sans-serif'],
+        arabic: ['Readex Pro', 'Noto Sans Arabic', 'Manrope', 'sans-serif'],
       },
       colors: {
         border: {

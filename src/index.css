@@ -13,7 +13,6 @@
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgb(255 255 255 / 0.02)'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e");
 }
 /* Font import moved to index.html for performance */
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -131,12 +130,17 @@
   }
 
   html {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Manrope', system-ui, -apple-system, sans-serif;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     letter-spacing: -0.011em;
+  }
+
+  html[dir="rtl"] {
+    font-family: 'Readex Pro', 'Noto Sans Arabic', 'Manrope', sans-serif;
+    letter-spacing: 0;
   }
 
   body {
@@ -200,10 +204,21 @@
   h6 {
     letter-spacing: -0.02em;
     font-weight: 600;
+    font-family: 'Sora', system-ui, -apple-system, sans-serif;
   }
 
   h1 {
     letter-spacing: -0.03em;
+  }
+
+  html[dir="rtl"] h1,
+  html[dir="rtl"] h2,
+  html[dir="rtl"] h3,
+  html[dir="rtl"] h4,
+  html[dir="rtl"] h5,
+  html[dir="rtl"] h6 {
+    font-family: 'Readex Pro', 'Noto Sans Arabic', 'Manrope', sans-serif;
+    letter-spacing: 0;
   }
 
   /* Improve text rendering */
