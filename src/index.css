@@ -258,10 +258,16 @@
 @layer components {
 
   /* Modern card styles */
+  .card {
+    transition: transform var(--motion-base) var(--ease-out),
+      box-shadow var(--motion-base) var(--ease-out),
+      border-color var(--motion-base) var(--ease-out);
+  }
+
   .card-modern {
     @apply bg-card border border-border/60 rounded-xl;
     box-shadow: var(--shadow-sm);
-    transition: all 0.2s ease;
+    @apply card;
   }
 
   .card-modern:hover {
