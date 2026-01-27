@@ -137,7 +137,7 @@
     /* Typography */
     --font-display: "Space Grotesk", system-ui, sans-serif;
     --font-body: "Manrope", system-ui, sans-serif;
-    --font-ar: "IBM Plex Sans Arabic", "Cairo", sans-serif;
+    --font-ar: "Tajawal", "Almarai", "Cairo", sans-serif;
 
     /* Sidebar */
     --sidebar-background: 222 47% 5%;
@@ -416,7 +416,8 @@ body {
 }
 
 :lang(ar) {
-  font-family: "Tajawal", "Cairo", "Almarai", sans-serif;
+  font-family: var(--font-ar);
+  font-size: 1rem;
   line-height: 1.7;
   letter-spacing: 0;
 }
