@@ -1,4 +1,4 @@
-import { useState, useCallback, memo } from 'react';
+import { useState, useCallback, useEffect, memo } from 'react';
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from 'framer-motion';
 import { Copy, Check, Heart, ChevronDown, ChevronUp, MessageCircle, Bookmark, FolderPlus } from 'lucide-react';
@@ -133,6 +133,13 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
         `${getOptimizedImageUrl(baseImageUrl, 1024)} 1024w`,
       ].join(', ')
     : undefined;
+  const [imageSrc, setImageSrc] = useState(
+    baseImageUrl ? getOptimizedImageUrl(baseImageUrl, 768) : ''
+  );
+
+  useEffect(() => {
+    setImageSrc(baseImageUrl ? getOptimizedImageUrl(baseImageUrl, 768) : '');
+  }, [baseImageUrl]);
 
   // Stagger animation delay (capped for performance)
   const animationDelay = Math.min(index * 0.05, 0.3);
@@ -189,12 +196,17 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
         {prompt.image_url && (
           <div className="mb-4 rounded-lg overflow-hidden border border-border/30 bg-secondary/50 relative aspect-video">
             <img
-              src={prompt.image_url}
+              src={imageSrc || baseImageUrl}
               alt={displayTitle || "Prompt image"}
               srcSet={srcSet}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               className="w-full h-full object-cover"
               loading="lazy"
+              onError={() => {
+                if (baseImageUrl && imageSrc !== baseImageUrl) {
+                  setImageSrc(baseImageUrl);
+                }
+              }}
             />
             <div className="absolute inset-0 image-overlay pointer-events-none" />
           </div>
