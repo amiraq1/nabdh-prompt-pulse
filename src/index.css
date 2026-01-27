@@ -416,7 +416,9 @@ body {
 }
 
 :lang(ar) {
-  font-family: var(--font-ar);
+  font-family: "Tajawal", "Cairo", "Almarai", sans-serif;
+  line-height: 1.7;
+  letter-spacing: 0;
 }
 
 h1,
