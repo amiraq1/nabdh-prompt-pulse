@@ -110,26 +110,10 @@ const Header = ({ searchQuery, onSearchChange, suggestions = [] }: HeaderProps) 
                     </DropdownMenuItem>
                   </Link>
 
-                  <DropdownMenuSeparator />
-
                   <Link to="/settings">
                     <DropdownMenuItem className={cn("cursor-pointer gap-2", isRTL && "flex-row-reverse")}>
                       <Settings className="h-4 w-4" />
                       <span>{isRTL ? "الإعدادات" : "Settings"}</span>
-                    </DropdownMenuItem>
-                  </Link>
-
-                  <Link to="/bookmarks">
-                    <DropdownMenuItem className={cn("cursor-pointer gap-2", isRTL && "flex-row-reverse")}>
-                      <Bookmark className="h-4 w-4" />
-                      <span>{isRTL ? "مفضلتي" : "Bookmarks"}</span>
-                    </DropdownMenuItem>
-                  </Link>
-
-                  <Link to="/collections">
-                    <DropdownMenuItem className={cn("cursor-pointer gap-2", isRTL && "flex-row-reverse")}>
-                      <FolderOpen className="h-4 w-4" />
-                      <span>{isRTL ? "مجموعاتي" : "My Collections"}</span>
                     </DropdownMenuItem>
                   </Link>
 
