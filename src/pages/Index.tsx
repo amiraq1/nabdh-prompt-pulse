@@ -78,9 +78,9 @@ const Index = () => {
             onSortChange={handleSortChange}
           />
 
-          <section className="section">
+          <section className="py-20 md:py-28">
             <div className="container mx-auto px-4">
-              <div className={cn("flex items-center justify-between mb-8", isRTL && "flex-row-reverse")}>
+              <div className={cn("flex items-center justify-between mb-8 max-w-3xl", isRTL && "flex-row-reverse")}>
                 <h2 className="text-2xl font-bold text-foreground">
                   {selectedCategory === 'all'
                     ? translations.allPrompts[language]

@@ -88,10 +88,10 @@ const FilterBar = memo(({
   ), [language]);
 
   return (
-    <div className="py-4 sm:py-6 border-b border-border/50">
+    <div className="py-4 md:py-6 border-b border-border/50">
       <div className="container mx-auto px-3 sm:px-4">
         <div className={cn(
-          "flex flex-col gap-3 sm:gap-4",
+          "flex flex-col gap-2 md:gap-4",
           isRTL && "items-end"
         )}>
           {/* Category Chips */}
@@ -112,7 +112,7 @@ const FilterBar = memo(({
 
           {/* Model and Sort Selectors */}
           <div className={cn(
-            "flex flex-col xs:flex-row gap-2 sm:gap-3 w-full sm:w-auto",
+            "flex flex-col xs:flex-row gap-2 md:gap-4 w-full sm:w-auto",
             isRTL && "sm:flex-row-reverse"
           )}>
             <Select value={selectedModel} onValueChange={onModelChange}>
