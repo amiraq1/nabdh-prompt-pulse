@@ -414,6 +414,19 @@
   }
 }
 
+@layer utilities {
+  /* Hide element backside to reduce flicker during transforms */
+  .backface-hidden {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  /* Hint browser about upcoming transforms */
+  .will-change-transform {
+    will-change: transform, opacity;
+  }
+}
+
 html {
   font-family: var(--font-body);
   font-size: 16px;
