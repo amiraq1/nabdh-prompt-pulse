@@ -752,6 +752,15 @@
 
 /* Mobile optimizations */
 @media (max-width: 640px) {
+  .bg-grid-pattern {
+    opacity: 0.4;
+  }
+
+  .animate-blob {
+    filter: blur(80px);
+    animation: none;
+  }
+
   .container {
     padding-left: 1rem;
     padding-right: 1rem;
