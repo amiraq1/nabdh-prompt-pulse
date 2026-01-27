@@ -41,7 +41,6 @@ export default function Profile() {
         .from("prompts")
         .select("*")
         .eq("user_id", id)
-        .eq("status", "approved")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -54,7 +53,7 @@ export default function Profile() {
   if (!id) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">
-        {isRTL ? "ÊÚÐÑ ÇáÚËæÑ Úáì ÇáãÓÊÎÏã" : "User not found"}
+        {isRTL ? "ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" : "User not found"}
       </div>
     );
   }
@@ -62,7 +61,7 @@ export default function Profile() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        {isRTL ? "ÌÇÑ ÇáÊÍãíá..." : "Loading..."}
+        {isRTL ? "ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½..." : "Loading..."}
       </div>
     );
   }
@@ -70,7 +69,7 @@ export default function Profile() {
   if (!profile) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">
-        {isRTL ? "ÇáãÓÊÎÏã ÛíÑ ãæÌæÏ" : "User not found"}
+        {isRTL ? "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½" : "User not found"}
       </div>
     );
   }
@@ -104,7 +103,7 @@ export default function Profile() {
               <div className="flex-1">
                 <div className="flex items-center gap-3 flex-wrap">
                   <h1 className="text-2xl font-bold">
-                    {profile.full_name || profile.username || (isRTL ? "ãÓÊÎÏã" : "User")}
+                    {profile.full_name || profile.username || (isRTL ? "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" : "User")}
                   </h1>
                   {profile.username && (
                     <Badge variant="secondary" className="text-xs">
@@ -135,7 +134,7 @@ export default function Profile() {
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4" />
                       <span>
-                        {isRTL ? "ÇäÖã" : "Joined"} {format(new Date(profile.created_at), "MMM yyyy")}
+                        {isRTL ? "ï¿½ï¿½ï¿½ï¿½" : "Joined"} {format(new Date(profile.created_at), "MMM yyyy")}
                       </span>
                     </div>
                   )}
@@ -147,10 +146,10 @@ export default function Profile() {
 
         <div className="mb-6">
           <h2 className="text-2xl font-bold">
-            {isRTL ? "ãæÌåÇÊ ÇáãÓÊÎÏã" : "User Prompts"}
+            {isRTL ? "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" : "User Prompts"}
           </h2>
           <p className="text-muted-foreground">
-            {isRTL ? "ßá ÇáãæÌåÇÊ ÇáãÚÊãÏÉ ÇáÊí äÔÑåÇ ÇáãÓÊÎÏã." : "All approved prompts published by this user."}
+            {isRTL ? "ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½." : "All approved prompts published by this user."}
           </p>
         </div>
 

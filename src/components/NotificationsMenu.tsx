@@ -40,12 +40,13 @@ interface NotificationItem {
 export default function NotificationsMenu() {
   const { user } = useAuth();
   const { isRTL } = useLanguage();
+  const notificationsEnabled = import.meta.env.VITE_ENABLE_NOTIFICATIONS === 'true';
   const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
 
   const { data: notifications } = useQuery({
     queryKey: ["notifications", user?.id],
-    enabled: !!user,
+    enabled: !!user && notificationsEnabled,
     refetchInterval: 60000,
     queryFn: async () => {
       const { data, error } = await supabase
@@ -89,7 +90,7 @@ export default function NotificationsMenu() {
     }
   };
 
-  if (!user) return null;
+  if (!user || !notificationsEnabled) return null;
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={handleOpenChange} dir={isRTL ? "rtl" : "ltr"}>

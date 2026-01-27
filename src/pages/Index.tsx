@@ -27,7 +27,6 @@ export default function Index() {
       let query = supabase
         .from("prompts")
         .select("*")
-        .eq("status", "approved")
         .order("created_at", { ascending: false });
 
       if (selectedCategory !== "all") {
@@ -48,18 +47,18 @@ export default function Index() {
 
   return (
     <div className="min-h-screen bg-background relative">
-      <SEO title={isRTL ? "ÇáÑÆíÓíÉ" : "Home"} />
+      <SEO title={isRTL ? "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" : "Home"} />
 
       <Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
       <main className="container mx-auto px-4 py-8 space-y-8">
         <div className="text-center space-y-4 max-w-2xl mx-auto mt-8">
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-            {isRTL ? "ÇßÊÔÝ ÃÝÖá ÃæÇãÑ ÇáÐßÇÁ ÇáÇÕØäÇÚí" : "Discover Top AI Prompts"}
+            {isRTL ? "ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" : "Discover Top AI Prompts"}
           </h1>
           <p className="text-muted-foreground text-lg">
             {isRTL
-              ? "ãßÊÈÉ ÖÎãÉ áãÓÇÚÏÊß Ýí ChatGPT¡ Midjourney¡ æÇáãÒíÏ."
+              ? "ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ChatGPTï¿½ Midjourneyï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½."
               : "A massive library to supercharge your ChatGPT, Midjourney, and more."}
           </p>
 
@@ -72,7 +71,7 @@ export default function Index() {
             <Input
               placeholder={
                 isRTL
-                  ? "ÇÈÍË Úä ãæÌå (ãËáÇð: ÊÓæíÞ¡ ÈÇíËæä)..."
+                  ? "ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½Þ¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)..."
                   : "Search prompts (e.g., Marketing, Python)..."
               }
               className={`h-12 text-lg shadow-sm border-primary/20 focus-visible:ring-primary/50 ${
