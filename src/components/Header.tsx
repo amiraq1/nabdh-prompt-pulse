@@ -69,7 +69,7 @@ const Header = ({ searchQuery, onSearchChange, suggestions = [] }: HeaderProps) 
             <LanguageToggle />
             <Button
               className={cn(
-                "bg-primary text-primary-foreground hover:bg-primary/90 glow-sm font-medium h-10 px-4 gap-2",
+                "bg-primary text-primary-foreground hover:bg-primary/90 glow-sm button-press font-medium h-10 px-4 gap-2",
                 isRTL && "flex-row-reverse",
               )}
             >
@@ -153,7 +153,7 @@ const Header = ({ searchQuery, onSearchChange, suggestions = [] }: HeaderProps) 
           <div className={cn("sm:hidden mt-3 pt-3 border-t border-border/50 animate-fade-in", isRTL && "text-right")}>
             <Button
               className={cn(
-                "w-full bg-primary text-primary-foreground hover:bg-primary/90 glow-sm font-medium h-12 gap-2",
+                "w-full bg-primary text-primary-foreground hover:bg-primary/90 glow-sm button-press font-medium h-12 gap-2",
                 isRTL && "flex-row-reverse",
               )}
               onClick={() => setMobileMenuOpen(false)}
