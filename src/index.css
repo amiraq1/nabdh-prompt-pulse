@@ -252,6 +252,10 @@
     letter-spacing: 0;
   }
 
+  [dir="rtl"] .icon-arrow {
+    transform: scaleX(-1);
+  }
+
   /* Improve text rendering */
   p,
   span,
