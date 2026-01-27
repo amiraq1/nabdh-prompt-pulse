@@ -16,14 +16,14 @@ const container = {
   show: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1,
+      staggerChildren: 0.08,
     },
   },
 };
 
 const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 },
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { type: 'tween', duration: 0.3 } },
 };
 
 // Memoized skeleton grid
@@ -71,7 +71,7 @@ const PromptGrid = memo(({ prompts, isLoading = false }: PromptGridProps) => {
       className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-5 lg:gap-6 auto-rows-fr"
     >
       {prompts.map((prompt) => (
-        <motion.div key={prompt.id} variants={item}>
+        <motion.div key={prompt.id} variants={item} className="will-change-transform">
           <PromptCard prompt={prompt} />
         </motion.div>
       ))}
