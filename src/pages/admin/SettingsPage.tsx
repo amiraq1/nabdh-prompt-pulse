@@ -15,6 +15,7 @@ import { Loader2, Save, Upload, User as UserIcon, Lock, Palette, Globe, Trash2 }
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import Seo from "@/components/Seo";
+import BackButton from "@/components/BackButton";
 
 export default function SettingsPage() {
   const { user, session } = useAuth();
@@ -201,6 +202,7 @@ export default function SettingsPage() {
       <Seo title={pageTitle} description={pageDescription} noIndex />
       <Header />
       <main className="container max-w-4xl mx-auto px-4 py-8">
+        <BackButton />
         <h1 className="text-3xl font-bold mb-6">{isRTL ? "«·≈⁄œ«œ« " : "Settings"}</h1>
 
         <Tabs defaultValue="profile" className="w-full" dir={isRTL ? "rtl" : "ltr"}>
@@ -440,3 +442,4 @@ export default function SettingsPage() {
     </div>
   );
 }
+
