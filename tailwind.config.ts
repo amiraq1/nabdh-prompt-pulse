@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import { fontFamily } from "tailwindcss/defaultTheme";
 import tailwindcssAnimate from "tailwindcss-animate";
 
 export default {
@@ -32,9 +33,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Manrope', 'system-ui', '-apple-system', 'sans-serif'],
-        display: ['Sora', 'system-ui', '-apple-system', 'sans-serif'],
-        arabic: ['Readex Pro', 'Noto Sans Arabic', 'Manrope', 'sans-serif'],
+        sans: ["Cairo", ...fontFamily.sans],
+        display: ["Sora", "system-ui", "-apple-system", "sans-serif"],
+        arabic: ["Readex Pro", "Noto Sans Arabic", "Manrope", "sans-serif"],
       },
       colors: {
         border: {
