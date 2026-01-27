@@ -1,6 +1,6 @@
 import { useState, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, Check, Heart, ChevronDown, ChevronUp } from 'lucide-react';
+import { Copy, Check, Heart, ChevronDown, ChevronUp, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge, BadgeProps } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
@@ -8,6 +8,14 @@ import { Prompt } from '@/hooks/usePrompts';
 import { useLike } from '@/hooks/useLike';
 import { useLanguage, translations } from '@/contexts/useLanguage';
 import { cn, getOptimizedImageUrl } from '@/lib/utils';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import CommentSection from "./CommentSection";
 
 interface PromptCardProps {
   prompt: Prompt;
@@ -212,42 +220,66 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
             isRTL && "flex-row-reverse"
           )}
         >
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={(event) => {
-              event.stopPropagation();
-              toggleLike();
-            }}
-            disabled={isLiking}
-            className={cn(
-              "group/like gap-2 hover:bg-red-500/10 transition-colors",
-              isLiked ? "text-red-500" : "text-foreground/70"
-            )}
-            aria-label={isLiked ? "Unlike" : "Like"}
-          >
-            <div className="relative">
-              <Heart
-                className={cn(
-                  "w-4 h-4 transition-transform duration-base ease-out-smooth",
-                  isLiked ? "fill-current scale-110" : "group-hover/like:scale-110"
-                )}
-              />
-              <AnimatePresence>
-                {isLiked && (
-                  <motion.div
-                    initial={{ scale: 0, opacity: 1 }}
-                    animate={{ scale: 2, opacity: 0 }}
-                    exit={{ scale: 0, opacity: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="absolute inset-0 bg-red-500 rounded-full -z-10"
-                  />
-                )}
-              </AnimatePresence>
-            </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(event) => {
+                event.stopPropagation();
+                toggleLike();
+              }}
+              disabled={isLiking}
+              className={cn(
+                "group/like gap-2 hover:bg-red-500/10 transition-colors",
+                isLiked ? "text-red-500" : "text-foreground/70"
+              )}
+              aria-label={isLiked ? "Unlike" : "Like"}
+            >
+              <div className="relative">
+                <Heart
+                  className={cn(
+                    "w-4 h-4 transition-transform duration-base ease-out-smooth",
+                    isLiked ? "fill-current scale-110" : "group-hover/like:scale-110"
+                  )}
+                />
+                <AnimatePresence>
+                  {isLiked && (
+                    <motion.div
+                      initial={{ scale: 0, opacity: 1 }}
+                      animate={{ scale: 2, opacity: 0 }}
+                      exit={{ scale: 0, opacity: 0 }}
+                      transition={{ duration: 0.5 }}
+                      className="absolute inset-0 bg-red-500 rounded-full -z-10"
+                    />
+                  )}
+                </AnimatePresence>
+              </div>
 
-            <span className="tabular-nums font-medium">{likesCount}</span>
-          </Button>
+              <span className="tabular-nums font-medium">{likesCount}</span>
+            </Button>
+
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="gap-2 text-muted-foreground hover:text-blue-500 hover:bg-blue-500/10"
+                  onClick={(event) => event.stopPropagation()}
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  <span className="text-xs">{isRTL ? "نقاش" : "Discuss"}</span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px]" dir={isRTL ? "rtl" : "ltr"}>
+                <DialogHeader>
+                  <DialogTitle className="text-start truncate pr-8">
+                    {displayTitle}
+                  </DialogTitle>
+                </DialogHeader>
+                <CommentSection promptId={prompt.id} />
+              </DialogContent>
+            </Dialog>
+          </div>
 
           <Button
             variant="ghost"
