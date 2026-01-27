@@ -30,8 +30,8 @@ const UsersPage = () => {
                         {isRTL ? 'عرض وإدارة صلاحيات الأعضاء' : 'View and manage member permissions'}
                     </p>
                 </div>
-                <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
-                    <UserPlus className={cn("w-4 h-4", isRTL ? "ml-2" : "mr-2")} />
+                <Button className={cn("bg-primary text-primary-foreground hover:bg-primary/90 gap-2", isRTL && "flex-row-reverse")}>
+                    <UserPlus className="w-4 h-4" />
                     {isRTL ? 'إضافة مستخدم' : 'Add User'}
                 </Button>
             </div>

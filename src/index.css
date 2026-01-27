@@ -318,6 +318,62 @@
 }
 
 @layer utilities {
+  .ms-auto {
+    margin-inline-start: auto;
+  }
+
+  .me-auto {
+    margin-inline-end: auto;
+  }
+
+  .ms-0 {
+    margin-inline-start: 0;
+  }
+
+  .me-0 {
+    margin-inline-end: 0;
+  }
+
+  .ms-1 {
+    margin-inline-start: 0.25rem;
+  }
+
+  .me-1 {
+    margin-inline-end: 0.25rem;
+  }
+
+  .ms-2 {
+    margin-inline-start: 0.5rem;
+  }
+
+  .me-2 {
+    margin-inline-end: 0.5rem;
+  }
+
+  .ms-3 {
+    margin-inline-start: 0.75rem;
+  }
+
+  .me-3 {
+    margin-inline-end: 0.75rem;
+  }
+
+  .ms-4 {
+    margin-inline-start: 1rem;
+  }
+
+  .me-4 {
+    margin-inline-end: 1rem;
+  }
+
+  .-ms-4 {
+    margin-inline-start: -1rem;
+  }
+
+  .tech-ltr {
+    direction: ltr;
+    text-align: left;
+  }
   .pad-card {
     padding: var(--space-4);
   }

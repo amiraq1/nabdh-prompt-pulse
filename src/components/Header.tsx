@@ -69,11 +69,11 @@ const Header = ({ searchQuery, onSearchChange, suggestions = [] }: HeaderProps) 
             <LanguageToggle />
             <Button
               className={cn(
-                "bg-primary text-primary-foreground hover:bg-primary/90 glow-sm font-medium h-10 px-4",
+                "bg-primary text-primary-foreground hover:bg-primary/90 glow-sm font-medium h-10 px-4 gap-2",
                 isRTL && "flex-row-reverse",
               )}
             >
-              <Plus className={cn("w-4 h-4", isRTL ? "ml-2" : "mr-2")} />
+              <Plus className="w-4 h-4" />
               <span className="hidden lg:inline">{t.submitPrompt[language]}</span>
               <span className="lg:hidden">{t.submit[language]}</span>
             </Button>
@@ -97,8 +97,8 @@ const Header = ({ searchQuery, onSearchChange, suggestions = [] }: HeaderProps) 
                   <DropdownMenuSeparator />
 
                   <Link to="/settings">
-                    <DropdownMenuItem className="cursor-pointer">
-                      <Settings className="mr-2 h-4 w-4 ml-2" />
+                    <DropdownMenuItem className={cn("cursor-pointer gap-2", isRTL && "flex-row-reverse")}>
+                      <Settings className="h-4 w-4" />
                       <span>{isRTL ? "الإعدادات" : "Settings"}</span>
                     </DropdownMenuItem>
                   </Link>
@@ -106,9 +106,9 @@ const Header = ({ searchQuery, onSearchChange, suggestions = [] }: HeaderProps) 
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onClick={signOut}
-                    className="text-destructive cursor-pointer focus:text-destructive"
+                    className={cn("text-destructive cursor-pointer focus:text-destructive gap-2", isRTL && "flex-row-reverse")}
                   >
-                    <LogOut className="mr-2 h-4 w-4 ml-2" />
+                    <LogOut className="h-4 w-4" />
                     <span>{isRTL ? "تسجيل الخروج" : "Log out"}</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -153,12 +153,12 @@ const Header = ({ searchQuery, onSearchChange, suggestions = [] }: HeaderProps) 
           <div className={cn("sm:hidden mt-3 pt-3 border-t border-border/50 animate-fade-in", isRTL && "text-right")}>
             <Button
               className={cn(
-                "w-full bg-primary text-primary-foreground hover:bg-primary/90 glow-sm font-medium h-12",
+                "w-full bg-primary text-primary-foreground hover:bg-primary/90 glow-sm font-medium h-12 gap-2",
                 isRTL && "flex-row-reverse",
               )}
               onClick={() => setMobileMenuOpen(false)}
             >
-              <Plus className={cn("w-4 h-4", isRTL ? "ml-2" : "mr-2")} />
+              <Plus className="w-4 h-4" />
               {t.submitPrompt[language]}
             </Button>
           </div>

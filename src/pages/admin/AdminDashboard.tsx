@@ -114,9 +114,9 @@ const AdminDashboard = () => {
         </div>
         <Button
           onClick={() => navigate('/admin/create')}
-          className={cn("bg-primary text-primary-foreground hover:bg-primary/90 glow-sm", isRTL && "flex-row-reverse")}
+          className={cn("bg-primary text-primary-foreground hover:bg-primary/90 glow-sm gap-2", isRTL && "flex-row-reverse")}
         >
-          <Plus className={cn("w-4 h-4", isRTL ? "ml-2" : "mr-2")} />
+          <Plus className="w-4 h-4" />
           {t.addNewPrompt[language]}
         </Button>
       </div>
@@ -177,7 +177,7 @@ const AdminDashboard = () => {
       </div>
 
       {/* Search */}
-      <div className={cn("relative max-w-md", isRTL && "mr-auto ml-0")}>
+      <div className={cn("relative max-w-md", isRTL && "me-auto")}>
         <Search className={cn(
           "absolute top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground",
           isRTL ? "right-3" : "left-3"

@@ -467,18 +467,18 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
           isLoading={isSubmitting}
           loadingText={t.saving[language]}
           variant="glow"
-          className={cn(isRTL && "flex-row-reverse")}
+          className={cn("gap-2", isRTL && "flex-row-reverse")}
         >
-          <Save className={cn("w-4 h-4", isRTL ? "ml-2" : "mr-2")} />
+          <Save className="w-4 h-4" />
           {editPrompt ? t.updatePulse[language] : t.savePulse[language]}
         </Button>
         <Button
           type="button"
           variant="outline"
           onClick={handleCancel}
-          className={cn("border-border hover:bg-secondary", isRTL && "flex-row-reverse")}
+          className={cn("border-border hover:bg-secondary gap-2", isRTL && "flex-row-reverse")}
         >
-          <X className={cn("w-4 h-4", isRTL ? "ml-2" : "mr-2")} />
+          <X className="w-4 h-4" />
           {t.cancel[language]}
         </Button>
       </div>

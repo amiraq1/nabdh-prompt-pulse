@@ -164,7 +164,7 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
           <div className="bg-secondary/50 rounded-lg p-3 sm:p-4 border border-border/30 transition-colors group-hover:bg-secondary/70">
             <p className={cn(
               "text-xs sm:text-sm text-foreground/80 leading-relaxed font-mono break-words",
-              isRTL && "text-right"
+              isRTL && "tech-ltr"
             )} dir="ltr">
               {isExpanded ? prompt.content : truncatedPrompt}
             </p>

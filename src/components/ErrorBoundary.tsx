@@ -70,12 +70,12 @@ class ErrorBoundary extends Component<Props, State> {
             )}
 
             <div className="flex items-center justify-center gap-3">
-              <Button onClick={this.handleRetry} variant="default">
-                <RefreshCw className="w-4 h-4 mr-2" />
+              <Button onClick={this.handleRetry} variant="default" className="gap-2">
+                <RefreshCw className="w-4 h-4" />
                 Try Again
               </Button>
-              <Button onClick={this.handleGoHome} variant="outline">
-                <Home className="w-4 h-4 mr-2" />
+              <Button onClick={this.handleGoHome} variant="outline" className="gap-2">
+                <Home className="w-4 h-4" />
                 Go Home
               </Button>
             </div>

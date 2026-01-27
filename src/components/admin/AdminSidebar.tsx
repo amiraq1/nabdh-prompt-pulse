@@ -123,7 +123,7 @@ const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
                                         {!isOpen && (
                                             <div className={cn(
                                                 "absolute top-1/2 -translate-y-1/2 px-2 py-1 bg-popover text-popover-foreground text-xs rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 whitespace-nowrap",
-                                                isRTL ? "right-full mr-2" : "left-full ml-2"
+                                              isRTL ? "right-full me-2" : "left-full ms-2"
                                             )}>
                                                 {item.title}
                                             </div>

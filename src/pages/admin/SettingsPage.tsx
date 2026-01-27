@@ -301,12 +301,12 @@ export default function SettingsPage() {
                   </div>
 
                   <div className="flex justify-end pt-4">
-                    <Button type="submit" disabled={updating}>
+                    <Button type="submit" disabled={updating} className="gap-2">
                       {updating ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
                         <>
-                          <Save className="h-4 w-4 mr-2" />
+                          <Save className="h-4 w-4" />
                           {isRTL ? "Õ›Ÿ «· €ÌÌ—« " : "Save Changes"}
                         </>
                       )}
@@ -389,7 +389,7 @@ export default function SettingsPage() {
                       })
                     }
                   >
-                    <Trash2 className="h-4 w-4 mr-2" />
+                    <Trash2 className="h-4 w-4" />
                     {isRTL ? "Õ–› «·Õ”«»" : "Delete Account"}
                   </Button>
                 </CardContent>

@@ -120,22 +120,22 @@ export default function AdminSubmissions() {
                 </CardContent>
 
                 <CardFooter className="flex gap-3 pt-4 border-t bg-secondary/10">
-                  <Button
+                  <Button 
                     className="flex-1 bg-green-600 hover:bg-green-700 text-white"
                     onClick={() => handleAction(sub.id, 'approved')}
                     disabled={updateStatusMutation.isPending}
                   >
-                    <Check className="w-4 h-4 mr-2" />
+                    <Check className="w-4 h-4 me-2" />
                     {isRTL ? 'موافقة' : 'Approve'}
                   </Button>
 
-                  <Button
+                  <Button 
                     variant="destructive"
                     className="flex-1"
                     onClick={() => handleAction(sub.id, 'rejected')}
                     disabled={updateStatusMutation.isPending}
                   >
-                    <X className="w-4 h-4 mr-2" />
+                    <X className="w-4 h-4 me-2" />
                     {isRTL ? 'رفض' : 'Reject'}
                   </Button>
                 </CardFooter>
