@@ -11,7 +11,7 @@ import { useLike } from '@/hooks/useLike';
 import AddToCollectionDialog from "@/components/AddToCollectionDialog";
 import { getOptimizedImageUrl } from "@/lib/imageOptimizer";
 
-const PromptCard = ({ prompt }: { prompt: Prompt }) => {
+const PromptCard = ({ prompt, prioritizeImage = false }: { prompt: Prompt; prioritizeImage?: boolean }) => {
   const { toast } = useToast();
   const { isRTL } = useLanguage();
   const [isCopied, setIsCopied] = useState(false);
@@ -48,7 +48,8 @@ const PromptCard = ({ prompt }: { prompt: Prompt }) => {
               `}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               alt={prompt.title}
-              loading="lazy"
+              loading={prioritizeImage ? "eager" : "lazy"}
+              fetchPriority={prioritizeImage ? "high" : "auto"}
               className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
               onError={(event) => { event.currentTarget.src = "/placeholder.svg"; }}
             />

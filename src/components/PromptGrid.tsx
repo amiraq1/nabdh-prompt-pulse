@@ -70,9 +70,9 @@ const PromptGrid = memo(({ prompts, isLoading = false }: PromptGridProps) => {
       animate="show"
       className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-5 lg:gap-6 auto-rows-fr"
     >
-      {prompts.map((prompt) => (
+      {prompts.map((prompt, index) => (
         <motion.div key={prompt.id} variants={item} className="will-change-transform">
-          <PromptCard prompt={prompt} />
+          <PromptCard prompt={prompt} prioritizeImage={index === 0} />
         </motion.div>
       ))}
     </motion.div>
