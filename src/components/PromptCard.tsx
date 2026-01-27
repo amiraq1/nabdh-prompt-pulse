@@ -1,186 +1,43 @@
-import { useState, useCallback, memo } from 'react';
-import { Link } from "react-router-dom";
-import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, Check, Heart, ChevronDown, ChevronUp, MessageCircle, Bookmark, FolderPlus } from 'lucide-react';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Copy, Check, Heart, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge, BadgeProps } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { toast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/useLanguage';
 import { Prompt } from '@/hooks/usePrompts';
-import { useLike } from '@/hooks/useLike';
-import { useBookmark } from '@/hooks/useBookmark';
-import { useLanguage, translations } from '@/contexts/useLanguage';
 import { cn } from '@/lib/utils';
-import { getOptimizedImageUrl } from '@/lib/imageOptimizer';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import CommentSection from "./CommentSection";
+import { useLike } from '@/hooks/useLike';
 import AddToCollectionDialog from "@/components/AddToCollectionDialog";
+import { getOptimizedImageUrl } from "@/lib/imageOptimizer";
 
-interface PromptCardProps {
-  prompt: Prompt;
-  index?: number;
-}
-const ModelBadge = memo(({ model }: { model: string }) => {
-  const getModelVariant = (model: string): BadgeProps['variant'] => {
-    switch (model) {
-      case 'gpt-4': return 'gpt4';
-      case 'gpt-3.5': return 'gpt35';
-      case 'midjourney': return 'midjourney';
-      case 'claude': return 'claude';
-      case 'gemini': return 'gemini';
-      default: return 'default';
-    }
+const PromptCard = ({ prompt }: { prompt: Prompt }) => {
+  const { toast } = useToast();
+  const { isRTL } = useLanguage();
+  const [isCopied, setIsCopied] = useState(false);
+  const { isLiked, likesCount, toggleLike } = useLike(prompt.id, prompt.likes || 0);
+
+  const handleCopy = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    navigator.clipboard.writeText(prompt.content);
+    setIsCopied(true);
+    toast({
+      title: isRTL ? "?? ?????!" : "Copied!",
+      description: isRTL ? "?? ??? ???? ??? ???????." : "Prompt copied to clipboard.",
+    });
+    setTimeout(() => setIsCopied(false), 2000);
   };
 
-  return (
-    <Badge
-      variant={getModelVariant(model)}
-      size="sm"
-      className="shrink-0 transition-transform group-hover:scale-105"
-    >
-      {model.toUpperCase()}
-    </Badge>
-  );
-});
-ModelBadge.displayName = 'ModelBadge';
-
-// Memoized tags list
-const TagsList = memo(({ tags, isRTL }: { tags: string[] | null; isRTL: boolean }) => {
-  const visibleTags = (tags ?? []).slice(0, 4);
-  const extraCount = (tags?.length ?? 0) - 4;
-
-  if (visibleTags.length === 0) return null;
-
-  return (
-    <div className={cn(
-      "flex gap-1.5 sm:gap-2 mb-3 sm:mb-4 overflow-x-auto scrollbar-hide -mx-1 px-1",
-      isRTL && "flex-row-reverse"
-    )}>
-      {visibleTags.map((tag) => (
-        <span
-          key={tag}
-          className="px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs rounded-md bg-secondary text-muted-foreground whitespace-nowrap flex-shrink-0"
-        >
-          {tag}
-        </span>
-      ))}
-      {extraCount > 0 && (
-        <span className="px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs text-muted-foreground">
-          +{extraCount}
-        </span>
-      )}
-    </div>
-  );
-});
-TagsList.displayName = 'TagsList';
-
-const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
-  const { language, isRTL } = useLanguage();
-  const t = translations;
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [isCopied, setIsCopied] = useState(false);
-  const [isCopying, setIsCopying] = useState(false);
-
-  const { isLiked, likesCount, toggleLike, isLoading: isLiking } = useLike(
-    prompt.id,
-    prompt.likes || 0
-  );
-  const { isBookmarked, toggleBookmark } = useBookmark(prompt.id);
-
-  const handleCopy = useCallback(async () => {
-    if (isCopying) return;
-
-    setIsCopying(true);
-    try {
-      await navigator.clipboard.writeText(prompt.content);
-      setIsCopied(true);
-      toast({
-        title: t.copied[language],
-        description: isRTL ? '?? ??? ?????? ??? ???????' : 'Prompt copied to clipboard',
-      });
-      setTimeout(() => setIsCopied(false), 2000);
-    } catch (err) {
-      toast({
-        title: isRTL ? '??? ?????' : 'Failed to copy',
-        description: isRTL ? '???? ??? ????' : 'Please try again',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsCopying(false);
-    }
-  }, [prompt.content, isCopying, language, isRTL, t]);
-
-  const toggleExpand = useCallback(() => {
-    setIsExpanded(prev => !prev);
-  }, []);
-
-  const displayTitle = isRTL && prompt.title_ar ? prompt.title_ar : prompt.title;
-  const truncatedPrompt = prompt.content.length > 120
-    ? prompt.content.slice(0, 120) + '...'
-    : prompt.content;
-
-  const rawImageUrl = (prompt as { image?: string | null }).image || prompt.image_url || null;
-
-  // Stagger animation delay (capped for performance)
-  const animationDelay = Math.min(index * 0.05, 0.3);
+  const rawImageUrl = (prompt as { image?: string | null }).image || prompt.image_url;
 
   return (
     <motion.div
       whileHover={{ y: -5, scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      style={{ willChange: 'transform, opacity' }}
-      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-      className="h-full transform-gpu backface-hidden"
+      transition={{ type: "spring", stiffness: 300 }}
+      className="h-full"
     >
-      <div
-        className="group relative bg-card rounded-xl border border-border/50 pad-card transition-[box-shadow,border-color,transform] duration-base ease-out-smooth hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 animate-fade-in will-change-transform min-h-[300px] md:min-h-[320px] flex flex-col justify-between h-full"
-        style={{ animationDelay: `${animationDelay}s` }}
-      >
-        {/* Glow hover effect */}
-        <div className="absolute inset-0 rounded-xl bg-gradient-to-tr from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-
-        <div className="relative z-10">
-        {/* Profile */}
-        {prompt.profiles && (
-          <Link
-            to={`/user/${prompt.user_id}`}
-            className={cn(
-              "flex items-center gap-2 mb-2 group-hover:opacity-100 opacity-70 transition-opacity",
-              isRTL && "flex-row-reverse"
-            )}
-          >
-            <Avatar className="w-5 h-5">
-              <AvatarImage src={prompt.profiles.avatar_url || ""} />
-              <AvatarFallback className="text-[9px]">U</AvatarFallback>
-            </Avatar>
-            <span className="text-xs text-muted-foreground hover:text-primary transition-colors">
-              {prompt.profiles.username || "Unknown"}
-            </span>
-          </Link>
-        )}
-
-        {/* Header */}
-        <div className={cn(
-          "flex items-start justify-between gap-2 sm:gap-4 mb-2 sm:mb-3",
-          isRTL && "flex-row-reverse"
-        )}>
-          <h3 className={cn(
-            "font-semibold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors line-clamp-2",
-            isRTL && "text-right"
-          )}>
-            {displayTitle}
-          </h3>
-          <ModelBadge model={prompt.ai_model} />
-        </div>
-
-        {/* Image Display */}
-        <div className="mb-4 rounded-lg overflow-hidden border border-border/30 bg-secondary/50 relative aspect-video">
+      <div className="group relative h-full bg-card border border-border/50 rounded-xl overflow-hidden hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 flex flex-col">
+        <div className="relative aspect-video w-full overflow-hidden bg-muted">
           {rawImageUrl ? (
             <img
               src={getOptimizedImageUrl(rawImageUrl, 640)}
@@ -190,24 +47,14 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
                 ${getOptimizedImageUrl(rawImageUrl, 1200)} 1200w
               `}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              alt={displayTitle || "Prompt image"}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              alt={prompt.title}
               loading="lazy"
-              onError={(e) => {
-                e.currentTarget.src = "/placeholder.svg";
-              }}
+              className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+              onError={(event) => { event.currentTarget.src = "/placeholder.svg"; }}
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 via-secondary/10 to-primary/5 group-hover:from-primary/10 transition-colors">
-              <span className="text-4xl opacity-50">
-                {prompt.category === 'coding'
-                  ? 'CODE'
-                  : prompt.category === 'art'
-                  ? 'ART'
-                  : prompt.category === 'writing'
-                  ? 'WRITE'
-                  : 'PROMPT'}
-              </span>
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 via-secondary/10 to-primary/5">
+              <span className="text-4xl opacity-50">?</span>
             </div>
           )}
 
@@ -216,186 +63,78 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
               {prompt.category}
             </Badge>
           </div>
-          <div className="absolute inset-0 image-overlay pointer-events-none" />
         </div>
 
-        {/* Tags */}
-        <TagsList tags={prompt.tags} isRTL={isRTL} />
-
-        {/* Prompt Text */}
-        <div className="relative mb-3 sm:mb-4">
-          <div className="bg-secondary/50 rounded-lg p-3 sm:p-4 border border-border/30 transition-colors group-hover:bg-secondary/70">
-            <p className={cn(
-              "text-xs sm:text-sm text-foreground/80 leading-relaxed font-mono break-words",
-              isRTL && "tech-ltr"
-            )} dir="ltr">
-              {isExpanded ? prompt.content : truncatedPrompt}
-            </p>
+        <div className="p-5 flex-1 flex flex-col">
+          <div className="flex justify-between items-start mb-2">
+            <h3 className="font-semibold text-lg line-clamp-1 group-hover:text-primary transition-colors">
+              {isRTL ? (prompt.title_ar || prompt.title) : prompt.title}
+            </h3>
+            <span className="text-xs text-muted-foreground bg-secondary/50 px-2 py-1 rounded-md">
+              {prompt.ai_model.toUpperCase()}
+            </span>
           </div>
 
-          {prompt.content.length > 120 && (
-            <button
-              onClick={toggleExpand}
-              className={cn(
-                "flex items-center gap-1 mt-2 text-xs text-primary hover:text-primary/80 transition-colors focus:outline-none focus:underline touch-target justify-center w-full sm:w-auto sm:justify-start",
-                isRTL && "flex-row-reverse"
-              )}
-            >
-              {isExpanded ? (
-                <>
-                  <ChevronUp className="w-3 h-3" />
-                  {t.showLess[language]}
-                </>
-              ) : (
-                <>
-                  <ChevronDown className="w-3 h-3" />
-                  {t.showMore[language]}
-                </>
-              )}
-            </button>
-          )}
-        </div>
+          <p className="text-sm text-muted-foreground line-clamp-2 mb-3 flex-1">
+            {prompt.content}
+          </p>
 
-        {/* Actions */}
-        <div
-          className={cn(
-            "mt-4 pt-4 border-t border-border/50 flex items-center justify-between",
-            isRTL && "flex-row-reverse"
-          )}
-        >
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={(event) => {
-                event.stopPropagation();
-                toggleLike();
-              }}
-              disabled={isLiking}
-              className={cn(
-                "group/like gap-2 hover:bg-red-500/10 transition-colors",
-                isLiked ? "text-red-500" : "text-foreground/70"
-              )}
-              aria-label={isLiked ? "Unlike" : "Like"}
-            >
-              <div className="relative">
-                <Heart
-                  className={cn(
-                    "w-4 h-4 transition-transform duration-base ease-out-smooth",
-                    isLiked ? "fill-current scale-110" : "group-hover/like:scale-110"
-                  )}
-                />
-                <AnimatePresence>
-                  {isLiked && (
-                    <motion.div
-                      initial={{ scale: 0, opacity: 1 }}
-                      animate={{ scale: 2, opacity: 0 }}
-                      exit={{ scale: 0, opacity: 0 }}
-                      transition={{ duration: 0.5 }}
-                      className="absolute inset-0 bg-red-500 rounded-full -z-10"
-                    />
-                  )}
-                </AnimatePresence>
-              </div>
-
-              <span className="tabular-nums font-medium">{likesCount}</span>
-            </Button>
-
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="gap-2 text-muted-foreground hover:text-blue-500 hover:bg-blue-500/10"
-                  onClick={(event) => event.stopPropagation()}
+          {prompt.tags && prompt.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {prompt.tags.slice(0, 4).map((tag) => (
+                <span
+                  key={tag}
+                  className="text-xs text-muted-foreground bg-secondary/50 px-2 py-0.5 rounded-md"
                 >
-                  <MessageCircle className="w-4 h-4" />
-                  <span className="text-xs">{isRTL ? "نقاش" : "Discuss"}</span>
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[500px]" dir={isRTL ? "rtl" : "ltr"}>
-                <DialogHeader>
-                  <DialogTitle className="text-start truncate pr-8">
-                    {displayTitle}
-                  </DialogTitle>
-                </DialogHeader>
-                <CommentSection promptId={prompt.id} />
-              </DialogContent>
-            </Dialog>
-          </div>
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
 
-          <div className="flex items-center gap-1">
-            <AddToCollectionDialog
-              promptId={prompt.id}
-              trigger={
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
-                  title={isRTL ? "حفظ في مجموعة" : "Save to Collection"}
-                >
-                  <FolderPlus className="w-4 h-4" />
-                </Button>
-              }
-            />
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={(event) => {
-                event.stopPropagation();
-                toggleBookmark();
-              }}
-              className={cn(
-                "h-8 w-8 hover:bg-yellow-500/10 transition-colors",
-                isBookmarked ? "text-yellow-500" : "text-muted-foreground"
-              )}
-              title={isRTL ? "حفظ في المفضلة" : "Bookmark"}
-            >
-              <Bookmark className={cn("w-4 h-4 transition-all", isBookmarked && "fill-current")} />
-            </Button>
+          <div className="pt-4 border-t border-border/50 flex items-center justify-between mt-auto">
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={(event) => { event.stopPropagation(); toggleLike(); }}
+                className={cn("gap-1.5 px-2 h-8", isLiked ? "text-red-500" : "text-muted-foreground")}
+              >
+                <Heart className={cn("w-4 h-4", isLiked && "fill-current")} />
+                <span className="text-xs">{likesCount}</span>
+              </Button>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-foreground/70 hover:text-foreground hover:bg-background/50"
-              onClick={handleCopy}
-              aria-label={isCopied ? "Copied" : "Copy prompt"}
-            >
-              <AnimatePresence mode="wait" initial={false}>
-                {isCopied ? (
-                  <motion.div
-                    key="check"
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Check className="w-4 h-4 text-green-500" />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="copy"
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Copy className="w-4 h-4" />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </Button>
+              <Button variant="ghost" size="sm" className="gap-1.5 px-2 h-8 text-muted-foreground">
+                <MessageCircle className="w-4 h-4" />
+                <span className="text-xs">0</span>
+              </Button>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <AddToCollectionDialog
+                promptId={prompt.id}
+                trigger={
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary">
+                    <BookmarkIcon />
+                  </Button>
+                }
+              />
+
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleCopy}>
+                {isCopied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+              </Button>
+            </div>
           </div>
-        </div>
         </div>
       </div>
     </motion.div>
   );
-});
+};
 
-PromptCard.displayName = 'PromptCard';
+const BookmarkIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+  </svg>
+);
 
 export default PromptCard;
-
-
-
