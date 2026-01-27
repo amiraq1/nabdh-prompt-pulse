@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeAll } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter } from 'react-router-dom';
 import { LanguageProvider } from '@/contexts/LanguageProvider';
 import { TooltipProvider } from '@/components/ui/tooltip';
 
@@ -68,7 +69,9 @@ const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <QueryClientProvider client={createTestQueryClient()}>
     <LanguageProvider>
       <TooltipProvider>
-        {children}
+        <MemoryRouter>
+          {children}
+        </MemoryRouter>
       </TooltipProvider>
     </LanguageProvider>
   </QueryClientProvider>

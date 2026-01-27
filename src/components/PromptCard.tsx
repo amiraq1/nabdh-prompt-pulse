@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Copy, Check, Heart, MessageCircle } from 'lucide-react';
+import { Copy, Check, Heart, MessageCircle, GitFork } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
@@ -10,12 +10,14 @@ import { cn } from '@/lib/utils';
 import { useLike } from '@/hooks/useLike';
 import AddToCollectionDialog from "@/components/AddToCollectionDialog";
 import { getOptimizedImageUrl } from "@/lib/imageOptimizer";
+import { useNavigate } from "react-router-dom";
 
 const PromptCard = ({ prompt, prioritizeImage = false }: { prompt: Prompt; prioritizeImage?: boolean }) => {
   const { toast } = useToast();
   const { isRTL } = useLanguage();
   const [isCopied, setIsCopied] = useState(false);
   const { isLiked, likesCount, toggleLike } = useLike(prompt.id, prompt.likes || 0);
+  const navigate = useNavigate();
 
   const handleCopy = (event: React.MouseEvent) => {
     event.stopPropagation();
@@ -29,6 +31,10 @@ const PromptCard = ({ prompt, prioritizeImage = false }: { prompt: Prompt; prior
   };
 
   const rawImageUrl = (prompt as { image?: string | null }).image || prompt.image_url;
+  const handleRemix = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    navigate(`/submit?remix_id=${prompt.id}`);
+  };
 
   return (
     <motion.div
@@ -112,6 +118,15 @@ const PromptCard = ({ prompt, prioritizeImage = false }: { prompt: Prompt; prior
             </div>
 
             <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleRemix}
+                className="h-8 w-8 text-muted-foreground hover:text-purple-500 hover:bg-purple-500/10 transition-colors"
+                title={isRTL ? "عمل ريمكس (نسخة معدلة)" : "Remix this prompt"}
+              >
+                <GitFork className="w-4 h-4" />
+              </Button>
               <AddToCollectionDialog
                 promptId={prompt.id}
                 trigger={

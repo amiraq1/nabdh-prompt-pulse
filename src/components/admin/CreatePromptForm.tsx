@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useRef, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Save, X, AlertCircle, ImagePlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -50,6 +50,8 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
   const t = translations;
   const addPrompt = useAddPrompt();
   const updatePrompt = useUpdatePrompt();
+  const [searchParams] = useSearchParams();
+  const remixId = searchParams.get('remix_id');
 
   const [formData, setFormData] = useState({
     title: editPrompt?.title || '',
@@ -66,6 +68,37 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<FieldError[]>([]);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [parentId, setParentId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!remixId) return;
+    const fetchOriginalPrompt = async () => {
+      const { data, error } = await supabase
+        .from('prompts')
+        .select('*')
+        .eq('id', remixId)
+        .single();
+
+      if (data && !error) {
+        setFormData({
+          title: `${data.title} (Remix)`,
+          titleAr: data.title_ar || '',
+          content: data.content,
+          category: data.category,
+          aiModel: data.ai_model,
+          tags: data.tags?.join(', ') || '',
+        });
+        setPreviewUrl(data.image_url || null);
+        setParentId(data.id);
+        toast({
+          title: isRTL ? '???? ???????!' : 'Ready to remix!',
+          description: isRTL ? '?? ??? ?????? ?????? ??????.' : 'Loaded original prompt data.',
+        });
+      }
+    };
+
+    fetchOriginalPrompt();
+  }, [remixId, isRTL]);
 
   const validateField = (field: string, value: string): string | null => {
     switch (field) {
@@ -380,7 +413,8 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
             </p>
           )}
         </div>
-      </div>      {/* Image Upload Section */}
+      </div>
+      {/* Image Upload Section */}
       <div className="space-y-2">
         <Label className={cn("text-foreground", isRTL && "block text-right")}>
           {isRTL ? 'صورة توضيحية (اختياري)' : 'Example Image (Optional)'}

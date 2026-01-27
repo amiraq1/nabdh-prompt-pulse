@@ -57,34 +57,6 @@ export default defineConfig(({ mode }) => ({
               },
             },
           },
-          {
-            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: "StaleWhileRevalidate",
-            options: {
-              cacheName: "google-fonts-cache",
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365,
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
-          {
-            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
-            handler: "CacheFirst",
-            options: {
-              cacheName: "google-fonts-files",
-              expiration: {
-                maxEntries: 20,
-                maxAgeSeconds: 60 * 60 * 24 * 365,
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
         ],
       },
     }),
@@ -99,16 +71,20 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: {
-          // Vendor chunks
-          'router': ['react-router-dom'],
-          'query': ['@tanstack/react-query'],
-          'motion': ['framer-motion'],
-          'icons': ['lucide-react'],
-          'ui-core': [
-            '@radix-ui/react-select',
-            '@radix-ui/react-dialog',
-            '@radix-ui/react-tooltip',
-            '@radix-ui/react-popover',
+          // Core bundles
+          "react-vendor": ["react", "react-dom"],
+          router: ["react-router-dom"],
+          query: ["@tanstack/react-query"],
+          // Heavy libs
+          charts: ["recharts"],
+          "ui-heavy": [
+            "@radix-ui/react-dialog",
+            "@radix-ui/react-popover",
+            "@radix-ui/react-tooltip",
+            "@radix-ui/react-select",
+            "framer-motion",
+            "cmdk",
+            "date-fns",
           ],
         },
       },
@@ -118,7 +94,9 @@ export default defineConfig(({ mode }) => ({
     // Minimize CSS
     cssMinify: true,
     // Source maps only in development
-    sourcemap: mode === 'development',
+    sourcemap: mode === "development",
+    // Warn if a chunk exceeds this size (kB)
+    chunkSizeWarningLimit: 1000,
   },
   // Optimize dependencies
   optimizeDeps: {
