@@ -7,6 +7,7 @@ import AdminSubmissions from "./pages/admin/AdminSubmissions";
 import AuthPage from "./pages/AuthPage";
 import Settings from "./pages/Settings";
 import MagicBackground from "@/components/MagicBackground";
+import Bookmarks from "./pages/Bookmarks";
 
 // Eager load the main page for LCP
 import Index from "./pages/Index";
@@ -46,6 +47,7 @@ const App = () => (
         {/* Auth page - lazy loaded */}
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/bookmarks" element={<Bookmarks />} />
 
         {/* Admin Routes - lazy loaded and protected */}
         <Route path="/admin" element={
