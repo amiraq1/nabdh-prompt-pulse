@@ -152,6 +152,7 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               loading="lazy"
             />
+            <div className="absolute inset-0 image-overlay pointer-events-none" />
           </div>
         )}
 
@@ -209,7 +210,7 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
             disabled={isLiking}
             className={cn(
               "group/like gap-2 hover:bg-red-500/10 transition-colors",
-              isLiked ? "text-red-500" : "text-muted-foreground"
+              isLiked ? "text-red-500" : "text-foreground/70"
             )}
             aria-label={isLiked ? "Unlike" : "Like"}
           >
@@ -239,7 +240,7 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-background/50"
+            className="h-8 w-8 text-foreground/70 hover:text-foreground hover:bg-background/50"
             onClick={handleCopy}
           >
             <AnimatePresence mode="wait" initial={false}>
