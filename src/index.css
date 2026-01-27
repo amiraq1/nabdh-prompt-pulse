@@ -79,8 +79,8 @@
     --muted: 222 18% 16%;
     --muted-foreground: 215 18% 65%;
 
-    /* Accent (matches primary) */
-    --accent: 187 85% 53%;
+    /* Accent (warm neon highlight) */
+    --accent: 32 95% 58%;
     --accent-foreground: 222 47% 5%;
 
     /* Destructive */
