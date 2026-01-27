@@ -82,7 +82,7 @@ const PromptCard = ({ prompt, prioritizeImage = false }: { prompt: Prompt; prior
             </span>
           </div>
 
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-3 flex-1">
+          <p className="text-sm text-muted-foreground line-clamp-2 mb-3 flex-1 break-words whitespace-pre-wrap">
             {prompt.content}
           </p>
 
