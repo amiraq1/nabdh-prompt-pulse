@@ -149,7 +149,7 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
             <img
               src={prompt.image_url}
               alt={displayTitle}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              className="w-full h-full object-cover"
               loading="lazy"
             />
             <div className="absolute inset-0 image-overlay pointer-events-none" />
