@@ -1,7 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeAll } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import PromptCard from './PromptCard';
 import { LanguageProvider } from '@/contexts/LanguageProvider';
 import { TooltipProvider } from '@/components/ui/tooltip';
 vi.mock('@/hooks/useLike', () => ({
@@ -24,6 +23,13 @@ vi.mock('@/hooks/useBookmark', () => ({
 vi.mock('@/components/AddToCollectionDialog', () => ({
   default: () => null,
 }));
+
+
+let PromptCard: typeof import('./PromptCard').default;
+
+beforeAll(async () => {
+  ({ default: PromptCard } = await import('./PromptCard'));
+});
 
 // ������ ����� �������� (Mock Data)
 const mockPrompt = {
