@@ -1,134 +1,98 @@
-import { useState, useCallback, useDeferredValue } from 'react';
-import Header from '@/components/Header';
-import HeroSection from '@/components/HeroSection';
-import FilterBar from '@/components/FilterBar';
-import PromptGrid from '@/components/PromptGrid';
-import ErrorBoundary, { InlineError } from '@/components/ErrorBoundary';
-import Seo from '@/components/Seo';
-import { SortOption } from '@/components/SortSelect';
-import { usePrompts } from '@/hooks/usePrompts';
-import { useLanguage, translations } from '@/contexts/useLanguage';
-import { cn } from '@/lib/utils';
-import { Loader2 } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/contexts/useLanguage";
+import Header from "@/components/Header";
+import PromptGrid from "@/components/PromptGrid";
+import CategoryFilter from "@/components/CategoryFilter";
+import SEO from "@/components/Seo";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 
-const Index = () => {
-  const { language, isRTL } = useLanguage();
+export default function Index() {
+  const { isRTL } = useLanguage();
 
-  // States
-  const [searchQuery, setSearchQuery] = useState('');
-  // تأخير البحث قليلاً لتحسين الأداء (Debounce-like behavior)
-  const deferredQuery = useDeferredValue(searchQuery);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedModel, setSelectedModel] = useState('all');
-  const [sortOption, setSortOption] = useState<SortOption>('newest');
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchQuery), 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
-  // استخدام Hook الجديد مع الترحيل اللانهائي
-  const {
-    data,
-    isLoading,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    refetch
-  } = usePrompts(deferredQuery, selectedCategory, selectedModel);
+  const { data: prompts, isLoading } = useQuery({
+    queryKey: ["prompts", selectedCategory, debouncedSearch],
+    queryFn: async () => {
+      let query = supabase
+        .from("prompts")
+        .select("*")
+        .eq("status", "approved")
+        .order("created_at", { ascending: false });
 
-  // دمج جميع الصفحات القادمة من السيرفر في مصفوفة واحدة للعرض
-  const allPrompts = data?.pages.flatMap(page => page) ?? [];
+      if (selectedCategory !== "all") {
+        query = query.eq("category", selectedCategory);
+      }
 
-  // دالة الفرز (Sorting) - نقوم بها محلياً على البيانات المحملة
-  // (ملاحظة: السيرفر يرسلها مرتبة حسب التاريخ افتراضياً، لكن هنا للتحكم الإضافي)
-  const sortedPrompts = [...allPrompts].sort((a, b) => {
-    if (sortOption === 'popular' || sortOption === 'likes') return (b.likes || 0) - (a.likes || 0);
-    if (sortOption === 'oldest') return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-    // الافتراضي newest
-    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      if (debouncedSearch) {
+        query = query.or(
+          `title.ilike.%${debouncedSearch}%,content.ilike.%${debouncedSearch}%,title_ar.ilike.%${debouncedSearch}%`,
+        );
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return data;
+    },
   });
 
-  const handleSearchChange = useCallback((query: string) => setSearchQuery(query), []);
-  const handleCategoryChange = useCallback((cat: string) => setSelectedCategory(cat), []);
-  const handleModelChange = useCallback((model: string) => setSelectedModel(model), []);
-  const handleSortChange = useCallback((sort: SortOption) => setSortOption(sort), []);
-
-  const pageDescription = isRTL
-    ? 'نبض مكتبة عربية/إنجليزية لموجهات الذكاء الاصطناعي مع تصنيفات ذكية ونتائج سريعة للنسخ والاستخدام.'
-    : 'Nabdh is an AI prompt library in Arabic and English with smart categories and fast copy-ready prompts.';
-
   return (
-    <ErrorBoundary>
-      <div className="min-h-screen bg-background pb-20">
-        <Seo title={isRTL ? "الرئيسية" : "Home"} description={pageDescription} />
-        <Header
-          searchQuery={searchQuery}
-          onSearchChange={handleSearchChange}
-          suggestions={[]} // ألغينا الاقتراحات المحلية مؤقتاً للسرعة
-        />
+    <div className="min-h-screen bg-background relative">
+      <SEO title={isRTL ? "��������" : "Home"} />
 
-        <main>
-          <HeroSection />
+      <Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
-          <FilterBar
+      <main className="container mx-auto px-4 py-8 space-y-8">
+        <div className="text-center space-y-4 max-w-2xl mx-auto mt-8">
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+            {isRTL ? "����� ���� ����� ������ ���������" : "Discover Top AI Prompts"}
+          </h1>
+          <p className="text-muted-foreground text-lg">
+            {isRTL
+              ? "����� ���� �������� �� ChatGPT� Midjourney� �������."
+              : "A massive library to supercharge your ChatGPT, Midjourney, and more."}
+          </p>
+
+          <div className="relative max-w-lg mx-auto mt-6">
+            <Search
+              className={`absolute top-3.5 h-5 w-5 text-muted-foreground ${
+                isRTL ? "right-3" : "left-3"
+              }`}
+            />
+            <Input
+              placeholder={
+                isRTL
+                  ? "���� �� ���� (�����: ����ޡ ������)..."
+                  : "Search prompts (e.g., Marketing, Python)..."
+              }
+              className={`h-12 text-lg shadow-sm border-primary/20 focus-visible:ring-primary/50 ${
+                isRTL ? "pr-10" : "pl-10"
+              }`}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md py-4 border-b border-border/40">
+          <CategoryFilter
             selectedCategory={selectedCategory}
-            selectedModel={selectedModel}
-            sortOption={sortOption}
-            onCategoryChange={handleCategoryChange}
-            onModelChange={handleModelChange}
-            onSortChange={handleSortChange}
+            onSelectCategory={setSelectedCategory}
           />
+        </div>
 
-          <section className="py-20 md:py-28">
-            <div className="container mx-auto px-4">
-              <div className={cn("flex items-center justify-between mb-8 max-w-3xl", isRTL && "flex-row-reverse")}>
-                <h2 className="text-2xl font-bold text-foreground">
-                  {selectedCategory === 'all'
-                    ? translations.allPrompts[language]
-                    : selectedCategory}
-                </h2>
-                <span className="text-sm text-muted-foreground tabular-nums">
-                  {allPrompts.length} {isRTL ? 'موجه' : 'prompts'}
-                </span>
-              </div>
-
-              {error ? (
-                <InlineError
-                  message={isRTL ? 'حدث خطأ أثناء تحميل البيانات' : 'Error loading prompts'}
-                  onRetry={() => refetch()}
-                />
-              ) : (
-                <>
-                  <PromptGrid prompts={sortedPrompts} isLoading={isLoading} />
-
-                  {/* زر تحميل المزيد (Load More) */}
-                  <div className="mt-12 flex justify-center">
-                    {isFetchingNextPage ? (
-                      <div className="flex items-center gap-2 text-primary animate-pulse">
-                        <Loader2 className="w-6 h-6 animate-spin" />
-                        <span>{isRTL ? 'جاري تحميل المزيد...' : 'Loading more...'}</span>
-                      </div>
-                    ) : hasNextPage ? (
-                      <button
-                        onClick={() => fetchNextPage()}
-                        disabled={isFetchingNextPage}
-                        className="px-8 py-3 rounded-full bg-secondary hover:bg-secondary/80 text-foreground transition-[box-shadow,background-color,border-color,transform] duration-base ease-out-smooth font-medium border border-border shadow-sm hover:shadow-md active:scale-95"
-                      >
-                        {isRTL ? 'عرض المزيد' : 'Load More'}
-                      </button>
-                    ) : allPrompts.length > 0 ? (
-                      <p className="text-muted-foreground text-sm opacity-60">
-                        {isRTL ? 'وصلت لنهاية القائمة' : 'You have reached the end'}
-                      </p>
-                    ) : null}
-                  </div>
-                </>
-              )}
-            </div>
-          </section>
-        </main>
-      </div>
-    </ErrorBoundary>
+        <PromptGrid prompts={prompts || []} isLoading={isLoading} />
+      </main>
+    </div>
   );
-};
-
-export default Index;
-
+}
