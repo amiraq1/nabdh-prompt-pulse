@@ -279,6 +279,15 @@
     @apply card;
   }
 
+  .card-3d {
+    transform-style: preserve-3d;
+    transition: transform 200ms ease-out;
+  }
+
+  .card-3d:hover {
+    transform: translateY(-4px) rotateX(1deg);
+  }
+
   .card-modern:hover {
     @apply border-border;
     box-shadow: var(--shadow-md);
