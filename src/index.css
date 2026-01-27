@@ -349,6 +349,40 @@
 }
 
 @layer utilities {
+  .hero-title {
+    font-size: 2.25rem;
+  }
+
+  @media (min-width: 640px) {
+    .hero-title {
+      font-size: 3rem;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .hero-title {
+      font-size: 3.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .hero-title {
+      font-size: 4rem;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .hero-title {
+      font-size: 4.5rem;
+    }
+  }
+
+  @media (min-width: 1536px) {
+    .hero-title {
+      font-size: 5rem;
+    }
+  }
+
   .duration-fast {
     transition-duration: var(--motion-fast);
   }
@@ -761,6 +795,14 @@
     animation: none;
   }
 
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .section {
+    padding-block: 3rem;
+  }
+
   .container {
     padding-left: 1rem;
     padding-right: 1rem;
@@ -797,5 +839,21 @@
   *::after {
     animation: none !important;
     transition: none !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .content {
+    max-width: 1200px;
+  }
+
+  .grid {
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 1536px) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
