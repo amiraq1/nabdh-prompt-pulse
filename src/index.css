@@ -71,9 +71,9 @@
     --primary-muted: 188 60% 28%;
 
     /* Secondary (subtle contrast) */
-    --secondary: 222 25% 10%;
+    --secondary: 222 18% 14%;
     --secondary-foreground: 210 30% 90%;
-    --secondary-hover: 222 25% 13%;
+    --secondary-hover: 222 18% 18%;
 
     /* Muted text & elements */
     --muted: 222 25% 12%;
