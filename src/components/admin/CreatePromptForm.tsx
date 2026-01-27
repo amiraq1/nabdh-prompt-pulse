@@ -246,7 +246,7 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           onBlur={() => handleBlur('title')}
           className={cn(
-            "bg-secondary border-border focus:border-primary focus:ring-primary/20 transition-all",
+            "bg-secondary border-border focus:border-primary focus:ring-primary/20 transition-colors duration-base ease-out-smooth",
             isRTL && "text-right",
             getFieldError('title') && "border-destructive focus:border-destructive animate-shake"
           )}
@@ -289,7 +289,7 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
           onChange={(e) => setFormData({ ...formData, content: e.target.value })}
           onBlur={() => handleBlur('content')}
           className={cn(
-            "min-h-[200px] bg-secondary border-border focus:border-primary focus:ring-primary/20 resize-y transition-all",
+            "min-h-[200px] bg-secondary border-border focus:border-primary focus:ring-primary/20 resize-y transition-colors duration-base ease-out-smooth",
             isRTL && "text-right",
             getFieldError('content') && "border-destructive focus:border-destructive animate-shake"
           )}
@@ -323,7 +323,7 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
             }}
           >
             <SelectTrigger className={cn(
-              "bg-secondary border-border focus:border-primary transition-all",
+              "bg-secondary border-border focus:border-primary transition-colors duration-base ease-out-smooth",
               isRTL && "flex-row-reverse",
               getFieldError('category') && "border-destructive"
             )}>
@@ -359,7 +359,7 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
             }}
           >
             <SelectTrigger className={cn(
-              "bg-secondary border-border focus:border-primary transition-all",
+              "bg-secondary border-border focus:border-primary transition-colors duration-base ease-out-smooth",
               isRTL && "flex-row-reverse",
               getFieldError('aiModel') && "border-destructive"
             )}>

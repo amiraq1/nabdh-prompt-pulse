@@ -111,7 +111,7 @@ const Index = () => {
                       <button
                         onClick={() => fetchNextPage()}
                         disabled={isFetchingNextPage}
-                        className="px-8 py-3 rounded-full bg-secondary hover:bg-secondary/80 text-foreground transition-all font-medium border border-border shadow-sm hover:shadow-md active:scale-95"
+                        className="px-8 py-3 rounded-full bg-secondary hover:bg-secondary/80 text-foreground transition-[box-shadow,background-color,border-color,transform] duration-base ease-out-smooth font-medium border border-border shadow-sm hover:shadow-md active:scale-95"
                       >
                         {isRTL ? 'عرض المزيد' : 'Load More'}
                       </button>

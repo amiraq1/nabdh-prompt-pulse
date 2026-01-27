@@ -94,7 +94,7 @@ const SearchInput = ({ value, onChange, suggestions, placeholder, className }: S
         onFocus={() => setShowSuggestions(true)}
         onKeyDown={handleKeyDown}
         className={cn(
-          "h-11 sm:h-10 bg-secondary border-border/50 focus:border-primary/50 focus:ring-primary/20 transition-all text-base sm:text-sm",
+          "h-11 sm:h-10 bg-secondary border-border/50 focus:border-primary/50 focus:ring-primary/20 transition-colors duration-base ease-out-smooth text-base sm:text-sm",
           isRTL ? "pr-10 text-right" : "pl-10",
           value && (isRTL ? "pl-10" : "pr-10")
         )}

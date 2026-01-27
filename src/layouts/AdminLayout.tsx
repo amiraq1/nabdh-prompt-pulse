@@ -50,7 +50,7 @@ const AdminLayoutContent = () => {
       <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0 transition-all duration-300">
+      <div className="flex-1 flex flex-col min-w-0 transition-[width,margin] duration-slow ease-in-out-smooth">
         {/* Top Bar */}
         <header className={cn(
           "h-16 border-b border-border/50 bg-background/80 backdrop-blur-md flex items-center px-4 gap-4 sticky top-0 z-30",

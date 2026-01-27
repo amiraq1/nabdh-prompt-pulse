@@ -14,7 +14,7 @@ export function SettingsSection({ icon: Icon, title, description, children }: Se
   const { isRTL } = useLanguage();
 
   return (
-    <div className="bg-card rounded-xl border border-border p-6 transition-all hover:border-border/80">
+    <div className="bg-card rounded-xl border border-border p-6 transition-colors duration-base ease-out-smooth hover:border-border/80">
       <div className={cn(
         "flex items-start gap-3 mb-5",
         isRTL && "flex-row-reverse"

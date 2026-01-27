@@ -122,7 +122,7 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
       className="h-full will-change-transform"
     >
       <div
-        className="group relative bg-card rounded-xl border border-border/50 pad-card transition-all duration-200 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 animate-fade-in will-change-transform min-h-[300px] md:min-h-[320px] flex flex-col justify-between h-full"
+        className="group relative bg-card rounded-xl border border-border/50 pad-card transition-[box-shadow,border-color,transform] duration-base ease-out-smooth hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 animate-fade-in will-change-transform min-h-[300px] md:min-h-[320px] flex flex-col justify-between h-full"
         style={{ animationDelay: `${animationDelay}s` }}
       >
         {/* Glow hover effect */}
@@ -217,7 +217,7 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
             <div className="relative">
               <Heart
                 className={cn(
-                  "w-4 h-4 transition-all duration-300",
+                  "w-4 h-4 transition-transform duration-base ease-out-smooth",
                   isLiked ? "fill-current scale-110" : "group-hover/like:scale-110"
                 )}
               />

@@ -10,7 +10,7 @@ export default function MagicBackground() {
           className={cn(
             "absolute top-0 -left-40 w-96 h-96",
             "bg-primary/28 rounded-full",
-            "mix-blend-multiply filter blur-[128px] dark:mix-blend-soft-light",
+            "mix-blend-multiply filter blur-[96px] sm:blur-[120px] md:blur-[128px] dark:mix-blend-soft-light",
             "animate-blob"
           )}
         />
@@ -19,7 +19,7 @@ export default function MagicBackground() {
           className={cn(
             "absolute bottom-0 -right-40 w-96 h-96",
             "bg-secondary/25 rounded-full",
-            "mix-blend-multiply filter blur-[128px] dark:mix-blend-soft-light",
+            "mix-blend-multiply filter blur-[96px] sm:blur-[120px] md:blur-[128px] dark:mix-blend-soft-light",
             "animate-blob animation-delay-4000"
           )}
         />
@@ -28,7 +28,7 @@ export default function MagicBackground() {
           className={cn(
             "absolute inset-0 m-auto w-96 h-96",
             "bg-sky-400/25 rounded-full",
-            "mix-blend-multiply filter blur-[128px] dark:mix-blend-soft-light",
+            "mix-blend-multiply filter blur-[96px] sm:blur-[120px] md:blur-[128px] dark:mix-blend-soft-light",
             "animate-blob animation-delay-2000"
           )}
         />

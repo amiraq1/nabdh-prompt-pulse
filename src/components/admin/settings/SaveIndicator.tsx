@@ -48,7 +48,7 @@ export function SaveIndicator({ isPending, lastSaved, hasChanges }: SaveIndicato
 
   return (
     <div className={cn(
-      "flex items-center gap-2 text-sm transition-all",
+    "flex items-center gap-2 text-sm transition-colors duration-base ease-out-smooth",
       status.className,
       isRTL && "flex-row-reverse"
     )}>

@@ -326,7 +326,7 @@
   .input-modern {
     @apply w-full rounded-lg border border-border/60 bg-input px-3 py-2;
     @apply text-foreground placeholder:text-muted-foreground;
-    @apply transition-all duration-200;
+    @apply transition-colors duration-200;
     @apply focus:border-primary/50 focus:bg-input-focus focus:ring-2 focus:ring-primary/20;
     @apply hover:border-border-hover;
   }
@@ -344,6 +344,25 @@
 }
 
 @layer utilities {
+  .duration-fast {
+    transition-duration: var(--motion-fast);
+  }
+
+  .duration-base {
+    transition-duration: var(--motion-base);
+  }
+
+  .duration-slow {
+    transition-duration: var(--motion-slow);
+  }
+
+  .ease-out-smooth {
+    transition-timing-function: var(--ease-out);
+  }
+
+  .ease-in-out-smooth {
+    transition-timing-function: var(--ease-in-out);
+  }
   .section {
     padding-block: var(--space-16);
   }

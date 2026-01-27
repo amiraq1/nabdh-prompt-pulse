@@ -24,7 +24,7 @@ export function SettingsToggle({
 
   return (
     <div className={cn(
-      "flex items-center justify-between py-3 px-4 rounded-lg bg-secondary/30 border border-border/50 transition-all hover:bg-secondary/50",
+    "flex items-center justify-between py-3 px-4 rounded-lg bg-secondary/30 border border-border/50 transition-colors duration-base ease-out-smooth hover:bg-secondary/50",
       isRTL && "flex-row-reverse"
     )}>
       <div className={cn("space-y-0.5", isRTL && "text-right")}>

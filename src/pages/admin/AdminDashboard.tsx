@@ -157,7 +157,7 @@ const AdminDashboard = () => {
             desc: "System health"
           }
         ].map((stat, i) => (
-          <div key={i} className="group bg-card rounded-xl border border-border/60 p-5 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
+          <div key={i} className="group bg-card rounded-xl border border-border/60 p-5 hover:border-primary/30 transition-[box-shadow,border-color,transform] duration-slow ease-out-smooth hover:shadow-lg hover:shadow-primary/5">
             <div className="flex justify-between items-start mb-2">
               <span className="text-2xl">{stat.icon}</span>
               <span className={cn(

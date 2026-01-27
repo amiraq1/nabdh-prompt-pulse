@@ -10,9 +10,9 @@ const HeroSection = () => {
     <section className="relative py-12 sm:py-16 md:py-24 lg:py-32 overflow-hidden">
       {/* Background Effects - Reduced on mobile for performance */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] bg-primary/5 rounded-full blur-3xl" />
-        <div className="hidden sm:block absolute top-1/4 left-1/4 w-[200px] md:w-[300px] h-[200px] md:h-[300px] bg-primary/10 rounded-full blur-2xl animate-float" />
-        <div className="hidden md:block absolute bottom-1/4 right-1/4 w-[150px] md:w-[200px] h-[150px] md:h-[200px] bg-primary/8 rounded-full blur-2xl animate-float" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] bg-primary/5 rounded-full blur-2xl sm:blur-3xl" />
+        <div className="hidden sm:block absolute top-1/4 left-1/4 w-[200px] md:w-[300px] h-[200px] md:h-[300px] bg-primary/10 rounded-full blur-xl sm:blur-2xl animate-float" />
+        <div className="hidden md:block absolute bottom-1/4 right-1/4 w-[150px] md:w-[200px] h-[150px] md:h-[200px] bg-primary/8 rounded-full blur-xl sm:blur-2xl animate-float" style={{ animationDelay: '2s' }} />
       </div>
 
       <div className="container mx-auto px-4 relative z-10">

@@ -51,7 +51,7 @@ const CategoryButton = memo(({
   <button
     onClick={onClick}
     className={cn(
-      "px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap flex-shrink-0 touch-target",
+      "px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors duration-base ease-out-smooth whitespace-nowrap flex-shrink-0 touch-target",
       isSelected
         ? "bg-primary text-primary-foreground glow-sm"
         : "bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border/50 active:scale-95"

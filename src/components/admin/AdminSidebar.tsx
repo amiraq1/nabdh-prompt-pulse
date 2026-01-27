@@ -100,7 +100,7 @@ const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
                                         onClick={onClose}
                                         className={({ isActive }) =>
                                             cn(
-                                                "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group relative",
+                                                "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors duration-base ease-out-smooth group relative",
                                                 isRTL && "flex-row-reverse",
                                                 isActive
                                                     ? "bg-primary/10 text-primary glow-sm font-medium"
@@ -114,7 +114,7 @@ const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
                                         )} />
 
                                         <span className={cn(
-                                            "transition-all duration-300 whitespace-nowrap",
+                                            "transition-opacity duration-slow ease-out-smooth whitespace-nowrap",
                                             !isOpen && "lg:opacity-0 lg:w-0 lg:hidden"
                                         )}>
                                             {item.title}
@@ -139,7 +139,7 @@ const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
                 <div className="p-4 border-t border-border/50">
                     <div className={cn("flex items-center gap-3", !isOpen && "justify-center")}>
                         <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-purple-500 flex-shrink-0" />
-                        <div className={cn("overflow-hidden transition-all duration-300", !isOpen && "lg:hidden")}>
+                        <div className={cn("overflow-hidden transition-[height,opacity] duration-slow ease-out-smooth", !isOpen && "lg:hidden")}>
                             <p className="text-sm font-medium truncate">Admin User</p>
                             <p className="text-xs text-muted-foreground truncate">admin@nabdh.app</p>
                         </div>
