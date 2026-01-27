@@ -27,7 +27,8 @@ export default function Index() {
       let query = supabase
         .from("prompts")
         .select("*")
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .range(0, 11);
 
       if (selectedCategory !== "all") {
         query = query.eq("category", selectedCategory);
