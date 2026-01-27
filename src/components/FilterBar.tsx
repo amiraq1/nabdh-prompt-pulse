@@ -1,5 +1,5 @@
 import { memo, useCallback, useMemo } from 'react';
-import { useLanguage, translations } from '@/contexts/LanguageContext';
+import { useLanguage, translations } from '@/contexts/useLanguage';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {

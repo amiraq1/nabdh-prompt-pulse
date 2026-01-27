@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/useLanguage";
 
 const CATEGORIES = [
     { id: "all", en: "All", ar: "الكل" },
