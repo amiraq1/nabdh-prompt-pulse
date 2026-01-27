@@ -288,6 +288,13 @@
     transform: translateY(-4px) rotateX(1deg);
   }
 
+  .soft-pill {
+    background: linear-gradient(145deg,
+      hsl(var(--surface)) 0%,
+      hsl(var(--surface-hover)) 100%);
+    box-shadow: 0 4px 16px hsl(var(--primary) / 0.08);
+  }
+
   .card-modern:hover {
     @apply border-border;
     box-shadow: var(--shadow-md);
