@@ -1,4 +1,4 @@
-﻿import { Search, Plus, Zap, Menu, X, Settings, User, LogOut, Bookmark } from "lucide-react";
+﻿import { Search, Plus, Zap, Menu, X, Settings, User, LogOut, Bookmark, FolderOpen } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -103,6 +103,13 @@ const Header = ({ searchQuery, onSearchChange, suggestions = [] }: HeaderProps) 
                     </DropdownMenuItem>
                   </Link>
 
+                  <Link to="/collections">
+                    <DropdownMenuItem className={cn("cursor-pointer gap-2", isRTL && "flex-row-reverse")}>
+                      <FolderOpen className="h-4 w-4" />
+                      <span>{isRTL ? "مجموعاتي" : "My Collections"}</span>
+                    </DropdownMenuItem>
+                  </Link>
+
                   <DropdownMenuSeparator />
 
                   <Link to="/settings">
@@ -116,6 +123,13 @@ const Header = ({ searchQuery, onSearchChange, suggestions = [] }: HeaderProps) 
                     <DropdownMenuItem className={cn("cursor-pointer gap-2", isRTL && "flex-row-reverse")}>
                       <Bookmark className="h-4 w-4" />
                       <span>{isRTL ? "مفضلتي" : "Bookmarks"}</span>
+                    </DropdownMenuItem>
+                  </Link>
+
+                  <Link to="/collections">
+                    <DropdownMenuItem className={cn("cursor-pointer gap-2", isRTL && "flex-row-reverse")}>
+                      <FolderOpen className="h-4 w-4" />
+                      <span>{isRTL ? "مجموعاتي" : "My Collections"}</span>
                     </DropdownMenuItem>
                   </Link>
 
