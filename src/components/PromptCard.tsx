@@ -254,6 +254,7 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
             size="icon"
             className="h-8 w-8 text-foreground/70 hover:text-foreground hover:bg-background/50"
             onClick={handleCopy}
+            aria-label={isCopied ? "Copied" : "Copy prompt"}
           >
             <AnimatePresence mode="wait" initial={false}>
               {isCopied ? (
