@@ -5,29 +5,50 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function getOptimizedImageUrl(
-  url: string | null | undefined,
-  width: number = 400
-): string {
-  if (!url) return '';
+/**
+ * Smart image optimizer
+ * Converts to WebP and resizes for better performance
+ */
+export function getOptimizedImageUrl(url: string | null | undefined, width: number = 640): string {
+  if (!url) return "/placeholder.svg";
+
+  // Ignore local/data URLs
+  if (url.startsWith("data:") || url.startsWith("/placeholder")) return url;
 
   try {
-    const parsed = new URL(url);
-    if (!parsed.hostname.endsWith('supabase.co')) return url;
+    const urlObj = new URL(url);
 
-    const objectPrefix = '/storage/v1/object/public/';
-    if (!parsed.pathname.includes(objectPrefix)) return url;
+    // 1) Unsplash optimization
+    if (urlObj.hostname.includes("unsplash.com")) {
+      urlObj.searchParams.set("w", width.toString());
+      urlObj.searchParams.set("q", "80");
+      urlObj.searchParams.set("fm", "webp");
+      urlObj.searchParams.set("auto", "format");
+      return urlObj.toString();
+    }
 
-    parsed.pathname = parsed.pathname.replace(
-      objectPrefix,
-      '/storage/v1/render/image/public/'
-    );
-    parsed.searchParams.set('width', String(width));
-    parsed.searchParams.set('format', 'webp');
-    parsed.searchParams.set('quality', '80');
+    // 2) Supabase Storage image transformations
+    if (urlObj.hostname.endsWith("supabase.co") && urlObj.pathname.includes("/storage/v1/object/public")) {
+      const newPath = urlObj.pathname.replace(
+        "/storage/v1/object/public",
+        "/storage/v1/render/image/public"
+      );
+      const newUrl = new URL(urlObj.origin + newPath);
+      newUrl.searchParams.set("width", width.toString());
+      newUrl.searchParams.set("resize", "contain");
+      newUrl.searchParams.set("format", "webp");
+      newUrl.searchParams.set("quality", "80");
+      return newUrl.toString();
+    }
 
-    return parsed.toString();
+    // 3) External images via wsrv.nl (skip localhost)
+    if (!url.includes("localhost") && !url.includes("127.0.0.1")) {
+      return `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${width}&output=webp&q=80`;
+    }
+
+    return url;
   } catch {
     return url;
   }
 }
+

@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { cn, getOptimizedImageUrl } from './utils';
 
 describe('utils', () => {
-  // 1. ������ ���� ��� �������� (Tailwind Merge)
+  // 1. Test class merging
   describe('cn', () => {
     it('should merge class names correctly', () => {
       const result = cn('bg-red-500', 'text-white');
@@ -16,33 +16,36 @@ describe('utils', () => {
     });
 
     it('should resolve tailwind conflicts', () => {
-      // ������ �� �� p-4 ���� p-2
+      // Ensure p-4 overrides p-2
       const result = cn('p-2', 'p-4');
       expect(result).toBe('p-4');
     });
   });
 
-  // 2. ������ ���� ����� ����� (Image Optimization)
+  // 2. Image optimization
   describe('getOptimizedImageUrl', () => {
     it('should return empty string for null/undefined', () => {
-      expect(getOptimizedImageUrl(null)).toBe('');
-      expect(getOptimizedImageUrl(undefined)).toBe('');
+      expect(getOptimizedImageUrl(null)).toBe('/placeholder.svg');
+      expect(getOptimizedImageUrl(undefined)).toBe('/placeholder.svg');
     });
 
     it('should optimize Supabase storage URLs', () => {
       const url = 'https://xyz.supabase.co/storage/v1/object/public/images/img.jpg';
       const result = getOptimizedImageUrl(url, 500);
 
-      // ����� �� ���� ��������� �������
-      expect(result).toContain('?width=500');
+      expect(result).toContain('/storage/v1/render/image/public/');
       expect(result).toContain('format=webp');
       expect(result).toContain('quality=80');
     });
 
-    it('should NOT modify external URLs (non-Supabase)', () => {
+    
+    it('should proxy external images via wsrv.nl', () => {
       const url = 'https://example.com/image.jpg';
-      const result = getOptimizedImageUrl(url);
-      expect(result).toBe(url);
+      const result = getOptimizedImageUrl(url, 640);
+      expect(result).toContain('https://wsrv.nl/?url=');
+      expect(result).toContain('w=640');
+      expect(result).toContain('output=webp');
+      expect(result).toContain('q=80');
     });
   });
 });
