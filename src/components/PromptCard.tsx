@@ -124,7 +124,9 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
     ? prompt.content.slice(0, 120) + '...'
     : prompt.content;
 
-  const baseImageUrl = prompt.image_url || '';
+  const imageUrl = (prompt as { image?: string | null }).image || prompt.image_url || null;
+  const baseImageUrl = imageUrl || '';
+  const placeholderImage = '/placeholder.svg';
   const srcSet = baseImageUrl
     ? [
         `${getOptimizedImageUrl(baseImageUrl, 360)} 360w`,
@@ -193,24 +195,44 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
         </div>
 
         {/* Image Display */}
-        {prompt.image_url && (
-          <div className="mb-4 rounded-lg overflow-hidden border border-border/30 bg-secondary/50 relative aspect-video">
+        <div className="mb-4 rounded-lg overflow-hidden border border-border/30 bg-secondary/50 relative aspect-video">
+          {imageUrl && imageUrl !== placeholderImage ? (
             <img
               src={imageSrc || baseImageUrl}
               alt={displayTitle || "Prompt image"}
               srcSet={srcSet}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               loading="lazy"
-              onError={() => {
+              onError={(e) => {
                 if (baseImageUrl && imageSrc !== baseImageUrl) {
                   setImageSrc(baseImageUrl);
+                  return;
                 }
+                e.currentTarget.src = placeholderImage;
               }}
             />
-            <div className="absolute inset-0 image-overlay pointer-events-none" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 via-secondary/10 to-primary/5 group-hover:from-primary/10 transition-colors">
+              <span className="text-4xl opacity-50">
+                {prompt.category === 'coding'
+                  ? '??'
+                  : prompt.category === 'art'
+                  ? '??'
+                  : prompt.category === 'writing'
+                  ? '??'
+                  : '?'}
+              </span>
+            </div>
+          )}
+
+          <div className="absolute top-3 left-3">
+            <Badge variant="secondary" className="backdrop-blur-md bg-background/30 text-xs font-normal border-white/10 text-white">
+              {prompt.category}
+            </Badge>
           </div>
-        )}
+          <div className="absolute inset-0 image-overlay pointer-events-none" />
+        </div>
 
         {/* Tags */}
         <TagsList tags={prompt.tags} isRTL={isRTL} />
