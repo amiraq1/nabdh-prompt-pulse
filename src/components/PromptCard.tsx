@@ -114,6 +114,7 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
   const baseImageUrl = prompt.image_url || '';
   const srcSet = baseImageUrl
     ? [
+        `${getOptimizedImageUrl(baseImageUrl, 360)} 360w`,
         `${getOptimizedImageUrl(baseImageUrl, 480)} 480w`,
         `${getOptimizedImageUrl(baseImageUrl, 768)} 768w`,
         `${getOptimizedImageUrl(baseImageUrl, 1024)} 1024w`,
@@ -128,7 +129,7 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
       whileHover={{ y: -4, scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-      className="h-full will-change-transform"
+      className="h-full will-change-transform lazy-card"
     >
       <div
         className="group relative bg-card rounded-xl border border-border/50 pad-card transition-[box-shadow,border-color,transform] duration-base ease-out-smooth hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 animate-fade-in will-change-transform min-h-[300px] md:min-h-[320px] flex flex-col justify-between h-full"
@@ -159,7 +160,7 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
               src={prompt.image_url}
               alt={displayTitle}
               srcSet={srcSet}
-              sizes="(max-width: 640px) 100vw, 33vw"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               className="w-full h-full object-cover"
               loading="lazy"
             />

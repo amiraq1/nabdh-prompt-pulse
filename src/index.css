@@ -327,6 +327,11 @@
     -webkit-overflow-scrolling: touch;
   }
 
+  .lazy-card {
+    content-visibility: auto;
+    contain-intrinsic-size: 320px 420px;
+  }
+
   /* Input base */
   .input-modern {
     @apply w-full rounded-lg border border-border/60 bg-input px-3 py-2;
@@ -839,6 +844,21 @@
   *::after {
     animation: none !important;
     transition: none !important;
+  }
+}
+
+@media (prefers-reduced-data: reduce) {
+  .bg-grid-pattern {
+    opacity: 0.2;
+  }
+
+  .animate-blob {
+    filter: blur(64px);
+    animation: none;
+  }
+
+  .bg-noise {
+    opacity: 0.01;
   }
 }
 
