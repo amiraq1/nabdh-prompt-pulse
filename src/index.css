@@ -133,6 +133,11 @@
     --surface-hover: 222 35% 12%;
     --surface-active: 222 30% 15%;
 
+    /* Typography */
+    --font-display: "Space Grotesk", system-ui, sans-serif;
+    --font-body: "Manrope", system-ui, sans-serif;
+    --font-ar: "IBM Plex Sans Arabic", "Cairo", sans-serif;
+
     /* Sidebar */
     --sidebar-background: 222 47% 5%;
     --sidebar-foreground: 210 40% 98%;
@@ -385,6 +390,20 @@
   .divider {
     @apply h-px w-full bg-gradient-to-r from-transparent via-border to-transparent;
   }
+}
+
+html {
+  font-family: var(--font-body);
+}
+
+:lang(ar) {
+  font-family: var(--font-ar);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
 }
 
 @layer utilities {
