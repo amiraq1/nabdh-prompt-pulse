@@ -21,16 +21,16 @@ const queryClient = new QueryClient({
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <AuthProvider>
-      <LanguageProvider>
-        <TooltipProvider>
-          <QueryClientProvider client={queryClient}>
-            <HelmetProvider>
+    <HelmetProvider>
+      <AuthProvider>
+        <LanguageProvider>
+          <TooltipProvider>
+            <QueryClientProvider client={queryClient}>
               <App />
-            </HelmetProvider>
-          </QueryClientProvider>
-        </TooltipProvider>
-      </LanguageProvider>
-    </AuthProvider>
+            </QueryClientProvider>
+          </TooltipProvider>
+        </LanguageProvider>
+      </AuthProvider>
+    </HelmetProvider>
   </StrictMode>,
 );
