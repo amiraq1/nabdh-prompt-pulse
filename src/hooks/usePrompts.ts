@@ -2,7 +2,12 @@ import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-q
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
 
-export type Prompt = Database['public']['Tables']['prompts']['Row'];
+export type Prompt = Database['public']['Tables']['prompts']['Row'] & {
+  profiles?: {
+    username?: string | null;
+    avatar_url?: string | null;
+  } | null;
+};
 export type PromptInsert = Database['public']['Tables']['prompts']['Insert'];
 export type PromptUpdate = Database['public']['Tables']['prompts']['Update'];
 

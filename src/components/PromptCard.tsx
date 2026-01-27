@@ -1,8 +1,10 @@
 import { useState, useCallback, memo } from 'react';
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from 'framer-motion';
 import { Copy, Check, Heart, ChevronDown, ChevronUp, MessageCircle, Bookmark } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge, BadgeProps } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from '@/hooks/use-toast';
 import { Prompt } from '@/hooks/usePrompts';
 import { useLike } from '@/hooks/useLike';
@@ -149,6 +151,25 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
         <div className="absolute inset-0 rounded-xl bg-gradient-to-tr from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
         <div className="relative z-10">
+        {/* Profile */}
+        {prompt.profiles && (
+          <Link
+            to={`/user/${prompt.user_id}`}
+            className={cn(
+              "flex items-center gap-2 mb-2 group-hover:opacity-100 opacity-70 transition-opacity",
+              isRTL && "flex-row-reverse"
+            )}
+          >
+            <Avatar className="w-5 h-5">
+              <AvatarImage src={prompt.profiles.avatar_url || ""} />
+              <AvatarFallback className="text-[9px]">U</AvatarFallback>
+            </Avatar>
+            <span className="text-xs text-muted-foreground hover:text-primary transition-colors">
+              {prompt.profiles.username || "Unknown"}
+            </span>
+          </Link>
+        )}
+
         {/* Header */}
         <div className={cn(
           "flex items-start justify-between gap-2 sm:gap-4 mb-2 sm:mb-3",
