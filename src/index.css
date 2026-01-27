@@ -258,9 +258,18 @@
     letter-spacing: 0;
   }
 
-  [dir="rtl"] .icon-arrow {
-    transform: scaleX(-1);
-  }
+[dir="rtl"] .icon-arrow {
+  transform: scaleX(-1);
+}
+
+.ar-text {
+  text-align: right;
+  direction: rtl;
+}
+
+[dir="rtl"] .icon-dir {
+  transform: scaleX(-1);
+}
 
   /* Improve text rendering */
   p,
