@@ -1,6 +1,7 @@
 import { memo, useCallback, useMemo } from 'react';
 import { useLanguage, translations } from '@/contexts/useLanguage';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -20,11 +21,13 @@ interface FilterBarProps {
 }
 
 const categories = [
-  { id: 'all', en: 'All', ar: 'Ø§Ù„ÙƒÙ„' },
-  { id: 'coding', en: 'Coding', ar: 'Ø§Ù„Ø¨Ø±Ù…Ø¬Ø©' },
-  { id: 'writing', en: 'Writing', ar: 'Ø§Ù„ÙƒØªØ§Ø¨Ø©' },
-  { id: 'art', en: 'Art', ar: 'Ø§Ù„ÙÙ†' },
-  { id: 'marketing', en: 'Marketing', ar: 'Ø§Ù„ØªØ³ÙˆÙŠÙ‚' }
+  { id: 'all', en: 'All', ar: 'Çáßá' },
+  { id: 'coding', en: 'Coding', ar: 'ÈÑãÌÉ' },
+  { id: 'art', en: 'Art & Design', ar: 'Ýäæä æÊÕãíã' },
+  { id: 'writing', en: 'Writing', ar: 'ßÊÇÈÉ' },
+  { id: 'marketing', en: 'Marketing', ar: 'ÊÓæíÞ' },
+  { id: 'productivity', en: 'Productivity', ar: 'ÅäÊÇÌíÉ' },
+  { id: 'seo', en: 'SEO', ar: 'Óíæ' },
 ] as const;
 
 const models = [
@@ -35,32 +38,6 @@ const models = [
   { id: 'claude', en: 'Claude', ar: 'Claude' },
   { id: 'gemini', en: 'Gemini', ar: 'Gemini' }
 ] as const;
-
-// Memoized category button
-const CategoryButton = memo(({
-  category,
-  isSelected,
-  language,
-  onClick
-}: {
-  category: typeof categories[number];
-  isSelected: boolean;
-  language: 'en' | 'ar';
-  onClick: () => void;
-}) => (
-  <button
-    onClick={onClick}
-    className={cn(
-      "px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors duration-base ease-out-smooth whitespace-nowrap flex-shrink-0 touch-target",
-      isSelected
-        ? "bg-primary text-primary-foreground glow-sm"
-        : "bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border/50 active:scale-95"
-    )}
-  >
-    {language === 'ar' ? category.ar : category.en}
-  </button>
-));
-CategoryButton.displayName = 'CategoryButton';
 
 const FilterBar = memo(({
   selectedCategory,
@@ -94,19 +71,23 @@ const FilterBar = memo(({
           "flex flex-col gap-2 md:gap-4",
           isRTL && "items-end"
         )}>
-          {/* Category Chips */}
           <div className={cn(
-            "flex gap-2 overflow-x-auto scrollbar-hide pb-1 -mx-3 px-3 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-visible w-full mask-linear-gradient",
+            "flex gap-2 overflow-x-auto pb-4 pt-2 scrollbar-hide mask-linear-gradient",
             isRTL && "flex-row-reverse"
           )}>
             {categories.map((category) => (
-              <CategoryButton
+              <Button
                 key={category.id}
-                category={category}
-                isSelected={selectedCategory === category.id}
-                language={language}
+                variant={selectedCategory === category.id ? "default" : "outline"}
+                size="sm"
                 onClick={() => handleCategoryClick(category.id)}
-              />
+                className={cn(
+                  "rounded-full whitespace-nowrap transition-all",
+                  selectedCategory === category.id ? "shadow-md scale-105" : "hover:bg-secondary"
+                )}
+              >
+                {language === 'ar' ? category.ar : category.en}
+              </Button>
             ))}
           </div>
 
@@ -138,4 +119,10 @@ const FilterBar = memo(({
 FilterBar.displayName = 'FilterBar';
 
 export default FilterBar;
+
+
+
+
+
+
 
