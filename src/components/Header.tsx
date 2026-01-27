@@ -1,4 +1,4 @@
-﻿import { Search, Plus, Zap, Menu, X, Settings, User, LogOut, Bookmark, FolderOpen } from "lucide-react";
+﻿import { Zap, Menu, X, Settings, User, LogOut, Bookmark, FolderOpen } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -69,16 +69,6 @@ const Header = ({ searchQuery, onSearchChange, suggestions = [] }: HeaderProps) 
           >
             <LanguageToggle />
             <NotificationsMenu />
-            <Button
-              className={cn(
-                "bg-primary text-primary-foreground hover:bg-primary/90 glow-sm button-press font-medium h-10 px-4 gap-2",
-                isRTL && "flex-row-reverse",
-              )}
-            >
-              <Plus className="w-4 h-4" />
-              <span className="hidden lg:inline">{t.submitPrompt[language]}</span>
-              <span className="lg:hidden">{t.submit[language]}</span>
-            </Button>
 
             {user ? (
               <DropdownMenu dir={isRTL ? "rtl" : "ltr"}>
@@ -162,21 +152,7 @@ const Header = ({ searchQuery, onSearchChange, suggestions = [] }: HeaderProps) 
           />
         </div>
 
-        {/* Mobile Menu Dropdown */}
-        {mobileMenuOpen && (
-          <div className={cn("sm:hidden mt-3 pt-3 border-t border-border/50 animate-fade-in", isRTL && "text-right")}>
-            <Button
-              className={cn(
-                "w-full bg-primary text-primary-foreground hover:bg-primary/90 glow-sm button-press font-medium h-12 gap-2",
-                isRTL && "flex-row-reverse",
-              )}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <Plus className="w-4 h-4" />
-              {t.submitPrompt[language]}
-            </Button>
-          </div>
-        )}
+
       </div>
     </header>
   );
