@@ -5,6 +5,7 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@
 import { Badge } from '@/components/ui/badge';
 import { Search, ShieldAlert, Clock, User, Globe } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import BackButton from '@/components/BackButton';
 
 const AuditLogsPage = () => {
     const { isRTL } = useLanguage();
@@ -20,6 +21,7 @@ const AuditLogsPage = () => {
 
     return (
         <div className="space-y-6">
+            <BackButton />
             <div className={cn("flex flex-col gap-2", isRTL && "text-right")}>
                 <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
                     <ShieldAlert className="w-6 h-6 text-primary" />

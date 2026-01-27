@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Mail, Lock } from "lucide-react";
 import Header from "@/components/Header";
 import Seo from "@/components/Seo";
+import BackButton from "@/components/BackButton";
 
 export default function AuthPage() {
   const navigate = useNavigate();
@@ -61,7 +62,9 @@ export default function AuthPage() {
       <Seo title={pageTitle} description={pageDescription} noIndex />
       <Header />
       <div className="flex-1 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md shadow-lg border-primary/10">
+        <div className="w-full max-w-md">
+          <BackButton />
+          <Card className="w-full shadow-lg border-primary/10">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-bold text-primary">Nabdh</CardTitle>
             <CardDescription>{isRTL ? "بوابتك لعالم الذكاء الاصطناعي" : "Your gateway to AI prompts"}</CardDescription>
@@ -142,6 +145,7 @@ export default function AuthPage() {
             </Tabs>
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
   );

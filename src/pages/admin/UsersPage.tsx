@@ -7,6 +7,7 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@
 import { Badge } from '@/components/ui/badge';
 import { Search, UserPlus, MoreHorizontal, Shield, Mail } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import BackButton from '@/components/BackButton';
 
 const UsersPage = () => {
     const { isRTL } = useLanguage();
@@ -21,6 +22,7 @@ const UsersPage = () => {
 
     return (
         <div className="space-y-6">
+            <BackButton />
             <div className={cn("flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4", isRTL && "sm:flex-row-reverse")}>
                 <div>
                     <h1 className={cn("text-2xl font-bold text-foreground", isRTL && "text-right")}>
@@ -108,4 +110,6 @@ const UsersPage = () => {
 };
 
 export default UsersPage;
+
+
 

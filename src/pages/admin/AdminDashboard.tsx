@@ -33,6 +33,7 @@ import { usePrompts, useDeletePrompt, Prompt } from '@/hooks/usePrompts';
 import { useLanguage, translations } from '@/contexts/useLanguage';
 import CreatePromptForm from '@/components/admin/CreatePromptForm';
 import { cn } from '@/lib/utils';
+import BackButton from '@/components/BackButton';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -103,6 +104,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="space-y-6">
+      <BackButton />
       {/* Header */}
       <div className={cn(
         "flex flex-col sm:flex-row sm:items-center justify-between gap-4",

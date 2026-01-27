@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Check, X, Clock, Loader2 } from 'lucide-react';
+import BackButton from '@/components/BackButton';
 import { formatDistanceToNow } from 'date-fns';
 import { ar, enUS } from 'date-fns/locale';
 
@@ -64,6 +65,7 @@ export default function AdminSubmissions() {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container mx-auto px-4 py-8">
+        <BackButton />
         <h1 className="text-3xl font-bold mb-6 flex items-center gap-2">
           <Clock className="w-8 h-8 text-primary" />
           {isRTL ? 'طلبات المراجعة' : 'Submission Queue'}
