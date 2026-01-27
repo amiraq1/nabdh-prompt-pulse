@@ -116,9 +116,9 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
 
   return (
     <motion.div
-      whileHover={{ y: -5, scale: 1.02 }}
+      whileHover={{ y: -4, scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
-      transition={{ type: "spring", stiffness: 300 }}
+      transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
       className="h-full"
     >
       <div
