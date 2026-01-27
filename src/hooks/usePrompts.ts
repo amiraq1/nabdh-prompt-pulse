@@ -23,7 +23,6 @@ export const usePrompts = (search?: string, category?: string, model?: string) =
   return useInfiniteQuery({
     queryKey: promptKeys.infinite(search, category, model),
     queryFn: async ({ pageParam = 0 }: { pageParam: number }) => {
-      console.log('Fetching page:', pageParam);
 
       let query = supabase
         .from('prompts')
@@ -53,7 +52,6 @@ export const usePrompts = (search?: string, category?: string, model?: string) =
       const { data, error } = await query;
 
       if (error) {
-        console.error('Error fetching prompts:', error);
         throw error;
       }
 
