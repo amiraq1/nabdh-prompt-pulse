@@ -65,10 +65,10 @@
     --popover-foreground: 210 40% 98%;
 
     /* Primary accent (refined cyan) */
-    --primary: 187 85% 53%;
+    --primary: 188 90% 55%;
     --primary-foreground: 222 47% 5%;
-    --primary-hover: 187 90% 45%;
-    --primary-muted: 187 60% 25%;
+    --primary-hover: 188 95% 47%;
+    --primary-muted: 188 60% 28%;
 
     /* Secondary (subtle contrast) */
     --secondary: 222 25% 10%;
