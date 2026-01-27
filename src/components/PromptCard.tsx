@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, memo } from 'react';
+import { useState, useCallback, memo } from 'react';
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from 'framer-motion';
 import { Copy, Check, Heart, ChevronDown, ChevronUp, MessageCircle, Bookmark, FolderPlus } from 'lucide-react';
@@ -10,7 +10,8 @@ import { Prompt } from '@/hooks/usePrompts';
 import { useLike } from '@/hooks/useLike';
 import { useBookmark } from '@/hooks/useBookmark';
 import { useLanguage, translations } from '@/contexts/useLanguage';
-import { cn, getOptimizedImageUrl } from '@/lib/utils';
+import { cn } from '@/lib/utils';
+import { getOptimizedImageUrl } from '@/lib/imageOptimizer';
 import {
   Dialog,
   DialogContent,
@@ -101,13 +102,13 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
       setIsCopied(true);
       toast({
         title: t.copied[language],
-        description: isRTL ? 'تم نسخ الموجه إلى الحافظة' : 'Prompt copied to clipboard',
+        description: isRTL ? '?? ??? ?????? ??? ???????' : 'Prompt copied to clipboard',
       });
       setTimeout(() => setIsCopied(false), 2000);
     } catch (err) {
       toast({
-        title: isRTL ? 'فشل النسخ' : 'Failed to copy',
-        description: isRTL ? 'حاول مرة أخرى' : 'Please try again',
+        title: isRTL ? '??? ?????' : 'Failed to copy',
+        description: isRTL ? '???? ??? ????' : 'Please try again',
         variant: 'destructive',
       });
     } finally {
@@ -124,24 +125,7 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
     ? prompt.content.slice(0, 120) + '...'
     : prompt.content;
 
-  const imageUrl = (prompt as { image?: string | null }).image || prompt.image_url || null;
-  const baseImageUrl = imageUrl || '';
-  const placeholderImage = '/placeholder.svg';
-  const srcSet = baseImageUrl
-    ? [
-        `${getOptimizedImageUrl(baseImageUrl, 360)} 360w`,
-        `${getOptimizedImageUrl(baseImageUrl, 480)} 480w`,
-        `${getOptimizedImageUrl(baseImageUrl, 768)} 768w`,
-        `${getOptimizedImageUrl(baseImageUrl, 1024)} 1024w`,
-      ].join(', ')
-    : undefined;
-  const [imageSrc, setImageSrc] = useState(
-    baseImageUrl ? getOptimizedImageUrl(baseImageUrl, 768) : ''
-  );
-
-  useEffect(() => {
-    setImageSrc(baseImageUrl ? getOptimizedImageUrl(baseImageUrl, 768) : '');
-  }, [baseImageUrl]);
+  const rawImageUrl = (prompt as { image?: string | null }).image || prompt.image_url || null;
 
   // Stagger animation delay (capped for performance)
   const animationDelay = Math.min(index * 0.05, 0.3);
@@ -197,32 +181,32 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
 
         {/* Image Display */}
         <div className="mb-4 rounded-lg overflow-hidden border border-border/30 bg-secondary/50 relative aspect-video">
-          {imageUrl && imageUrl !== placeholderImage ? (
+          {rawImageUrl ? (
             <img
-              src={imageSrc || baseImageUrl}
-              alt={displayTitle || "Prompt image"}
-              srcSet={srcSet}
+              src={getOptimizedImageUrl(rawImageUrl, 640)}
+              srcSet={`
+                ${getOptimizedImageUrl(rawImageUrl, 400)} 400w,
+                ${getOptimizedImageUrl(rawImageUrl, 800)} 800w,
+                ${getOptimizedImageUrl(rawImageUrl, 1200)} 1200w
+              `}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              alt={displayTitle || "Prompt image"}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               loading="lazy"
               onError={(e) => {
-                if (baseImageUrl && imageSrc !== baseImageUrl) {
-                  setImageSrc(baseImageUrl);
-                  return;
-                }
-                e.currentTarget.src = placeholderImage;
+                e.currentTarget.src = "/placeholder.svg";
               }}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 via-secondary/10 to-primary/5 group-hover:from-primary/10 transition-colors">
               <span className="text-4xl opacity-50">
                 {prompt.category === 'coding'
-                  ? '??'
+                  ? 'CODE'
                   : prompt.category === 'art'
-                  ? '??'
+                  ? 'ART'
                   : prompt.category === 'writing'
-                  ? '??'
-                  : '?'}
+                  ? 'WRITE'
+                  : 'PROMPT'}
               </span>
             </div>
           )}
