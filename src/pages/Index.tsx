@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useState, useEffect, useMemo } from "react";
 import { useLanguage } from "@/contexts/useLanguage";
+import { usePrompts } from "@/hooks/usePrompts";
 import Header from "@/components/Header";
 import PromptGrid from "@/components/PromptGrid";
 import CategoryFilter from "@/components/CategoryFilter";
 import SEO from "@/components/Seo";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Search, Loader2 } from "lucide-react";
 
 export default function Index() {
   const { isRTL } = useLanguage();
@@ -15,87 +15,55 @@ export default function Index() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [shouldFetch, setShouldFetch] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(searchQuery), 500);
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const win = window as Window & {
-      requestIdleCallback?: (cb: () => void) => number;
-      cancelIdleCallback?: (id: number) => void;
-    };
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = usePrompts(debouncedSearch, selectedCategory);
 
-    if (win.requestIdleCallback) {
-      const id = win.requestIdleCallback(() => setShouldFetch(true));
-      return () => win.cancelIdleCallback?.(id);
-    }
-
-    const timeoutId = window.setTimeout(() => setShouldFetch(true), 0);
-    return () => window.clearTimeout(timeoutId);
-  }, []);
-
-  const { data: prompts, isLoading } = useQuery({
-    queryKey: ["prompts", selectedCategory, debouncedSearch],
-    enabled: shouldFetch,
-    queryFn: async () => {
-      let query = supabase
-        .from("prompts")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .range(0, 11);
-
-      if (selectedCategory !== "all") {
-        query = query.eq("category", selectedCategory);
-      }
-
-      if (debouncedSearch) {
-        query = query.or(
-          `title.ilike.%${debouncedSearch}%,content.ilike.%${debouncedSearch}%,title_ar.ilike.%${debouncedSearch}%`,
-        );
-      }
-
-      const { data, error } = await query;
-      if (error) throw error;
-      return data;
-    },
-  });
+  // Flatten all pages into a single array
+  const prompts = useMemo(() => {
+    return data?.pages.flat() || [];
+  }, [data]);
 
   return (
     <div className="min-h-screen bg-background relative">
-      <SEO title={isRTL ? "��������" : "Home"} />
+      <SEO title={isRTL ? "الرئيسية" : "Home"} />
 
       <Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
       <main className="container mx-auto px-4 py-8 space-y-8">
         <div className="text-center space-y-4 max-w-2xl mx-auto mt-8">
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-            {isRTL ? "����� ���� ����� ������ ���������" : "Discover Top AI Prompts"}
+            {isRTL ? "اكتشف أفضل موجهات الذكاء الاصطناعي" : "Discover Top AI Prompts"}
           </h1>
           <p className="text-muted-foreground text-lg">
             {isRTL
-              ? "����� ���� �������� �� ChatGPT� Midjourney� �������."
+              ? "مكتبة ضخمة للاستفادة من ChatGPT، Midjourney، والمزيد."
               : "A massive library to supercharge your ChatGPT, Midjourney, and more."}
           </p>
 
           <div className="relative max-w-lg mx-auto mt-6">
             <Search
-              className={`absolute top-3.5 h-5 w-5 text-muted-foreground ${
-                isRTL ? "right-3" : "left-3"
-              }`}
+              className={`absolute top-3.5 h-5 w-5 text-muted-foreground ${isRTL ? "right-3" : "left-3"
+                }`}
             />
             <Input
               placeholder={
                 isRTL
-                  ? "���� �� ���� (�����: ����ޡ ������)..."
+                  ? "ابحث عن موجه (مثال: تسويق، بايثون)..."
                   : "Search prompts (e.g., Marketing, Python)..."
               }
-              className={`h-12 text-lg shadow-sm border-primary/20 focus-visible:ring-primary/50 ${
-                isRTL ? "pr-10" : "pl-10"
-              }`}
+              className={`h-12 text-lg shadow-sm border-primary/20 focus-visible:ring-primary/50 ${isRTL ? "pr-10" : "pl-10"
+                }`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -109,7 +77,36 @@ export default function Index() {
           />
         </div>
 
-        <PromptGrid prompts={prompts || []} isLoading={isLoading} />
+        <PromptGrid prompts={prompts} isLoading={isLoading} />
+
+        {/* Load More Button */}
+        {hasNextPage && (
+          <div className="flex justify-center pt-8">
+            <Button
+              onClick={() => fetchNextPage()}
+              disabled={isFetchingNextPage}
+              variant="outline"
+              size="lg"
+              className="min-w-[200px] gap-2"
+            >
+              {isFetchingNextPage ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {isRTL ? "جارٍ التحميل..." : "Loading..."}
+                </>
+              ) : (
+                isRTL ? "عرض المزيد" : "Load More"
+              )}
+            </Button>
+          </div>
+        )}
+
+        {/* No more prompts message */}
+        {!hasNextPage && prompts.length > 0 && !isLoading && (
+          <p className="text-center text-muted-foreground py-4">
+            {isRTL ? "لا يوجد المزيد من الموجهات" : "No more prompts to load"}
+          </p>
+        )}
       </main>
     </div>
   );
