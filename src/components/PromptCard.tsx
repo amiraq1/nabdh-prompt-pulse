@@ -122,7 +122,7 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
       className="h-full"
     >
       <div
-        className="group relative bg-card rounded-xl border border-border/50 pad-card transition-all duration-200 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 animate-fade-in will-change-transform min-h-[280px] flex flex-col justify-between"
+        className="group relative bg-card rounded-xl border border-border/50 pad-card transition-all duration-200 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 animate-fade-in will-change-transform min-h-[300px] md:min-h-[320px] flex flex-col justify-between h-full"
         style={{ animationDelay: `${animationDelay}s` }}
       >
         {/* Glow hover effect */}

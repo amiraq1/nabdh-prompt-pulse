@@ -439,17 +439,21 @@
   }
 
   @media (min-width: 768px) {
-    .layout-grid {
-      grid-template-columns: repeat(8, minmax(0, 1fr));
-      gap: 20px;
-    }
+  .layout-grid {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 20px;
+  }
   }
 
   @media (min-width: 1024px) {
-    .layout-grid {
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-      gap: 24px;
-    }
+  .layout-grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .auto-rows-fr {
+    grid-auto-rows: 1fr;
+  }
   }
 
   .content-max {
