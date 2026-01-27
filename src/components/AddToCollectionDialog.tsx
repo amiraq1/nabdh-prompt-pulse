@@ -18,6 +18,11 @@ interface AddToCollectionDialogProps {
   trigger?: React.ReactNode;
 }
 
+interface CollectionSummary {
+  id: string;
+  title: string;
+}
+
 export default function AddToCollectionDialog({
   promptId,
   trigger,
@@ -92,7 +97,7 @@ export default function AddToCollectionDialog({
                 </p>
               )}
 
-              {collections?.map((collection: any) => (
+              {collections?.map((collection: CollectionSummary) => (
                 <Button
                   key={collection.id}
                   variant="ghost"

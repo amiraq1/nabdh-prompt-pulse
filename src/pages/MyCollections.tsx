@@ -31,6 +31,13 @@ import { Folder, Plus, Trash2, FolderOpen, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 
+interface CollectionListItem {
+  id: string;
+  title: string;
+  created_at: string;
+  count: number;
+}
+
 export default function MyCollections() {
   const { isRTL } = useLanguage();
   const { user } = useAuth();
@@ -52,7 +59,7 @@ export default function MyCollections() {
 
       if (error) throw error;
 
-      return data.map((col: any) => ({
+      return data.map((col: { id: string; title: string; created_at: string; collection_items: { count: number }[] }) => ({
         ...col,
         count: col.collection_items?.[0]?.count || 0,
       }));
@@ -150,7 +157,7 @@ export default function MyCollections() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {collections?.map((collection: any) => (
+            {collections?.map((collection: CollectionListItem) => (
               <div
                 key={collection.id}
                 className="group relative bg-card border hover:border-primary/50 transition-all duration-300 rounded-xl p-5 hover:shadow-lg flex flex-col justify-between h-40"

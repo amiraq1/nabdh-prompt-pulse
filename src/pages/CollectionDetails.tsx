@@ -47,7 +47,7 @@ export default function CollectionDetails() {
         .order("added_at", { ascending: false });
 
       if (error) throw error;
-      return data.map((item: any) => item.prompts);
+      return data.map((item: { prompts: Prompt }) => item.prompts);
     },
   });
 
@@ -64,7 +64,7 @@ export default function CollectionDetails() {
         <div className="mb-8 border-b pb-4">
           <h1 className="text-3xl font-bold">{collection?.title}</h1>
           <p className="text-muted-foreground">
-            {prompts?.length || 0} {isRTL ? "ãæÌå ãÍÝæÙ" : "saved prompts"}
+            {prompts?.length || 0} {isRTL ? "ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½" : "saved prompts"}
           </p>
         </div>
 
@@ -73,7 +73,7 @@ export default function CollectionDetails() {
         {!isLoading && prompts?.length === 0 && (
           <div className="text-center py-20">
             <p className="text-muted-foreground">
-              {isRTL ? "åÐå ÇáãÌãæÚÉ ÝÇÑÛÉ." : "This collection is empty."}
+              {isRTL ? "ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½." : "This collection is empty."}
             </p>
           </div>
         )}

@@ -18,6 +18,25 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatDistanceToNow } from "date-fns";
 import { ar, enUS } from "date-fns/locale";
 
+interface NotificationActor {
+  full_name: string | null;
+  avatar_url: string | null;
+}
+
+interface NotificationPrompt {
+  title: string | null;
+  title_ar: string | null;
+}
+
+interface NotificationItem {
+  id: string;
+  type: "like" | "comment" | string;
+  is_read: boolean;
+  created_at: string;
+  actor: NotificationActor | null;
+  prompt: NotificationPrompt | null;
+}
+
 export default function NotificationsMenu() {
   const { user } = useAuth();
   const { isRTL } = useLanguage();
@@ -100,7 +119,7 @@ export default function NotificationsMenu() {
               {isRTL ? "لا توجد إشعارات بعد 😴" : "No notifications yet 😴"}
             </div>
           ) : (
-            notifications?.map((notif: any) => (
+            notifications?.map((notif: NotificationItem) => (
               <Link key={notif.id} to={`/user/${user.id}`} onClick={() => setIsOpen(false)}>
                 <DropdownMenuItem className="cursor-pointer p-3 focus:bg-secondary/50">
                   <div className="flex gap-3 items-start">
