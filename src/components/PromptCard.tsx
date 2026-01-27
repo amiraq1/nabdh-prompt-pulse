@@ -1,11 +1,12 @@
 import { useState, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, Check, Heart, ChevronDown, ChevronUp, MessageCircle } from 'lucide-react';
+import { Copy, Check, Heart, ChevronDown, ChevronUp, MessageCircle, Bookmark } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge, BadgeProps } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { Prompt } from '@/hooks/usePrompts';
 import { useLike } from '@/hooks/useLike';
+import { useBookmark } from '@/hooks/useBookmark';
 import { useLanguage, translations } from '@/contexts/useLanguage';
 import { cn, getOptimizedImageUrl } from '@/lib/utils';
 import {
@@ -86,6 +87,7 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
     prompt.id,
     prompt.likes || 0
   );
+  const { isBookmarked, toggleBookmark } = useBookmark(prompt.id);
 
   const handleCopy = useCallback(async () => {
     if (isCopying) return;
@@ -281,37 +283,55 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
             </Dialog>
           </div>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-foreground/70 hover:text-foreground hover:bg-background/50"
-            onClick={handleCopy}
-            aria-label={isCopied ? "Copied" : "Copy prompt"}
-          >
-            <AnimatePresence mode="wait" initial={false}>
-              {isCopied ? (
-                <motion.div
-                  key="check"
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Check className="w-4 h-4 text-green-500" />
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="copy"
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Copy className="w-4 h-4" />
-                </motion.div>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={(event) => {
+                event.stopPropagation();
+                toggleBookmark();
+              }}
+              className={cn(
+                "h-8 w-8 hover:bg-yellow-500/10 transition-colors",
+                isBookmarked ? "text-yellow-500" : "text-muted-foreground"
               )}
-            </AnimatePresence>
-          </Button>
+              title={isRTL ? "حفظ في المفضلة" : "Bookmark"}
+            >
+              <Bookmark className={cn("w-4 h-4 transition-all", isBookmarked && "fill-current")} />
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-foreground/70 hover:text-foreground hover:bg-background/50"
+              onClick={handleCopy}
+              aria-label={isCopied ? "Copied" : "Copy prompt"}
+            >
+              <AnimatePresence mode="wait" initial={false}>
+                {isCopied ? (
+                  <motion.div
+                    key="check"
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Check className="w-4 h-4 text-green-500" />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="copy"
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Copy className="w-4 h-4" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </Button>
+          </div>
         </div>
         </div>
       </div>
