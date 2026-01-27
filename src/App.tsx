@@ -30,7 +30,11 @@ const AdminFallback = () => (
 
 const App = () => (
   <>
-    {import.meta.env.PROD && <SpeedInsights />}
+    {import.meta.env.PROD &&
+      typeof window !== "undefined" &&
+      !["localhost", "127.0.0.1"].includes(window.location.hostname) && (
+        <SpeedInsights />
+      )}
     <Toaster />
     <Sonner />
     <MagicBackground />
