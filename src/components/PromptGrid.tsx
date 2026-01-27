@@ -28,7 +28,7 @@ const item = {
 
 // Memoized skeleton grid
 const SkeletonGrid = memo(() => (
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5 lg:gap-6">
     {Array.from({ length: 6 }).map((_, index) => (
       <PromptCardSkeleton key={index} />
     ))}
@@ -68,7 +68,7 @@ const PromptGrid = memo(({ prompts, isLoading = false }: PromptGridProps) => {
       variants={container}
       initial="hidden"
       animate="show"
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5 lg:gap-6"
     >
       {prompts.map((prompt) => (
         <motion.div key={prompt.id} variants={item}>
