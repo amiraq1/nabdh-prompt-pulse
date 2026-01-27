@@ -7,6 +7,10 @@ import { LanguageProvider } from "@/contexts/LanguageProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import App from "./App.tsx";
 import "./index.css";
+import "@fontsource/cairo/400.css";
+import "@fontsource/cairo/600.css";
+import "@fontsource/cairo/700.css";
+import "@fontsource/cairo/900.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {
