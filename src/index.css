@@ -169,7 +169,7 @@
   }
 
   html[dir="rtl"] {
-    font-family: 'Readex Pro', 'Noto Sans Arabic', 'Manrope', sans-serif;
+    font-family: var(--font-ar);
     letter-spacing: 0;
   }
 
@@ -254,7 +254,7 @@
   html[dir="rtl"] h4,
   html[dir="rtl"] h5,
   html[dir="rtl"] h6 {
-    font-family: 'Readex Pro', 'Noto Sans Arabic', 'Manrope', sans-serif;
+    font-family: var(--font-ar);
     letter-spacing: 0;
   }
 
