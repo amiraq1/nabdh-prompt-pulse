@@ -47,6 +47,7 @@ const AuditLogsPage = () => {
 
             {/* Logs Table */}
             <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
+                <div className="w-full overflow-x-auto">
                 <Table>
                     <TableHeader>
                         <TableRow className="hover:bg-transparent border-b border-border">
@@ -98,6 +99,7 @@ const AuditLogsPage = () => {
                         ))}
                     </TableBody>
                 </Table>
+                </div>
             </div>
         </div>
     );

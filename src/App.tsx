@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import MagicBackground from "@/components/MagicBackground";
 import { Loader2 } from "lucide-react";
+import MobileNav from "@/components/MobileNav";
 
 const Index = lazy(() => import("./pages/Index"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
@@ -41,6 +42,7 @@ const App = () => (
     <MagicBackground />
     <BrowserRouter>
       <Suspense fallback={<PageLoader />}>
+        <MobileNav />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<AuthPage />} />

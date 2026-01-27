@@ -31,6 +31,11 @@
     line-height: 1.5;
   }
   :root {
+    --sat: env(safe-area-inset-top);
+    --sab: env(safe-area-inset-bottom);
+    --sal: env(safe-area-inset-left);
+    --sar: env(safe-area-inset-right);
+
     --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
     --motion-fast: 150ms;
@@ -166,6 +171,21 @@
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     letter-spacing: -0.011em;
+  }
+
+  /* Prevent iOS auto-zoom on form fields */
+  input,
+  textarea,
+  select {
+    @apply text-base;
+  }
+
+  @media (min-width: 768px) {
+    input,
+    textarea,
+    select {
+      @apply text-sm;
+    }
   }
 
   html[dir="rtl"] {
@@ -912,6 +932,14 @@ h3 {
     padding-bottom: env(safe-area-inset-bottom);
   }
 
+  .pt-safe {
+    padding-top: var(--sat);
+  }
+
+  .pb-safe {
+    padding-bottom: var(--sab);
+  }
+
   .touch-target {
     min-height: 44px;
     min-width: 44px;
@@ -947,6 +975,12 @@ h3 {
 
   .mask-linear-gradient {
     mask-image: linear-gradient(to right, transparent, black 12px, black calc(100% - 12px), transparent);
+  }
+}
+
+@media (hover: hover) {
+  .hover-effect:hover {
+    @apply bg-primary/10;
   }
 }
 

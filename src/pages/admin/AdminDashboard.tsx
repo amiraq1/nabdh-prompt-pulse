@@ -203,7 +203,8 @@ const AdminDashboard = () => {
             <Loader2 className="w-6 h-6 text-primary animate-spin" />
           </div>
         ) : (
-          <Table>
+          <div className="w-full overflow-x-auto">
+            <Table>
             <TableHeader>
               <TableRow className="border-border hover:bg-transparent">
                 <TableHead className={cn("text-muted-foreground", isRTL && "text-right")}>{t.title[language]}</TableHead>
@@ -273,6 +274,7 @@ const AdminDashboard = () => {
               )}
             </TableBody>
           </Table>
+          </div>
         )}
       </div>
 
