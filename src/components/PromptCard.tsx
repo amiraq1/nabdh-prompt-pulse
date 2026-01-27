@@ -119,7 +119,7 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
       whileHover={{ y: -4, scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-      className="h-full"
+      className="h-full will-change-transform"
     >
       <div
         className="group relative bg-card rounded-xl border border-border/50 pad-card transition-all duration-200 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 animate-fade-in will-change-transform min-h-[300px] md:min-h-[320px] flex flex-col justify-between h-full"
