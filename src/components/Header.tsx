@@ -6,6 +6,7 @@ import { useLanguage, translations } from "@/contexts/useLanguage";
 import { useAuth } from "@/contexts/useAuth";
 import LanguageToggle from "./LanguageToggle";
 import SearchInput from "./SearchInput";
+import NotificationsMenu from "./NotificationsMenu";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -67,6 +68,7 @@ const Header = ({ searchQuery, onSearchChange, suggestions = [] }: HeaderProps) 
             )}
           >
             <LanguageToggle />
+            <NotificationsMenu />
             <Button
               className={cn(
                 "bg-primary text-primary-foreground hover:bg-primary/90 glow-sm button-press font-medium h-10 px-4 gap-2",
