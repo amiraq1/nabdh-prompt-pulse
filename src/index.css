@@ -440,6 +440,13 @@ h3 {
   transform: translateY(-1px);
 }
 
+.input {
+  background: hsl(var(--surface));
+  border: 1px solid hsl(var(--border));
+  padding: 10px 12px;
+  border-radius: 10px;
+}
+
 @layer utilities {
   .hero-title {
     font-size: 2.25rem;
