@@ -19,7 +19,7 @@ export default {
         md: "768px",
         lg: "1024px",
         xl: "1280px",
-        "2xl": "1400px",
+        "2xl": "1440px",
       },
     },
     screens: {
@@ -28,7 +28,7 @@ export default {
       md: "768px",
       lg: "1024px",
       xl: "1280px",
-      "2xl": "1536px",
+      "2xl": "1440px",
     },
     extend: {
       fontFamily: {
