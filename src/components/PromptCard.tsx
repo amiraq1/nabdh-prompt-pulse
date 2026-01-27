@@ -1,7 +1,7 @@
 import { useState, useCallback, memo } from 'react';
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, Check, Heart, ChevronDown, ChevronUp, MessageCircle, Bookmark } from 'lucide-react';
+import { Copy, Check, Heart, ChevronDown, ChevronUp, MessageCircle, Bookmark, FolderPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge, BadgeProps } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -19,6 +19,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import CommentSection from "./CommentSection";
+import AddToCollectionDialog from "@/components/AddToCollectionDialog";
 
 interface PromptCardProps {
   prompt: Prompt;
@@ -305,6 +306,19 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
           </div>
 
           <div className="flex items-center gap-1">
+            <AddToCollectionDialog
+              promptId={prompt.id}
+              trigger={
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                  title={isRTL ? "حفظ في مجموعة" : "Save to Collection"}
+                >
+                  <FolderPlus className="w-4 h-4" />
+                </Button>
+              }
+            />
             <Button
               variant="ghost"
               size="icon"
