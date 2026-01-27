@@ -322,6 +322,11 @@
     box-shadow: 0 0 0 2px hsl(var(--ring) / 0.6);
   }
 
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
   /* Input base */
   .input-modern {
     @apply w-full rounded-lg border border-border/60 bg-input px-3 py-2;
