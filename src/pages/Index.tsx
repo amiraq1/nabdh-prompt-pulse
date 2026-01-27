@@ -78,8 +78,8 @@ const Index = () => {
             onSortChange={handleSortChange}
           />
 
-          <section className="py-12">
-            <div className="container mx-auto px-4 content-max xl:max-w-6xl">
+          <section className="section">
+            <div className="container-wide">
               <div className={cn("flex items-center justify-between mb-8", isRTL && "flex-row-reverse")}>
                 <h2 className="text-2xl font-bold text-foreground">
                   {selectedCategory === 'all'
