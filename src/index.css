@@ -277,6 +277,7 @@
     @apply bg-card border border-border/60 rounded-xl;
     box-shadow: var(--shadow-sm);
     @apply card;
+    transform-style: preserve-3d;
   }
 
   .card-3d {
@@ -298,7 +299,7 @@
   .card-modern:hover {
     @apply border-border;
     box-shadow: var(--shadow-md);
-    transform: translateY(-1px);
+    transform: translateY(-4px) rotateX(1deg);
   }
 
   /* Interactive card with glow */
@@ -882,8 +883,8 @@
   }
 }
 
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
 
   *,
   *::before,
