@@ -51,7 +51,6 @@ const Index = () => {
   const handleModelChange = useCallback((model: string) => setSelectedModel(model), []);
   const handleSortChange = useCallback((sort: SortOption) => setSortOption(sort), []);
 
-  const pageTitle = isRTL ? 'مكتبة موجهات الذكاء الاصطناعي' : 'AI Prompt Library';
   const pageDescription = isRTL
     ? 'نبض مكتبة عربية/إنجليزية لموجهات الذكاء الاصطناعي مع تصنيفات ذكية ونتائج سريعة للنسخ والاستخدام.'
     : 'Nabdh is an AI prompt library in Arabic and English with smart categories and fast copy-ready prompts.';
@@ -59,7 +58,7 @@ const Index = () => {
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-background pb-20">
-        <Seo title={pageTitle} description={pageDescription} />
+        <Seo title={isRTL ? "الرئيسية" : "Home"} description={pageDescription} />
         <Header
           searchQuery={searchQuery}
           onSearchChange={handleSearchChange}
