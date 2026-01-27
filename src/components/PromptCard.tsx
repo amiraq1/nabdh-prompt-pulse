@@ -7,7 +7,7 @@ import { toast } from '@/hooks/use-toast';
 import { Prompt } from '@/hooks/usePrompts';
 import { useLike } from '@/hooks/useLike';
 import { useLanguage, translations } from '@/contexts/useLanguage';
-import { cn } from '@/lib/utils';
+import { cn, getOptimizedImageUrl } from '@/lib/utils';
 
 interface PromptCardProps {
   prompt: Prompt;
@@ -111,6 +111,15 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
     ? prompt.content.slice(0, 120) + '...'
     : prompt.content;
 
+  const baseImageUrl = prompt.image_url || '';
+  const srcSet = baseImageUrl
+    ? [
+        `${getOptimizedImageUrl(baseImageUrl, 480)} 480w`,
+        `${getOptimizedImageUrl(baseImageUrl, 768)} 768w`,
+        `${getOptimizedImageUrl(baseImageUrl, 1024)} 1024w`,
+      ].join(', ')
+    : undefined;
+
   // Stagger animation delay (capped for performance)
   const animationDelay = Math.min(index * 0.05, 0.3);
 
@@ -149,6 +158,8 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
             <img
               src={prompt.image_url}
               alt={displayTitle}
+              srcSet={srcSet}
+              sizes="(max-width: 640px) 100vw, 33vw"
               className="w-full h-full object-cover"
               loading="lazy"
             />
