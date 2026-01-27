@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Mail, Lock } from "lucide-react";
 import Header from "@/components/Header";
+import Seo from "@/components/Seo";
 
 export default function AuthPage() {
   const navigate = useNavigate();
@@ -17,6 +18,11 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const pageTitle = isRTL ? "تسجيل الدخول" : "Sign in";
+  const pageDescription = isRTL
+    ? "سجّل الدخول للوصول إلى موجهاتك المفضلة وإدارة حسابك في نبض."
+    : "Sign in to access your saved prompts and manage your Nabdh account.";
 
   // دالة تسجيل الدخول
   const handleLogin = async (e: React.FormEvent) => {
@@ -52,6 +58,7 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <Seo title={pageTitle} description={pageDescription} noIndex />
       <Header />
       <div className="flex-1 flex items-center justify-center p-4">
         <Card className="w-full max-w-md shadow-lg border-primary/10">

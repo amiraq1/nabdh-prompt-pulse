@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/contexts/AuthProvider";
 import { LanguageProvider } from "@/contexts/LanguageProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -24,7 +25,9 @@ createRoot(document.getElementById("root")!).render(
       <LanguageProvider>
         <TooltipProvider>
           <QueryClientProvider client={queryClient}>
-            <App />
+            <HelmetProvider>
+              <App />
+            </HelmetProvider>
           </QueryClientProvider>
         </TooltipProvider>
       </LanguageProvider>

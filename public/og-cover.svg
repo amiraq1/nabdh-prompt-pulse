@@ -1,0 +1,31 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Nabdh AI Prompt Library">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0b1220" />
+      <stop offset="1" stop-color="#0f172a" />
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(960 140) rotate(120) scale(420 520)">
+      <stop stop-color="#22d3ee" stop-opacity="0.35" />
+      <stop offset="1" stop-color="#22d3ee" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="glow2" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(260 520) rotate(-30) scale(420 520)">
+      <stop stop-color="#38bdf8" stop-opacity="0.25" />
+      <stop offset="1" stop-color="#38bdf8" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <rect width="1200" height="630" fill="url(#glow)" />
+  <rect width="1200" height="630" fill="url(#glow2)" />
+
+  <g fill="#e2e8f0">
+    <text x="88" y="250" font-family="Poppins, Arial, sans-serif" font-size="72" font-weight="700">Nabdh</text>
+    <text x="88" y="320" font-family="Poppins, Arial, sans-serif" font-size="32" font-weight="500" fill="#94a3b8">AI Prompt Library</text>
+    <text x="88" y="368" font-family="Poppins, Arial, sans-serif" font-size="20" font-weight="400" fill="#64748b">Arabic &amp; English prompts for modern AI models</text>
+  </g>
+
+  <g opacity="0.5">
+    <rect x="88" y="410" width="210" height="8" rx="4" fill="#22d3ee" />
+    <rect x="308" y="410" width="140" height="8" rx="4" fill="#38bdf8" />
+    <rect x="458" y="410" width="90" height="8" rx="4" fill="#0ea5e9" />
+  </g>
+</svg>

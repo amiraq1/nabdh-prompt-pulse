@@ -4,6 +4,7 @@ import HeroSection from '@/components/HeroSection';
 import FilterBar from '@/components/FilterBar';
 import PromptGrid from '@/components/PromptGrid';
 import ErrorBoundary, { InlineError } from '@/components/ErrorBoundary';
+import Seo from '@/components/Seo';
 import { SortOption } from '@/components/SortSelect';
 import { usePrompts } from '@/hooks/usePrompts';
 import { useLanguage, translations } from '@/contexts/useLanguage';
@@ -50,9 +51,15 @@ const Index = () => {
   const handleModelChange = useCallback((model: string) => setSelectedModel(model), []);
   const handleSortChange = useCallback((sort: SortOption) => setSortOption(sort), []);
 
+  const pageTitle = isRTL ? 'مكتبة موجهات الذكاء الاصطناعي' : 'AI Prompt Library';
+  const pageDescription = isRTL
+    ? 'نبض مكتبة عربية/إنجليزية لموجهات الذكاء الاصطناعي مع تصنيفات ذكية ونتائج سريعة للنسخ والاستخدام.'
+    : 'Nabdh is an AI prompt library in Arabic and English with smart categories and fast copy-ready prompts.';
+
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-background pb-20">
+        <Seo title={pageTitle} description={pageDescription} />
         <Header
           searchQuery={searchQuery}
           onSearchChange={handleSearchChange}

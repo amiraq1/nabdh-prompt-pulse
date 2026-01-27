@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Save, Upload, User as UserIcon, Lock, Palette, Globe, Trash2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import Seo from "@/components/Seo";
 
 export default function SettingsPage() {
   const { user, session } = useAuth();
@@ -34,6 +35,11 @@ export default function SettingsPage() {
   // Password State
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const pageTitle = isRTL ? "\u0627\u0644\u0625\u0639\u062f\u0627\u062f\u0627\u062a" : "Settings";
+  const pageDescription = isRTL
+    ? "\u0642\u0645 \u0628\u0625\u062f\u0627\u0631\u0629 \u0645\u0644\u0641\u0643 \u0627\u0644\u0634\u062e\u0635\u064a \u0648\u0625\u0639\u062f\u0627\u062f\u0627\u062a \u0627\u0644\u0623\u0645\u0627\u0646 \u0648\u0627\u0644\u0644\u063a\u0629 \u0641\u064a \u0646\u0628\u0636."
+    : "Manage your profile, security, and language preferences in Nabdh.";
 
   const getErrorMessage = useCallback((error: unknown) => {
     if (error instanceof Error) return error.message;
@@ -192,6 +198,7 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-background pb-10">
+      <Seo title={pageTitle} description={pageDescription} noIndex />
       <Header />
       <main className="container max-w-4xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">{isRTL ? "гАезогогй" : "Settings"}</h1>

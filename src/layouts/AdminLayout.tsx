@@ -18,6 +18,7 @@ import LanguageToggle from '@/components/LanguageToggle';
 import { AuthGuard } from '@/components/auth/AuthGuard';
 import { useAuth } from '@/contexts/useAuth';
 import { toast } from 'sonner';
+import Seo from '@/components/Seo';
 
 const AdminLayoutContent = () => {
   const { language, isRTL } = useLanguage();
@@ -36,6 +37,7 @@ const AdminLayoutContent = () => {
 
   return (
     <div className={cn("min-h-screen bg-background flex", isRTL && "flex-row-reverse")}>
+      <Seo title={isRTL ? "لوحة التحكم" : "Admin Dashboard"} noIndex />
       {/* Mobile Overlay */}
       {sidebarOpen && (
         <div
