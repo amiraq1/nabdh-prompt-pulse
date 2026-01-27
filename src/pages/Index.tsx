@@ -79,7 +79,7 @@ const Index = () => {
           />
 
           <section className="py-12">
-            <div className="container mx-auto px-4">
+            <div className="container mx-auto px-4 content-max">
               <div className={cn("flex items-center justify-between mb-8", isRTL && "flex-row-reverse")}>
                 <h2 className="text-2xl font-bold text-foreground">
                   {selectedCategory === 'all'

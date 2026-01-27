@@ -52,7 +52,7 @@ const HeroSection = () => {
           </h1>
 
           {/* Subtitle - Responsive text */}
-          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground mb-6 sm:mb-8 md:mb-10 animate-fade-in px-2" style={{ animationDelay: '0.2s' }}>
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground mb-6 sm:mb-8 md:mb-10 animate-fade-in px-2 text-measure mx-auto" style={{ animationDelay: '0.2s' }}>
             {t.heroSubtitle[language]}
             <br className="hidden sm:block" />
             <span className="hidden sm:inline">{t.boostProductivity[language]}</span>
