@@ -12,6 +12,20 @@ import AddToCollectionDialog from "@/components/AddToCollectionDialog";
 import { getOptimizedImageUrl } from "@/lib/imageOptimizer";
 import { useNavigate } from "react-router-dom";
 
+const CATEGORY_LABELS: Record<string, { en: string; ar: string }> = {
+  coding: { en: "Coding", ar: "برمجة" },
+  writing: { en: "Writing", ar: "كتابة" },
+  art: { en: "Art & Design", ar: "فن وتصميم" },
+  marketing: { en: "Marketing", ar: "تسويق" },
+  productivity: { en: "Productivity", ar: "إنتاجية" },
+  seo: { en: "SEO", ar: "سيو" },
+};
+
+const hasBadEncoding = (value?: string | null) => {
+  if (!value) return false;
+  return value.includes("�") || value.includes("�") || value.includes("ï¿½");
+};
+
 const PromptCard = ({ prompt, prioritizeImage = false }: { prompt: Prompt; prioritizeImage?: boolean }) => {
   const { toast } = useToast();
   const { isRTL } = useLanguage();
@@ -24,8 +38,8 @@ const PromptCard = ({ prompt, prioritizeImage = false }: { prompt: Prompt; prior
     navigator.clipboard.writeText(prompt.content);
     setIsCopied(true);
     toast({
-      title: isRTL ? "?? ?????!" : "Copied!",
-      description: isRTL ? "?? ??? ???? ??? ???????." : "Prompt copied to clipboard.",
+      title: isRTL ? "تم النسخ!" : "Copied!",
+      description: isRTL ? "تم نسخ النص إلى الحافظة." : "Prompt copied to clipboard.",
     });
     setTimeout(() => setIsCopied(false), 2000);
   };
@@ -35,6 +49,13 @@ const PromptCard = ({ prompt, prioritizeImage = false }: { prompt: Prompt; prior
     event.stopPropagation();
     navigate(`/submit?remix_id=${prompt.id}`);
   };
+
+  const displayTitle =
+    isRTL && prompt.title_ar && !hasBadEncoding(prompt.title_ar)
+      ? prompt.title_ar
+      : prompt.title;
+
+  const categoryLabel = CATEGORY_LABELS[prompt.category]?.[isRTL ? "ar" : "en"] || prompt.category;
 
   return (
     <motion.div
@@ -67,22 +88,28 @@ const PromptCard = ({ prompt, prioritizeImage = false }: { prompt: Prompt; prior
 
           <div className="absolute top-3 left-3">
             <Badge variant="secondary" className="backdrop-blur-md bg-background/30 text-xs font-normal border-white/10 text-white">
-              {prompt.category}
+              {categoryLabel}
             </Badge>
           </div>
         </div>
 
         <div className="p-5 flex-1 flex flex-col">
           <div className="flex justify-between items-start mb-2">
-            <h3 className="font-semibold text-lg line-clamp-1 group-hover:text-primary transition-colors">
-              {isRTL ? (prompt.title_ar || prompt.title) : prompt.title}
+            <h3
+              className={cn("font-semibold text-lg line-clamp-1 group-hover:text-primary transition-colors bidi-plaintext", isRTL && "text-right")}
+              dir="auto"
+            >
+              {displayTitle}
             </h3>
             <span className="text-xs text-muted-foreground bg-secondary/50 px-2 py-1 rounded-md">
               {prompt.ai_model.toUpperCase()}
             </span>
           </div>
 
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-3 flex-1 break-words whitespace-pre-wrap">
+          <p
+            className={cn("text-sm text-muted-foreground line-clamp-2 mb-3 flex-1 break-words whitespace-pre-wrap bidi-plaintext", isRTL && "text-right")}
+            dir="auto"
+          >
             {prompt.content}
           </p>
 

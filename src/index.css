@@ -441,6 +441,11 @@
     -webkit-backface-visibility: hidden;
   }
 
+  /* Improve mixed RTL/LTR text rendering */
+  .bidi-plaintext {
+    unicode-bidi: plaintext;
+  }
+
   /* Hint browser about upcoming transforms */
   .will-change-transform {
     will-change: transform, opacity;

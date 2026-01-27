@@ -41,11 +41,11 @@ beforeAll(async () => {
   ({ default: PromptCard } = await import('./PromptCard'));
 });
 
-// ������ ����� �������� (Mock Data)
+// Mock data
 const mockPrompt = {
   id: '123',
   title: 'Test Prompt Title',
-  title_ar: '����� ������',
+  title_ar: 'عنوان تجريبي',
   content: 'This is the prompt content for testing.',
   category: 'coding',
   ai_model: 'gpt-4',
@@ -64,7 +64,7 @@ const createTestQueryClient = () =>
     },
   });
 
-// ���� ������ ��������� (Wrapper)
+// Test wrapper
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <QueryClientProvider client={createTestQueryClient()}>
     <LanguageProvider>
@@ -85,7 +85,7 @@ describe('PromptCard Component', () => {
       </TestWrapper>
     );
 
-    // ������ �� ���� ������� ��������� (���������)
+// default title should be visible
     expect(screen.getByText('Test Prompt Title')).toBeInTheDocument();
   });
 

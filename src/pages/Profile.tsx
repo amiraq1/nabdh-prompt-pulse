@@ -53,7 +53,7 @@ export default function Profile() {
   if (!id) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">
-        {isRTL ? "���� ������ ��� ��������" : "User not found"}
+        {isRTL ? "المستخدم غير موجود" : "User not found"}
       </div>
     );
   }
@@ -61,7 +61,7 @@ export default function Profile() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        {isRTL ? "��� �������..." : "Loading..."}
+        {isRTL ? "جار التحميل..." : "Loading..."}
       </div>
     );
   }
@@ -69,7 +69,7 @@ export default function Profile() {
   if (!profile) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">
-        {isRTL ? "�������� ��� �����" : "User not found"}
+        {isRTL ? "المستخدم غير موجود" : "User not found"}
       </div>
     );
   }
@@ -103,7 +103,7 @@ export default function Profile() {
               <div className="flex-1">
                 <div className="flex items-center gap-3 flex-wrap">
                   <h1 className="text-2xl font-bold">
-                    {profile.full_name || profile.username || (isRTL ? "������" : "User")}
+                    {profile.full_name || profile.username || (isRTL ? "مستخدم" : "User")}
                   </h1>
                   {profile.username && (
                     <Badge variant="secondary" className="text-xs">
@@ -134,7 +134,7 @@ export default function Profile() {
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4" />
                       <span>
-                        {isRTL ? "����" : "Joined"} {format(new Date(profile.created_at), "MMM yyyy")}
+                        {isRTL ? "انضم" : "Joined"} {format(new Date(profile.created_at), "MMM yyyy")}
                       </span>
                     </div>
                   )}
@@ -146,10 +146,10 @@ export default function Profile() {
 
         <div className="mb-6">
           <h2 className="text-2xl font-bold">
-            {isRTL ? "������ ��������" : "User Prompts"}
+            {isRTL ? "موجهات المستخدم" : "User Prompts"}
           </h2>
           <p className="text-muted-foreground">
-            {isRTL ? "�� �������� �������� ���� ����� ��������." : "All approved prompts published by this user."}
+            {isRTL ? "كل الموجهات المعتمدة التي نشرها هذا المستخدم." : "All approved prompts published by this user."}
           </p>
         </div>
 

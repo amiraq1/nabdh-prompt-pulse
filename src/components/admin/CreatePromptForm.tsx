@@ -25,10 +25,10 @@ interface CreatePromptFormProps {
 }
 
 const categories = [
-  { id: 'coding', en: 'Coding', ar: 'ط§ظ„ط¨ط±ظ…ط¬ط©' },
-  { id: 'writing', en: 'Writing', ar: 'ط§ظ„ظƒطھط§ط¨ط©' },
-  { id: 'art', en: 'Art', ar: 'ط§ظ„ظپظ†' },
-  { id: 'marketing', en: 'Marketing', ar: 'ط§ظ„طھط³ظˆظٹظ‚' },
+  { id: 'coding', en: 'Coding', ar: 'برمجة' },
+  { id: 'writing', en: 'Writing', ar: 'كتابة' },
+  { id: 'art', en: 'Art', ar: 'فن' },
+  { id: 'marketing', en: 'Marketing', ar: 'تسويق' },
 ];
 
 const models = [
@@ -91,8 +91,8 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
         setPreviewUrl(data.image_url || null);
         setParentId(data.id);
         toast({
-          title: isRTL ? '???? ???????!' : 'Ready to remix!',
-          description: isRTL ? '?? ??? ?????? ?????? ??????.' : 'Loaded original prompt data.',
+          title: isRTL ? 'جاهز للتعديل!' : 'Ready to remix!',
+          description: isRTL ? 'تم نسخ بيانات الموجه الأصلي.' : 'Loaded original prompt data.',
         });
       }
     };

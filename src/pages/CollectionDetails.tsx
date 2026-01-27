@@ -64,7 +64,7 @@ export default function CollectionDetails() {
         <div className="mb-8 border-b pb-4">
           <h1 className="text-3xl font-bold">{collection?.title}</h1>
           <p className="text-muted-foreground">
-            {prompts?.length || 0} {isRTL ? "���� �����" : "saved prompts"}
+            {prompts?.length || 0} {isRTL ? "موجه محفوظ" : "saved prompts"}
           </p>
         </div>
 
@@ -73,7 +73,7 @@ export default function CollectionDetails() {
         {!isLoading && prompts?.length === 0 && (
           <div className="text-center py-20">
             <p className="text-muted-foreground">
-              {isRTL ? "��� �������� �����." : "This collection is empty."}
+              {isRTL ? "هذه المجموعة فارغة." : "This collection is empty."}
             </p>
           </div>
         )}
