@@ -274,6 +274,10 @@
 
   /* Modern card styles */
   .card {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: 16px;
+    padding: 16px;
     transition: transform var(--motion-base) var(--ease-out),
       box-shadow var(--motion-base) var(--ease-out),
       border-color var(--motion-base) var(--ease-out);
