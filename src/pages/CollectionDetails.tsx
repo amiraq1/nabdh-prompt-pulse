@@ -18,7 +18,11 @@ export default function CollectionDetails() {
     queryKey: ["collection-meta", id],
     enabled: !!id,
     queryFn: async () => {
-      const { data, error } = await supabase.from("collections").select("*").eq("id", id).single();
+      const { data, error } = await supabase
+        .from("collections")
+        .select("*")
+        .eq("id", id)
+        .single();
       if (error) {
         navigate("/collections");
         throw error;
@@ -60,7 +64,7 @@ export default function CollectionDetails() {
         <div className="mb-8 border-b pb-4">
           <h1 className="text-3xl font-bold">{collection?.title}</h1>
           <p className="text-muted-foreground">
-            {prompts?.length || 0} {isRTL ? "Ù…ÙˆØ¬Ù‡ Ù…Ø­ÙÙˆØ¸" : "saved prompts"}
+            {prompts?.length || 0} {isRTL ? "ãæÌå ãÍİæÙ" : "saved prompts"}
           </p>
         </div>
 
@@ -69,7 +73,7 @@ export default function CollectionDetails() {
         {!isLoading && prompts?.length === 0 && (
           <div className="text-center py-20">
             <p className="text-muted-foreground">
-              {isRTL ? "Ù‡Ø°Ù‡ Ø§Ù„Ù…Ø¬Ù…ÙˆØ¹Ø© ÙØ§Ø±ØºØ©." : "This collection is empty."}
+              {isRTL ? "åĞå ÇáãÌãæÚÉ İÇÑÛÉ." : "This collection is empty."}
             </p>
           </div>
         )}
