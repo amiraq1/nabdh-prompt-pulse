@@ -340,6 +340,14 @@
     box-shadow: 0 0 0 2px hsl(var(--ring) / 0.6);
   }
 
+  .button-press {
+    transition: transform 150ms ease-out, box-shadow 150ms ease-out;
+  }
+
+  .button-press:active {
+    transform: scale(0.98);
+  }
+
   .table-wrapper {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
