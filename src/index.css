@@ -137,7 +137,7 @@
     /* Typography */
     --font-display: "Space Grotesk", system-ui, sans-serif;
     --font-body: "Manrope", system-ui, sans-serif;
-    --font-ar: "Tajawal", "Almarai", "Cairo", sans-serif;
+    --font-ar: "Tajawal", "Almarai", sans-serif;
 
     /* Sidebar */
     --sidebar-background: 222 47% 5%;

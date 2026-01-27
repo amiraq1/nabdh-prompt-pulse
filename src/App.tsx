@@ -30,7 +30,7 @@ const AdminFallback = () => (
 
 const App = () => (
   <>
-    <SpeedInsights />
+    {import.meta.env.PROD && <SpeedInsights />}
     <Toaster />
     <Sonner />
     <MagicBackground />
