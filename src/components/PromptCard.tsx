@@ -158,7 +158,7 @@ const PromptCard = memo(({ prompt, index = 0 }: PromptCardProps) => {
           <div className="mb-4 rounded-lg overflow-hidden border border-border/30 bg-secondary/50 relative aspect-video">
             <img
               src={prompt.image_url}
-              alt={displayTitle}
+              alt={displayTitle || "Prompt image"}
               srcSet={srcSet}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               className="w-full h-full object-cover"
