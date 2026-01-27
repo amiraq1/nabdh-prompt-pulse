@@ -312,6 +312,14 @@
     transform: translateY(-4px) rotateX(1deg);
   }
 
+  .table-wrapper {
+    overflow-x: auto;
+  }
+
+  .table {
+    min-width: 720px;
+  }
+
   /* Interactive card with glow */
   .card-interactive {
     @apply card-modern;
