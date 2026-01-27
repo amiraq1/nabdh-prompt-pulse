@@ -100,9 +100,10 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks: {
           // Vendor chunks
-          'react-vendor': ['react', 'react-dom'],
           'router': ['react-router-dom'],
           'query': ['@tanstack/react-query'],
+          'motion': ['framer-motion'],
+          'icons': ['lucide-react'],
           'ui-core': [
             '@radix-ui/react-select',
             '@radix-ui/react-dialog',
