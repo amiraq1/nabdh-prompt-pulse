@@ -13,11 +13,23 @@ vi.mock('@/hooks/useLike', () => ({
   }),
 }));
 
-// »н«д«  жегн… бб«ќ »«— (Mock Data)
+vi.mock('@/hooks/useBookmark', () => ({
+  useBookmark: () => ({
+    isBookmarked: false,
+    toggleBookmark: vi.fn(),
+    isLoading: false,
+  }),
+}));
+
+vi.mock('@/components/AddToCollectionDialog', () => ({
+  default: () => null,
+}));
+
+// пњљпњљпњљпњљпњљпњљ пњљпњљпњљпњљпњљ пњљпњљпњљпњљпњљпњљпњљпњљ (Mock Data)
 const mockPrompt = {
   id: '123',
   title: 'Test Prompt Title',
-  title_ar: 'Џдж«д  ћ—н»н',
+  title_ar: 'пњљпњљпњљпњљпњљ пњљпњљпњљпњљпњљпњљ',
   content: 'This is the prompt content for testing.',
   category: 'coding',
   ai_model: 'gpt-4',
@@ -36,7 +48,7 @@ const createTestQueryClient = () =>
     },
   });
 
-// џб«Ё б жЁн— «бяжд я”  (Wrapper)
+// пњљпњљпњљпњљ пњљпњљпњљпњљпњљпњљ пњљпњљпњљпњљпњљпњљпњљпњљпњљ (Wrapper)
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <QueryClientProvider client={createTestQueryClient()}>
     <LanguageProvider>
@@ -55,7 +67,7 @@ describe('PromptCard Component', () => {
       </TestWrapper>
     );
 
-    // «б Ќёё гд ўеж— «бЏдж«д «б≈дћбн“н («б«Ё —«÷н)
+    // пњљпњљпњљпњљпњљпњљ пњљпњљ пњљпњљпњљпњљ пњљпњљпњљпњљпњљпњљпњљ пњљпњљпњљпњљпњљпњљпњљпњљпњљ (пњљпњљпњљпњљпњљпњљпњљпњљпњљ)
     expect(screen.getByText('Test Prompt Title')).toBeInTheDocument();
   });
 
