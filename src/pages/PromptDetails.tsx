@@ -9,6 +9,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { useLike } from "@/hooks/useLike";
 import AddToCollectionDialog from "@/components/AddToCollectionDialog";
+import { getCategoryImage } from "@/lib/categoryImages";
+import { getOptimizedImageUrl } from "@/lib/imageOptimizer";
 import {
     Copy,
     Check,
@@ -117,6 +119,21 @@ export default function PromptDetails() {
         { locale: isRTL ? ar : enUS }
     );
 
+    const finalImageUrl = prompt.image || prompt.image_url || getCategoryImage(prompt.category, prompt.id);
+
+    // AI Model Display names
+    const MODEL_LABELS: Record<string, string> = {
+        "gpt-4": "GPT-4",
+        "gpt-3.5": "GPT-3.5",
+        "midjourney": "Midjourney",
+        "dalle": "DALL·E",
+        "stable-diffusion": "Stable Diff.",
+        "claude": "Claude",
+        "gemini": "Gemini",
+    };
+
+    const modelDisplay = MODEL_LABELS[prompt.ai_model] || prompt.ai_model?.toUpperCase();
+
     return (
         <div className="min-h-screen bg-background">
             <SEO title={displayTitle} description={prompt.content.slice(0, 160)} />
@@ -134,13 +151,13 @@ export default function PromptDetails() {
                         <Badge variant="secondary" className="text-sm">
                             {categoryLabel}
                         </Badge>
-                        <Badge variant="outline" className="text-sm">
-                            {prompt.ai_model.toUpperCase()}
+                        <Badge variant="outline" className="text-sm" translate="no">
+                            {modelDisplay}
                         </Badge>
                     </div>
 
                     <h1
-                        className="text-3xl md:text-4xl font-bold mb-4"
+                        className="text-3xl md:text-4xl font-bold mb-4 bidi-plaintext"
                         dir="auto"
                     >
                         {displayTitle}
@@ -158,6 +175,21 @@ export default function PromptDetails() {
                     </div>
                 </div>
 
+                {/* Hero Image */}
+                <div className="relative w-full aspect-video md:aspect-[21/9] rounded-2xl overflow-hidden mb-8 border border-border/50 shadow-sm bg-muted">
+                    <img
+                        src={getOptimizedImageUrl(finalImageUrl, 1200)}
+                        alt={displayTitle}
+                        className="object-cover w-full h-full"
+                        onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.parentElement!.style.backgroundColor = 'hsl(var(--primary) / 0.1)';
+                        }}
+                    />
+                    {/* Fallback pattern overlay if using category image, to ensure text readability if any overlay text is added later */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/10 to-transparent pointer-events-none" />
+                </div>
+
                 {/* Prompt Content */}
                 <div className="relative mb-8">
                     <div className="absolute top-3 right-3 flex items-center gap-2">
@@ -169,12 +201,12 @@ export default function PromptDetails() {
 
                     <div
                         className={cn(
-                            "bg-card border border-border rounded-xl p-6 pt-12",
+                            "bg-card border border-border rounded-xl p-6 pt-12 shadow-sm",
                             isRTL && "text-right"
                         )}
                     >
                         <p
-                            className="text-foreground leading-relaxed whitespace-pre-wrap"
+                            className="text-foreground leading-relaxed whitespace-pre-wrap bidi-plaintext text-lg font-mono bg-muted/30 p-4 rounded-lg border border-border/50"
                             dir="auto"
                         >
                             {prompt.content}

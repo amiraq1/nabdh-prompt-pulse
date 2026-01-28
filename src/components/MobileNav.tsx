@@ -1,21 +1,30 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Search, PlusSquare, User, BookMarked } from "lucide-react";
+import { Home, Search, PlusSquare, User, BookMarked, LogIn } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/useAuth";
+import { useLanguage } from "@/contexts/useLanguage";
 
 export default function MobileNav() {
   const { pathname } = useLocation();
   const { user } = useAuth();
+  const { isRTL } = useLanguage();
 
-  if (!user) return null;
-
-  const navItems = [
-    { icon: Home, label: "Home", path: "/" },
-    { icon: Search, label: "Search", path: "/search" },
-    { icon: PlusSquare, label: "Add", path: "/submit" },
-    { icon: BookMarked, label: "Saved", path: "/bookmarks" },
-    { icon: User, label: "Profile", path: `/user/${user.id}` },
+  // Navigation items for logged-in users
+  const authNavItems = [
+    { icon: Home, label: isRTL ? "الرئيسية" : "Home", path: "/" },
+    { icon: PlusSquare, label: isRTL ? "إضافة" : "Add", path: "/submit" },
+    { icon: BookMarked, label: isRTL ? "المحفوظة" : "Saved", path: "/bookmarks" },
+    { icon: User, label: isRTL ? "الملف" : "Profile", path: `/user/${user?.id}` },
   ];
+
+  // Navigation items for guest users
+  const guestNavItems = [
+    { icon: Home, label: isRTL ? "الرئيسية" : "Home", path: "/" },
+    { icon: PlusSquare, label: isRTL ? "إضافة" : "Add", path: "/submit" },
+    { icon: LogIn, label: isRTL ? "دخول" : "Login", path: "/auth" },
+  ];
+
+  const navItems = user ? authNavItems : guestNavItems;
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-t border-border/50 pb-safe md:hidden">
@@ -40,3 +49,4 @@ export default function MobileNav() {
     </div>
   );
 }
+

@@ -890,6 +890,49 @@ h3 {
     }
   }
 
+  /* Nabdh Logo Heartbeat Animation */
+  .animate-nabdh-pulse {
+    animation: nabdh-heartbeat 2s ease-in-out infinite;
+  }
+
+  @keyframes nabdh-heartbeat {
+    0%, 100% {
+      transform: scale(1);
+      filter: drop-shadow(0 0 8px hsl(var(--primary) / 0.4));
+    }
+    14% {
+      transform: scale(1.1);
+      filter: drop-shadow(0 0 16px hsl(var(--primary) / 0.6));
+    }
+    28% {
+      transform: scale(1);
+      filter: drop-shadow(0 0 8px hsl(var(--primary) / 0.4));
+    }
+    42% {
+      transform: scale(1.05);
+      filter: drop-shadow(0 0 12px hsl(var(--primary) / 0.5));
+    }
+    56% {
+      transform: scale(1);
+      filter: drop-shadow(0 0 8px hsl(var(--primary) / 0.4));
+    }
+  }
+
+  /* Logo glow effect */
+  .logo-glow {
+    box-shadow: 
+      0 0 20px hsl(var(--primary) / 0.3),
+      0 0 40px hsl(var(--primary) / 0.1),
+      inset 0 0 20px hsl(var(--primary) / 0.1);
+  }
+
+  .logo-glow:hover {
+    box-shadow: 
+      0 0 30px hsl(var(--primary) / 0.5),
+      0 0 60px hsl(var(--primary) / 0.2),
+      inset 0 0 30px hsl(var(--primary) / 0.15);
+  }
+
   @keyframes shake {
     0%,
     100% {

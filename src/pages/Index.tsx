@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
 import { useLanguage } from "@/contexts/useLanguage";
-import { usePrompts } from "@/hooks/usePrompts";
+import { usePrompts, usePromptsCount } from "@/hooks/usePrompts";
 import Header from "@/components/Header";
 import PromptGrid from "@/components/PromptGrid";
 import CategoryFilter from "@/components/CategoryFilter";
+import FeaturedPrompts from "@/components/FeaturedPrompts";
 import SEO from "@/components/Seo";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -29,10 +30,15 @@ export default function Index() {
     fetchNextPage,
   } = usePrompts(debouncedSearch, selectedCategory);
 
+  const { data: totalCount } = usePromptsCount(debouncedSearch, selectedCategory);
+
   // Flatten all pages into a single array
   const prompts = useMemo(() => {
     return data?.pages.flat() || [];
   }, [data]);
+
+  // Only show featured section when not searching/filtering
+  const showFeatured = !searchQuery && selectedCategory === "all";
 
   return (
     <div className="min-h-screen bg-background relative">
@@ -70,11 +76,28 @@ export default function Index() {
           </div>
         </div>
 
+        {/* Featured Prompts Section - Only show when not searching */}
+        {showFeatured && <FeaturedPrompts />}
+
         <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md py-4 border-b border-border/40">
           <CategoryFilter
             selectedCategory={selectedCategory}
             onSelectCategory={setSelectedCategory}
           />
+        </div>
+
+        {/* Section Title for All Prompts */}
+        <div className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+          <h2 className="text-xl font-semibold text-foreground">
+            {isRTL ? "جميع البرومبتات" : "All Prompts"}
+          </h2>
+          <span className="text-sm text-muted-foreground flex items-center gap-1">
+            {isLoading ? (
+              <Loader2 className="h-3 w-3 animate-spin" />
+            ) : (
+              `(${totalCount ?? prompts.length})`
+            )}
+          </span>
         </div>
 
         <PromptGrid prompts={prompts} isLoading={isLoading} />

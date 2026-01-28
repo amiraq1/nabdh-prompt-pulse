@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
 
@@ -15,6 +15,8 @@ export const promptKeys = {
   all: ['prompts'] as const,
   infinite: (search?: string, category?: string, model?: string) =>
     ['prompts', 'infinite', search, category, model] as const,
+  count: (search?: string, category?: string, model?: string) =>
+    ['prompts', 'count', search, category, model] as const,
 };
 
 const PAGE_SIZE = 12;
@@ -30,22 +32,17 @@ export const usePrompts = (search?: string, category?: string, model?: string) =
         .range(pageParam * PAGE_SIZE, (pageParam + 1) * PAGE_SIZE - 1)
         .order('created_at', { ascending: false });
 
-      // تصفية الفئات (Categories)
       if (category && category !== 'all') {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         query = query.eq('category', category as any);
       }
 
-      // تصفية الموديلات (AI Models)
       if (model && model !== 'all') {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         query = query.eq('ai_model', model as any);
       }
 
-      // البحث (Search)
       if (search && search.trim()) {
-        // نستخدم textSearch للبحث السريع في العمود الذي أنشأناه سابقاً
-        // تأكد من أنك نفذت كود SQL الخاص بـ search_vector
         query = query.textSearch('search_vector', search.trim().split(' ').join(' & '));
       }
 
@@ -58,11 +55,38 @@ export const usePrompts = (search?: string, category?: string, model?: string) =
       return data as Prompt[];
     },
     getNextPageParam: (lastPage: Prompt[], allPages: Prompt[][]) => {
-      // إذا كانت الصفحة الحالية أقل من الحجم الكامل، فلا يوجد المزيد
       return lastPage.length === PAGE_SIZE ? allPages.length : undefined;
     },
     initialPageParam: 0,
-    staleTime: 1000 * 60 * 5, // 5 دقائق
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const usePromptsCount = (search?: string, category?: string, model?: string) => {
+  return useQuery({
+    queryKey: promptKeys.count(search, category, model),
+    queryFn: async () => {
+      let query = supabase.from('prompts').select('*', { count: 'exact', head: true });
+
+      if (category && category !== 'all') {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        query = query.eq('category', category as any);
+      }
+
+      if (model && model !== 'all') {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        query = query.eq('ai_model', model as any);
+      }
+
+      if (search && search.trim()) {
+        query = query.textSearch('search_vector', search.trim().split(' ').join(' & '));
+      }
+
+      const { count, error } = await query;
+      if (error) throw error;
+      return count || 0;
+    },
+    staleTime: 1000 * 60 * 5,
   });
 };
 

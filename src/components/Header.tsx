@@ -38,17 +38,35 @@ const Header = ({ searchQuery, onSearchChange, suggestions = [] }: HeaderProps) 
             isRTL && "flex-row-reverse",
           )}
         >
-          {/* Logo */}
-          <div className={cn("flex items-center gap-2 flex-shrink-0", isRTL && "flex-row-reverse")}>
+          {/* Logo - Interactive Button */}
+          <Link
+            to="/"
+            className={cn(
+              "flex items-center gap-2.5 flex-shrink-0 group cursor-pointer",
+              "transition-all duration-300 ease-out",
+              "hover:scale-105 active:scale-95",
+              isRTL && "flex-row-reverse"
+            )}
+          >
             <div className="relative">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-primary/20 flex items-center justify-center glow-sm">
-                <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+              {/* Animated glow ring */}
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary via-cyan-400 to-primary opacity-0 group-hover:opacity-60 blur-md transition-opacity duration-500 animate-pulse" />
+
+              {/* Main logo container */}
+              <div className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-primary/30 via-primary/20 to-cyan-500/20 flex items-center justify-center border border-primary/30 group-hover:border-primary/60 transition-all duration-300 overflow-hidden logo-glow animate-nabdh-pulse">
+                {/* Background pulse effect */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                {/* Animated Zap icon */}
+                <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-primary group-hover:text-cyan-300 transition-colors duration-300" />
               </div>
             </div>
-            <span className="text-lg sm:text-xl font-bold text-foreground glow-text">
+
+            {/* Text with gradient */}
+            <span className="text-xl sm:text-2xl font-extrabold bg-gradient-to-r from-foreground via-primary to-cyan-400 bg-clip-text text-transparent group-hover:from-primary group-hover:via-cyan-300 group-hover:to-foreground transition-all duration-500 drop-shadow-[0_0_12px_hsl(var(--primary)/0.4)]">
               {isRTL ? "نبض" : "Nabdh"}
             </span>
-          </div>
+          </Link>
 
           {/* Desktop Search Bar */}
           <div className="flex-1 max-w-xl hidden md:block">

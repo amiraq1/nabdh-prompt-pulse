@@ -15,15 +15,9 @@ const Bookmarks = lazy(() => import("./pages/Bookmarks"));
 const MyCollections = lazy(() => import("./pages/MyCollections"));
 const CollectionDetails = lazy(() => import("./pages/CollectionDetails"));
 const PromptDetails = lazy(() => import("./pages/PromptDetails"));
+const SubmitPrompt = lazy(() => import("./pages/SubmitPrompt"));
 const NotFound = lazy(() => import("./pages/NotFound"));
-
-const AdminLayout = lazy(() => import("./layouts/AdminLayout"));
-const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
-const UsersPage = lazy(() => import("./pages/admin/UsersPage"));
-const AdminSubmissions = lazy(() => import("./pages/admin/AdminSubmissions"));
-const CreatePromptPage = lazy(() => import("./pages/admin/CreatePromptPage"));
-const AuditLogPage = lazy(() => import("./pages/admin/AuditLogPage"));
-const SettingsPage = lazy(() => import("./pages/admin/SettingsPage"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 
 const PageLoader = () => (
   <div className="flex h-screen w-full items-center justify-center">
@@ -53,16 +47,8 @@ const App = () => (
           <Route path="/collections" element={<MyCollections />} />
           <Route path="/collections/:id" element={<CollectionDetails />} />
           <Route path="/prompts/:id" element={<PromptDetails />} />
-
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="users" element={<UsersPage />} />
-            <Route path="submissions" element={<AdminSubmissions />} />
-            <Route path="create" element={<CreatePromptPage />} />
-            <Route path="audit" element={<AuditLogPage />} />
-            <Route path="settings" element={<SettingsPage />} />
-          </Route>
-
+          <Route path="/submit" element={<SubmitPrompt />} />
+          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

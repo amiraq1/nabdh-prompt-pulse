@@ -11,6 +11,7 @@ import { useLike } from '@/hooks/useLike';
 import AddToCollectionDialog from "@/components/AddToCollectionDialog";
 import { getOptimizedImageUrl } from "@/lib/imageOptimizer";
 import { useNavigate } from "react-router-dom";
+import { getCategoryImage } from '@/lib/categoryImages';
 
 const CATEGORY_LABELS: Record<string, { en: string; ar: string }> = {
   all: { en: "All", ar: "الكل" },
@@ -22,7 +23,7 @@ const CATEGORY_LABELS: Record<string, { en: string; ar: string }> = {
 
 const hasBadEncoding = (value?: string | null) => {
   if (!value) return false;
-  return value.includes("�") || value.includes("�") || value.includes("ï¿½");
+  return value.includes("") || value.includes("") || value.includes("ï¿½");
 };
 
 const PromptCard = ({ prompt, prioritizeImage = false }: { prompt: Prompt; prioritizeImage?: boolean }) => {
@@ -43,7 +44,9 @@ const PromptCard = ({ prompt, prioritizeImage = false }: { prompt: Prompt; prior
     setTimeout(() => setIsCopied(false), 2000);
   };
 
-  const rawImageUrl = (prompt as { image?: string | null }).image || prompt.image_url;
+  // Fallback to stock category image if user didn't provide one
+  const finalImageUrl = (prompt as { image?: string | null }).image || prompt.image_url || getCategoryImage(prompt.category, prompt.id);
+
   const handleRemix = (event: React.MouseEvent) => {
     event.stopPropagation();
     navigate(`/submit?remix_id=${prompt.id}`);
@@ -56,6 +59,19 @@ const PromptCard = ({ prompt, prioritizeImage = false }: { prompt: Prompt; prior
 
   const categoryLabel = CATEGORY_LABELS[prompt.category]?.[isRTL ? "ar" : "en"] || prompt.category;
 
+  // AI Model Display names
+  const MODEL_LABELS: Record<string, string> = {
+    "gpt-4": "GPT-4",
+    "gpt-3.5": "GPT-3.5",
+    "midjourney": "Midjourney",
+    "dalle": "DALL·E",
+    "stable-diffusion": "Stable Diff.",
+    "claude": "Claude",
+    "gemini": "Gemini",
+  };
+
+  const modelDisplay = MODEL_LABELS[prompt.ai_model] || prompt.ai_model?.toUpperCase();
+
   return (
     <motion.div
       whileHover={{ y: -5, scale: 1.02 }}
@@ -65,26 +81,25 @@ const PromptCard = ({ prompt, prioritizeImage = false }: { prompt: Prompt; prior
     >
       <div className="group relative h-full bg-card border border-border/50 rounded-xl overflow-hidden hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 flex flex-col">
         <div className="relative aspect-video w-full overflow-hidden bg-muted">
-          {rawImageUrl ? (
-            <img
-              src={getOptimizedImageUrl(rawImageUrl, 640)}
-              srcSet={`
-                ${getOptimizedImageUrl(rawImageUrl, 400)} 400w,
-                ${getOptimizedImageUrl(rawImageUrl, 800)} 800w,
-                ${getOptimizedImageUrl(rawImageUrl, 1200)} 1200w
+          <img
+            src={getOptimizedImageUrl(finalImageUrl, 640)}
+            srcSet={`
+                ${getOptimizedImageUrl(finalImageUrl, 400)} 400w,
+                ${getOptimizedImageUrl(finalImageUrl, 800)} 800w,
+                ${getOptimizedImageUrl(finalImageUrl, 1200)} 1200w
               `}
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              alt={prompt.title}
-              loading={prioritizeImage ? "eager" : "lazy"}
-              fetchPriority={prioritizeImage ? "high" : "auto"}
-              className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
-              onError={(event) => { event.currentTarget.src = "/placeholder.svg"; }}
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 via-secondary/10 to-primary/5">
-              <span className="text-4xl opacity-50">?</span>
-            </div>
-          )}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            alt={prompt.title}
+            loading={prioritizeImage ? "eager" : "lazy"}
+            fetchPriority={prioritizeImage ? "high" : "auto"}
+            className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+            onError={(event) => {
+              event.currentTarget.style.display = 'none';
+              event.currentTarget.parentElement!.style.backgroundColor = 'hsl(var(--primary) / 0.1)';
+            }}
+          />
+
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
 
           <div className="absolute top-3 left-3">
             <Badge variant="secondary" className="backdrop-blur-md bg-background/30 text-xs font-normal border-white/10 text-white">
@@ -101,8 +116,8 @@ const PromptCard = ({ prompt, prioritizeImage = false }: { prompt: Prompt; prior
             >
               {displayTitle}
             </h3>
-            <span className="text-xs text-muted-foreground bg-secondary/50 px-2 py-1 rounded-md">
-              {prompt.ai_model.toUpperCase()}
+            <span className="text-xs text-muted-foreground bg-secondary/50 px-2 py-1 rounded-md" translate="no">
+              {modelDisplay}
             </span>
           </div>
 
