@@ -13,12 +13,11 @@ import { getOptimizedImageUrl } from "@/lib/imageOptimizer";
 import { useNavigate } from "react-router-dom";
 
 const CATEGORY_LABELS: Record<string, { en: string; ar: string }> = {
-  coding: { en: "Coding", ar: "برمجة" },
-  writing: { en: "Writing", ar: "كتابة" },
-  art: { en: "Art & Design", ar: "فن وتصميم" },
-  marketing: { en: "Marketing", ar: "تسويق" },
-  productivity: { en: "Productivity", ar: "إنتاجية" },
-  seo: { en: "SEO", ar: "سيو" },
+  all: { en: "All", ar: "الكل" },
+  coding: { en: "Coding", ar: "البرمجة" },
+  writing: { en: "Writing", ar: "الكتابة" },
+  art: { en: "Art & Design", ar: "الفن والتصميم" },
+  marketing: { en: "Marketing", ar: "التسويق" },
 };
 
 const hasBadEncoding = (value?: string | null) => {
@@ -61,7 +60,8 @@ const PromptCard = ({ prompt, prioritizeImage = false }: { prompt: Prompt; prior
     <motion.div
       whileHover={{ y: -5, scale: 1.02 }}
       transition={{ type: "spring", stiffness: 300 }}
-      className="h-full"
+      className="h-full cursor-pointer"
+      onClick={() => navigate(`/prompts/${prompt.id}`)}
     >
       <div className="group relative h-full bg-card border border-border/50 rounded-xl overflow-hidden hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 flex flex-col">
         <div className="relative aspect-video w-full overflow-hidden bg-muted">

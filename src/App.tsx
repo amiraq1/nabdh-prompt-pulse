@@ -14,6 +14,7 @@ const Profile = lazy(() => import("./pages/Profile"));
 const Bookmarks = lazy(() => import("./pages/Bookmarks"));
 const MyCollections = lazy(() => import("./pages/MyCollections"));
 const CollectionDetails = lazy(() => import("./pages/CollectionDetails"));
+const PromptDetails = lazy(() => import("./pages/PromptDetails"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const AdminLayout = lazy(() => import("./layouts/AdminLayout"));
@@ -51,6 +52,7 @@ const App = () => (
           <Route path="/bookmarks" element={<Bookmarks />} />
           <Route path="/collections" element={<MyCollections />} />
           <Route path="/collections/:id" element={<CollectionDetails />} />
+          <Route path="/prompts/:id" element={<PromptDetails />} />
 
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
