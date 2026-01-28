@@ -82,13 +82,12 @@ const PromptCard = ({ prompt, prioritizeImage = false }: { prompt: Prompt; prior
       <div className="group relative h-full bg-card border border-border/50 rounded-xl overflow-hidden hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 flex flex-col">
         <div className="relative aspect-video w-full overflow-hidden bg-muted">
           <img
-            src={getOptimizedImageUrl(finalImageUrl, 640)}
+            src={getOptimizedImageUrl(finalImageUrl, 400)}
             srcSet={`
-                ${getOptimizedImageUrl(finalImageUrl, 400)} 400w,
-                ${getOptimizedImageUrl(finalImageUrl, 800)} 800w,
-                ${getOptimizedImageUrl(finalImageUrl, 1200)} 1200w
+                ${getOptimizedImageUrl(finalImageUrl, 300)} 300w,
+                ${getOptimizedImageUrl(finalImageUrl, 600)} 600w
               `}
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 350px"
             alt={prompt.title}
             loading={prioritizeImage ? "eager" : "lazy"}
             fetchPriority={prioritizeImage ? "high" : "auto"}

@@ -176,38 +176,50 @@ export default function PromptDetails() {
                 </div>
 
                 {/* Hero Image */}
-                <div className="relative w-full aspect-video md:aspect-[21/9] rounded-2xl overflow-hidden mb-8 border border-border/50 shadow-sm bg-muted">
+                <div className="relative w-full aspect-video md:aspect-[21/9] rounded-2xl overflow-hidden mb-8 border border-border/50 shadow-sm bg-muted group">
                     <img
-                        src={getOptimizedImageUrl(finalImageUrl, 1200)}
+                        src={getOptimizedImageUrl(finalImageUrl, 1000)}
                         alt={displayTitle}
-                        className="object-cover w-full h-full"
+                        className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
                         onError={(e) => {
                             e.currentTarget.style.display = 'none';
                             e.currentTarget.parentElement!.style.backgroundColor = 'hsl(var(--primary) / 0.1)';
                         }}
                     />
-                    {/* Fallback pattern overlay if using category image, to ensure text readability if any overlay text is added later */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/10 to-transparent pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-80" />
                 </div>
 
                 {/* Prompt Content */}
-                <div className="relative mb-8">
-                    <div className="absolute top-3 right-3 flex items-center gap-2">
-                        <Sparkles className="w-4 h-4 text-primary" />
-                        <span className="text-xs text-muted-foreground font-medium">
-                            {isRTL ? "الموجه" : "Prompt"}
-                        </span>
-                    </div>
-
+                <div className="relative mb-8 group">
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/50 to-purple-600/50 rounded-2xl opacity-20 group-hover:opacity-40 transition duration-500 blur"></div>
                     <div
                         className={cn(
-                            "bg-card border border-border rounded-xl p-6 pt-12 shadow-sm",
+                            "relative bg-card/50 backdrop-blur-xl border border-border rounded-xl p-6 md:p-8 shadow-sm",
                             isRTL && "text-right"
                         )}
                     >
+                        <div className="flex items-center justify-between mb-4 pb-4 border-b border-border/50">
+                            <div className="flex items-center gap-2">
+                                <Sparkles className="w-5 h-5 text-primary animate-pulse" />
+                                <span className="font-semibold text-foreground">
+                                    {isRTL ? "نص الموجه" : "Prompt Script"}
+                                </span>
+                            </div>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleCopy}
+                                className={cn("hidden md:flex gap-2 h-8", isCopied && "text-green-500")}
+                            >
+                                {isCopied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                                <span className="text-xs">{isCopied ? (isRTL ? "تم النسخ" : "Copied") : (isRTL ? "نسخ" : "Copy")}</span>
+                            </Button>
+                        </div>
+
                         <p
-                            className="text-foreground leading-relaxed whitespace-pre-wrap bidi-plaintext text-lg font-mono bg-muted/30 p-4 rounded-lg border border-border/50"
+                            className="text-foreground leading-relaxed whitespace-pre-wrap bidi-plaintext text-lg md:text-xl font-mono tracking-wide selection:bg-primary/20"
                             dir="auto"
+                            style={{ fontFamily: "'Fira Code', 'Roboto Mono', monospace" }}
                         >
                             {prompt.content}
                         </p>
