@@ -1,9 +1,10 @@
-﻿import { Zap, Menu, X, Settings, User, LogOut, Bookmark, FolderOpen } from "lucide-react";
+﻿import { Zap, Menu, X, Settings, User, LogOut, Bookmark, FolderOpen, Plus } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useLanguage, translations } from "@/contexts/useLanguage";
 import { useAuth } from "@/contexts/useAuth";
+import { useAdmin } from "@/hooks/useAdmin"; // Added import
 import LanguageToggle from "./LanguageToggle";
 import SearchInput from "./SearchInput";
 import NotificationsMenu from "./NotificationsMenu";
@@ -26,6 +27,7 @@ interface HeaderProps {
 const Header = ({ searchQuery, onSearchChange, suggestions = [] }: HeaderProps) => {
   const { language, isRTL } = useLanguage();
   const { user, signOut } = useAuth();
+  const { isAdmin } = useAdmin(); // Added hook usage
   const t = translations;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -85,6 +87,14 @@ const Header = ({ searchQuery, onSearchChange, suggestions = [] }: HeaderProps) 
               isRTL && "flex-row-reverse",
             )}
           >
+            {user && isAdmin && (
+              <Link to="/submit">
+                <Button variant="outline" size="sm" className="gap-2 border-dashed border-primary/50 hover:border-primary">
+                  <Plus className="h-4 w-4" />
+                  <span>{isRTL ? "أضف موجه" : "Submit"}</span>
+                </Button>
+              </Link>
+            )}
             <LanguageToggle />
             <NotificationsMenu />
 
@@ -186,6 +196,12 @@ const Header = ({ searchQuery, onSearchChange, suggestions = [] }: HeaderProps) 
                 </div>
 
                 <div className="space-y-1">
+                  {isAdmin && (
+                    <Link to="/submit" className="flex items-center gap-2 p-2 hover:bg-accent rounded-md text-primary font-medium" onClick={() => setMobileMenuOpen(false)}>
+                      <Plus className="h-4 w-4" />
+                      <span>{isRTL ? "أضف موجه جديد" : "Submit New Prompt"}</span>
+                    </Link>
+                  )}
                   <Link to="/bookmarks" className="flex items-center gap-2 p-2 hover:bg-accent rounded-md" onClick={() => setMobileMenuOpen(false)}>
                     <Bookmark className="h-4 w-4 text-primary" />
                     <span>{isRTL ? "مفضلتي" : "Bookmarks"}</span>

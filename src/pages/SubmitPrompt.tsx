@@ -15,11 +15,12 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight, Send, LogIn, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Send, LogIn, Sparkles, ShieldAlert, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Database } from "@/integrations/supabase/types";
+import { useAdmin } from "@/hooks/useAdmin";
 
 type PromptCategory = Database["public"]["Enums"]["prompt_category"];
 type AIModel = Database["public"]["Enums"]["ai_model"];
@@ -41,6 +42,7 @@ const AI_MODELS = [
 
 export default function SubmitPrompt() {
     const { user } = useAuth();
+    const { isAdmin, isLoading: isAdminLoading } = useAdmin();
     const { isRTL } = useLanguage();
     const navigate = useNavigate();
     const { toast } = useToast();
@@ -64,6 +66,8 @@ export default function SubmitPrompt() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!isAdmin) return;
 
         if (!user) {
             toast({
@@ -119,8 +123,37 @@ export default function SubmitPrompt() {
         }
     };
 
-    // Guest user view - show login prompt
-    if (!user) {
+    // 1. Loading state
+    if (isAdminLoading) {
+        return (
+            <div className="flex h-screen w-full items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        );
+    }
+
+    // 2. Not logged in OR Not Admin
+    if (!isAdmin) {
+        // If logged in but not admin -> Unauthorized
+        if (user) {
+            return (
+                <div className="flex flex-col h-screen items-center justify-center p-4 text-center space-y-4">
+                    <ShieldAlert className="h-16 w-16 text-destructive opacity-50" />
+                    <h1 className="text-2xl font-bold">{isRTL ? "غير مصرح" : "Unauthorized Access"}</h1>
+                    <p className="text-muted-foreground max-w-md">
+                        {isRTL
+                            ? "عذراً، إضافة الموجهات مقتصرة حالياً على المشرفين فقط."
+                            : "Sorry, submitting prompts is currently restricted to admins only."
+                        }
+                    </p>
+                    <Button onClick={() => navigate("/")} variant="outline">
+                        {isRTL ? "العودة للرئيسية" : "Return Home"}
+                    </Button>
+                </div>
+            );
+        }
+
+        // If not logged in -> Show Login Prompt (Guest View)
         return (
             <div className="min-h-screen bg-background">
                 <SEO
@@ -148,12 +181,12 @@ export default function SubmitPrompt() {
                                 <Sparkles className="h-8 w-8 text-primary" />
                             </div>
                             <CardTitle className="text-2xl">
-                                {isRTL ? "شارك إبداعك!" : "Share Your Creativity!"}
+                                {isRTL ? "منطقة المشرفين" : "Admin Area"}
                             </CardTitle>
                             <CardDescription className="text-base">
                                 {isRTL
-                                    ? "سجّل الدخول لمشاركة موجهات الذكاء الاصطناعي الخاصة بك مع المجتمع"
-                                    : "Login to share your AI prompts with the community and help others create amazing things"}
+                                    ? "يرجى تسجيل الدخول بحساب مشرف لإضافة موجهات جديدة"
+                                    : "Please login with an admin account to submit new prompts"}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -165,11 +198,6 @@ export default function SubmitPrompt() {
                                 <LogIn className="h-5 w-5" />
                                 {isRTL ? "تسجيل الدخول" : "Login to Continue"}
                             </Button>
-                            <p className="text-sm text-muted-foreground">
-                                {isRTL
-                                    ? "ليس لديك حساب؟ يمكنك إنشاء حساب مجاني!"
-                                    : "Don't have an account? Create one for free!"}
-                            </p>
                         </CardContent>
                     </Card>
                 </div>
