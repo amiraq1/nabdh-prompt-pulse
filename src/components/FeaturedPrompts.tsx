@@ -20,7 +20,21 @@ const CATEGORY_LABELS: Record<string, { en: string; ar: string }> = {
     marketing: { en: "Marketing", ar: "التسويق" },
 };
 
-const FeaturedCard = ({ prompt, index }: { prompt: any; index: number }) => {
+interface Prompt {
+    id: string;
+    title: string;
+    title_ar?: string | null;
+    content: string;
+    category: string;
+    ai_model: string;
+    likes: number;
+    user_id?: string; // Optional to match potential hook response
+    image_url?: string | null;
+    image?: string | null;
+    tags?: string[] | null;
+}
+
+const FeaturedCard = ({ prompt, index }: { prompt: Prompt; index: number }) => {
     const { isRTL } = useLanguage();
     const navigate = useNavigate();
     const { toast } = useToast();

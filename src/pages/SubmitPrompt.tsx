@@ -19,6 +19,10 @@ import { ArrowLeft, ArrowRight, Send, LogIn, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Database } from "@/integrations/supabase/types";
+
+type PromptCategory = Database["public"]["Enums"]["prompt_category"];
+type AIModel = Database["public"]["Enums"]["ai_model"];
 
 const CATEGORIES = [
     { id: "coding", en: "Coding", ar: "البرمجة" },
@@ -44,11 +48,17 @@ export default function SubmitPrompt() {
     const remixId = searchParams.get("remix_id");
 
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<{
+        title: string;
+        content: string;
+        category: PromptCategory;
+        ai_model: AIModel;
+        tags: string;
+    }>({
         title: "",
         content: "",
-        category: "coding" as const,
-        ai_model: "gpt-4" as const,
+        category: "coding",
+        ai_model: "gpt-4",
         tags: "",
     });
 
@@ -77,13 +87,13 @@ export default function SubmitPrompt() {
 
             const { error } = await supabase.from("prompts").insert({
                 content: formData.content,
-                category: formData.category as "coding" | "writing" | "art" | "marketing",
-                ai_model: formData.ai_model as "gpt-4" | "gpt-3.5" | "claude" | "gemini" | "midjourney",
+                category: formData.category,
+                ai_model: formData.ai_model,
                 tags: tagsArray,
                 user_id: user.id,
-                title: formData.title, // Add title to insert
-                title_ar: isRTL ? formData.title : null // Optional: save Arabic title if in RTL
-            } as any); // Type assertion to bypass strict checking issue if needed
+                title: formData.title,
+                title_ar: isRTL ? formData.title : null
+            });
 
             if (error) throw error;
 
@@ -95,7 +105,7 @@ export default function SubmitPrompt() {
             });
 
             navigate("/");
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Submit error:", error);
             toast({
                 title: isRTL ? "حدث خطأ" : "Error",
@@ -250,7 +260,7 @@ export default function SubmitPrompt() {
                                     </Label>
                                     <Select
                                         value={formData.category}
-                                        onValueChange={(value) => setFormData({ ...formData, category: value as any })}
+                                        onValueChange={(value) => setFormData({ ...formData, category: value as PromptCategory })}
                                     >
                                         <SelectTrigger>
                                             <SelectValue />
@@ -271,7 +281,7 @@ export default function SubmitPrompt() {
                                     </Label>
                                     <Select
                                         value={formData.ai_model}
-                                        onValueChange={(value) => setFormData({ ...formData, ai_model: value as any })}
+                                        onValueChange={(value) => setFormData({ ...formData, ai_model: value as AIModel })}
                                     >
                                         <SelectTrigger>
                                             <SelectValue />

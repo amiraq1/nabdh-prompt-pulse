@@ -61,7 +61,7 @@ export default function AdminDashboard() {
         };
 
         checkAdmin();
-    }, [navigate]);
+    }, [navigate, isRTL, toast]);
 
     // Statistics Query
     const { data: stats } = useQuery({
