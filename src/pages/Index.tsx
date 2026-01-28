@@ -49,7 +49,7 @@ export default function Index() {
       <main className="container mx-auto px-4 py-8 space-y-8">
         <div className="text-center space-y-4 max-w-2xl mx-auto mt-8">
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-            {isRTL ? "اكتشف أفضل موجهات الذكاء الاصطناعي" : "Discover Top AI Prompts"}
+            {isRTL ? "اكتشف أفضل تطبيقات الذكاء الاصطناعي" : "Discover Top AI Applications"}
           </h1>
           <p className="text-muted-foreground text-lg">
             {isRTL

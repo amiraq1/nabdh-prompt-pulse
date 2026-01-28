@@ -160,7 +160,7 @@ const Header = ({ searchQuery, onSearchChange, suggestions = [] }: HeaderProps) 
           </div>
         </div>
 
-        {/* Mobile Search - Always visible */}
+
         <div className="mt-3 md:hidden">
           <SearchInput
             value={searchQuery}
@@ -170,6 +170,58 @@ const Header = ({ searchQuery, onSearchChange, suggestions = [] }: HeaderProps) 
           />
         </div>
 
+        {/* Mobile Menu Content */}
+        {mobileMenuOpen && (
+          <div className="md:hidden mt-4 p-4 rounded-xl bg-card border shadow-lg space-y-4 animate-in slide-in-from-top-2 fade-in duration-200">
+            {user ? (
+              <>
+                <div className="flex items-center gap-3 px-2 pb-2 border-b">
+                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <User className="h-6 w-6 text-primary" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-semibold">{user.email?.split('@')[0]}</span>
+                    <span className="text-xs text-muted-foreground">{user.email}</span>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <Link to="/bookmarks" className="flex items-center gap-2 p-2 hover:bg-accent rounded-md" onClick={() => setMobileMenuOpen(false)}>
+                    <Bookmark className="h-4 w-4 text-primary" />
+                    <span>{isRTL ? "مفضلتي" : "Bookmarks"}</span>
+                  </Link>
+                  <Link to="/collections" className="flex items-center gap-2 p-2 hover:bg-accent rounded-md" onClick={() => setMobileMenuOpen(false)}>
+                    <FolderOpen className="h-4 w-4 text-primary" />
+                    <span>{isRTL ? "مجموعاتي" : "My Collections"}</span>
+                  </Link>
+                  <Link to="/settings" className="flex items-center gap-2 p-2 hover:bg-accent rounded-md" onClick={() => setMobileMenuOpen(false)}>
+                    <Settings className="h-4 w-4 text-primary" />
+                    <span>{isRTL ? "الإعدادات" : "Settings"}</span>
+                  </Link>
+                </div>
+
+                <div className="border-t pt-2">
+                  <Button variant="ghost" className="w-full justify-start text-destructive gap-2" onClick={() => { signOut(); setMobileMenuOpen(false); }}>
+                    <LogOut className="h-4 w-4" />
+                    <span>{isRTL ? "تسجيل الخروج" : "Log out"}</span>
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
+                <Button className="w-full gap-2">
+                  <User className="h-4 w-4" />
+                  <span>{isRTL ? "تسجيل الدخول" : "Login"}</span>
+                </Button>
+              </Link>
+            )}
+
+            <div className="border-t pt-4 flex justify-between items-center">
+              <span className="text-sm font-medium">{isRTL ? "التنبيهات" : "Notifications"}</span>
+              <NotificationsMenu />
+            </div>
+          </div>
+        )}
 
       </div>
     </header>
