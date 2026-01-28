@@ -35,7 +35,12 @@ const App = () => (
     <Toaster />
     <Sonner />
     <MagicBackground />
-    <BrowserRouter>
+    <BrowserRouter
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true,
+      }}
+    >
       <Suspense fallback={<PageLoader />}>
         <MobileNav />
         <Routes>

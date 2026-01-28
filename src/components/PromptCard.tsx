@@ -90,7 +90,8 @@ const PromptCard = ({ prompt, prioritizeImage = false }: { prompt: Prompt; prior
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 350px"
             alt={prompt.title}
             loading={prioritizeImage ? "eager" : "lazy"}
-            fetchPriority={prioritizeImage ? "high" : "auto"}
+            // @ts-expect-error - fetchpriority is a valid DOM attribute but missing from React types
+            fetchpriority={prioritizeImage ? "high" : "auto"}
             className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
             onError={(event) => {
               event.currentTarget.style.display = 'none';
