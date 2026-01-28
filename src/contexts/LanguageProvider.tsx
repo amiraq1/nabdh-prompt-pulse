@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import { translations } from "@/constants/translations";
-import { Language, LanguageContext } from "./languageContext";
+import { Language, LanguageContext } from "./LanguageContext";
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguage] = useState<Language>(() => {
