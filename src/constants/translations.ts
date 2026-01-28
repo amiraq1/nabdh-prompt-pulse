@@ -117,4 +117,12 @@ export const translations = {
     fillRequired: { en: 'Please fill in all required fields', ar: 'يرجى ملء جميع الحقول المطلوبة' },
     failedToSave: { en: 'Failed to save prompt. Please try again.', ar: 'فشل في حفظ الموجه. حاول مرة أخرى.' },
     failedToDelete: { en: 'Failed to delete prompt. Please try again.', ar: 'فشل في حذف الموجه. حاول مرة أخرى.' },
+
+    // Image Generator
+    imageGenerator: { en: 'Image Generator', ar: 'مولد الصور' },
+    generateImage: { en: 'Generate Image', ar: 'توليد صوره' },
+    imagePromptPlaceholder: { en: 'Describe the image you want to create...', ar: 'صف الصورة التي تريد إنشاءها...' },
+    generating: { en: 'Generating...', ar: 'جارٍ الإنشاء...' },
+    download: { en: 'Download', ar: 'تحميل' },
+    share: { en: 'Share', ar: 'مشاركة' },
 };

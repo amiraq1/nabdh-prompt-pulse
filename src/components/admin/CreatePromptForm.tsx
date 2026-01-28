@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Save, X, AlertCircle, ImagePlus } from 'lucide-react';
+import { Save, X, AlertCircle, ImagePlus, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -64,6 +64,9 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(editPrompt?.image_url || null);
+  const [imagePrompt, setImagePrompt] = useState('');
+  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<FieldError[]>([]);
@@ -186,6 +189,40 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
     }
   };
 
+  const handleGenerateImage = async () => {
+    const prompt = imagePrompt.trim();
+    if (!prompt) return;
+
+    setIsGenerating(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-prompt-image', {
+        body: { prompt },
+      });
+
+      if (error) throw error;
+
+      const imageUrl = data?.imageUrl || data?.image_url;
+      if (!imageUrl) {
+        throw new Error('No image URL returned');
+      }
+
+      setGeneratedImageUrl(imageUrl);
+      setPreviewUrl(imageUrl);
+      setImageFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    } catch (error) {
+      console.error('Image generation error:', error);
+      toast({
+        title: t.error[language],
+        description: isRTL ? 'فشل توليد الصورة. حاول مرة أخرى.' : 'Failed to generate image. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -205,6 +242,10 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
 
     try {
       let imageUrlToSave = editPrompt?.image_url || null; // الافتراضي: الصورة القديمة أو لا شيء
+
+      if (generatedImageUrl) {
+        imageUrlToSave = generatedImageUrl;
+      }
 
       // إذا تم اختيار ملف جديد، قم برفعه
       if (imageFile) {
@@ -414,6 +455,43 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
           )}
         </div>
       </div>
+      {/* Image Generator */}
+      <div className="space-y-2">
+        <Label htmlFor="imagePrompt" className={cn("text-foreground", isRTL && "block text-right")}>
+          {t.imageGenerator[language]}
+        </Label>
+        <div className="space-y-3 rounded-lg border border-border bg-secondary/30 p-4">
+          <Textarea
+            id="imagePrompt"
+            placeholder={t.imagePromptPlaceholder[language]}
+            value={imagePrompt}
+            onChange={(e) => setImagePrompt(e.target.value)}
+            className={cn(
+              "min-h-[120px] bg-background/60 border-border focus:border-primary focus:ring-primary/20 resize-y bidi-plaintext",
+              isRTL && "text-right"
+            )}
+            dir={isRTL ? 'rtl' : 'ltr'}
+          />
+          <div className={cn("flex flex-col sm:flex-row sm:items-center gap-2", isRTL && "sm:flex-row-reverse")}>
+            <Button
+              type="button"
+              variant="soft"
+              isLoading={isGenerating}
+              loadingText={t.generating[language]}
+              onClick={handleGenerateImage}
+              disabled={isGenerating || !imagePrompt.trim()}
+              className={cn("gap-2", isRTL && "flex-row-reverse")}
+            >
+              <Sparkles className="w-4 h-4" />
+              {t.generateImage[language]}
+            </Button>
+            <p className={cn("text-xs text-muted-foreground", isRTL && "text-right")}>
+              {isRTL ? "سيتم استخدام الصورة الناتجة كصورة للموجه." : "Generated image will be used as the prompt image."}
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Image Upload Section */}
       <div className="space-y-2">
         <Label className={cn("text-foreground", isRTL && "block text-right")}>
@@ -435,6 +513,7 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
                   return;
                 }
                 setImageFile(file);
+                setGeneratedImageUrl(null);
                 setPreviewUrl(URL.createObjectURL(file)); // إنشاء رابط معاينة محلي
               }
             }}
@@ -459,6 +538,7 @@ const CreatePromptForm = ({ editPrompt, onClose }: CreatePromptFormProps) => {
                 type="button"
                 onClick={() => {
                   setImageFile(null);
+                  setGeneratedImageUrl(null);
                   setPreviewUrl(null);
                   if (fileInputRef.current) fileInputRef.current.value = '';
                 }}
