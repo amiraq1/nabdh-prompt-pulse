@@ -119,6 +119,7 @@ export default function PromptDetails() {
         { locale: isRTL ? ar : enUS }
     );
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const finalImageUrl = (prompt as any).image || prompt.image_url || getCategoryImage(prompt.category, prompt.id);
 
     // AI Model Display names
