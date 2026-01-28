@@ -119,7 +119,7 @@ export default function PromptDetails() {
         { locale: isRTL ? ar : enUS }
     );
 
-    const finalImageUrl = prompt.image || prompt.image_url || getCategoryImage(prompt.category, prompt.id);
+    const finalImageUrl = (prompt as any).image || prompt.image_url || getCategoryImage(prompt.category, prompt.id);
 
     // AI Model Display names
     const MODEL_LABELS: Record<string, string> = {
